@@ -23,6 +23,8 @@ namespace Luma
 #error "Unsupported platform! Luma supports Windows, Linux, and BSD."
 #endif
 
+#define BIT(x) (1u << x)
+
 //------------------------------------------------------------------------------
 // Compiler Detection
 //------------------------------------------------------------------------------

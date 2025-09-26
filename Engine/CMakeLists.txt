@@ -15,6 +15,8 @@ add_library(Luma STATIC)
 target_sources(Luma PRIVATE ${LUMA_ROOT_SOURCES} ${LUMA_ROOT_HEADERS})
 
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Core)
+add_subdirectory(${LUMA_SRC_DIR}/Luma/Events)
+add_subdirectory(${LUMA_SRC_DIR}/Luma/Platform)
 
 target_precompile_headers(Luma PRIVATE ${LUMA_SRC_DIR}/lmpch.hpp)
 target_compile_features(Luma PUBLIC cxx_std_23)

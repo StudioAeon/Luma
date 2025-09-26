@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Luma/Core/Base.hpp"
+#include "Luma/Core/Window.hpp"
 
 #include <string>
 
@@ -23,6 +24,9 @@ namespace Luma {
 
 		virtual void OnInit() {}
 		virtual void OnShutdown();
+		virtual void OnUpdate() {}
+
+		inline Window& GetWindow() { return *m_Window; }
 
 		static inline Application& Get() { return *s_Instance; }
 
@@ -31,6 +35,7 @@ namespace Luma {
 		static const char* GetConfigurationName();
 		static const char* GetPlatformName();
 	private:
+		std::unique_ptr<Window> m_Window;
 		ApplicationSpecification m_Specification;
 
 		bool m_Running = true, m_Minimized = false;

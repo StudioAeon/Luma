@@ -29,7 +29,10 @@ namespace Luma {
 	{
 		OnInit();
 		while (m_Running)
-		{}
+		{
+			if (!m_Minimized)
+			{}
+		}
 		OnShutdown();
 	}
 
