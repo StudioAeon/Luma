@@ -1,4 +1,4 @@
-#include "Luma.hpp"
+#include "EditorLayer.hpp"
 
 #include "Luma/EntryPoint.hpp"
 
@@ -8,14 +8,19 @@ public:
 	LumaEditorApplication(const Luma::ApplicationSpecification& specification)
 		: Application(specification)
 	{}
+
+	virtual void OnInit() override
+	{
+		PushLayer(new Luma::EditorLayer());
+	}
 };
 
 Luma::Application* Luma::CreateApplication(int argv, char** argc)
 {
 	ApplicationSpecification specification;
 	specification.Name = "Luma-Editor";
-	specification.WindowWidth = 1920;
-	specification.WindowHeight = 1080;
+	specification.WindowWidth = 1600;
+	specification.WindowHeight = 900;
 
 	return new LumaEditorApplication(specification);
 }

@@ -2,6 +2,9 @@
 
 #include "Luma/Core/Base.hpp"
 #include "Luma/Core/Window.hpp"
+#include "Luma/Core/LayerStack.hpp"
+
+#include "Luma/Events/ApplicationEvent.hpp"
 
 #include <string>
 
@@ -26,6 +29,13 @@ namespace Luma {
 		virtual void OnShutdown();
 		virtual void OnUpdate() {}
 
+		virtual void OnEvent(Event& event);
+
+		void PushLayer(Layer* layer);
+		void PushOverlay(Layer* overlay);
+		void PopLayer(Layer* layer);
+		void PopOverlay(Layer* overlay);
+
 		inline Window& GetWindow() { return *m_Window; }
 
 		static inline Application& Get() { return *s_Instance; }
@@ -35,10 +45,14 @@ namespace Luma {
 		static const char* GetConfigurationName();
 		static const char* GetPlatformName();
 	private:
+		bool OnWindowResize(WindowResizeEvent& e);
+		bool OnWindowClose(WindowCloseEvent& e);
+	private:
 		std::unique_ptr<Window> m_Window;
 		ApplicationSpecification m_Specification;
 
 		bool m_Running = true, m_Minimized = false;
+		LayerStack m_LayerStack;
 
 		static Application* s_Instance;
 	};

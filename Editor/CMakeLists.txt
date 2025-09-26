@@ -1,10 +1,16 @@
 set(EDITOR_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Source)
 
 set(EDITOR_SOURCES
+		${EDITOR_SRC_DIR}/EditorLayer.cpp
 		${EDITOR_SRC_DIR}/Luma-Editor.cpp
 )
 
-add_executable(Luma-Editor ${EDITOR_SOURCES})
+set(EDITOR_HEADERS
+		${EDITOR_SRC_DIR}/EditorLayer.hpp
+		${EDITOR_SRC_DIR}/Luma-Editor.cpp
+)
+
+add_executable(Luma-Editor ${EDITOR_SOURCES} ${EDITOR_HEADERS})
 
 target_compile_features(Luma-Editor PRIVATE cxx_std_23)
 target_include_directories(Luma-Editor PUBLIC ${EDITOR_SRC_DIR})

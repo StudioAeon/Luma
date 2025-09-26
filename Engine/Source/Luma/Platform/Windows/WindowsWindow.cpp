@@ -9,8 +9,9 @@ namespace Luma {
 	}
 
 	WindowsWindow::WindowsWindow(const WindowProps& props)
-		: Window(props)
-	{}
+	{
+		Init(props);
+	}
 
 	WindowsWindow::~WindowsWindow()
 	{}
@@ -22,9 +23,13 @@ namespace Luma {
 		m_Height = props.Height;
 
 		// TODO: Platform Specific
+		LM_CORE_INFO("Creating window {0} ({1}, {2})", m_Title, m_Width, m_Height);
 	}
 
 	void WindowsWindow::Shutdown()
+	{}
+
+	void WindowsWindow::OnUpdate()
 	{}
 
 }
