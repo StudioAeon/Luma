@@ -13,7 +13,12 @@ namespace Luma {
 	{
 		s_Instance = this;
 
-		m_Window = std::unique_ptr<Window>(Window::Create());
+		WindowSpecification windowSpec;
+		windowSpec.Title = specification.Name;
+		windowSpec.Width = specification.WindowWidth;
+		windowSpec.Height = specification.WindowHeight;
+		windowSpec.VSync = specification.VSync;
+		m_Window = std::unique_ptr<Window>(Window::Create(windowSpec));
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 	}
 

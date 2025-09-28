@@ -15,3 +15,18 @@ FetchContent_Declare(
 		SYSTEM
 )
 FetchContent_MakeAvailable(spdlog)
+
+set(SDL_AUDIO OFF)
+set(SDL_EXAMPLES OFF)
+set(SDL_SAMPLES OFF)
+set(SDL_TESTS OFF)
+set(SDL_STATIC ON)
+
+FetchContent_Declare(
+		SDL3
+		GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+		GIT_TAG release-3.2.22
+		SYSTEM
+)
+
+FetchContent_MakeAvailable(SDL3)

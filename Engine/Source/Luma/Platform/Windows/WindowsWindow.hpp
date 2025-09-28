@@ -2,28 +2,43 @@
 
 #include "Luma/Core/Window.hpp"
 
+#include "SDL3/SDL.h"
+
 namespace Luma {
 
 	class WindowsWindow : public Window
 	{
 	public:
-		WindowsWindow(const WindowProps& props);
+		WindowsWindow(const WindowSpecification& specification);
 		virtual ~WindowsWindow();
 
 		void OnUpdate() override;
 
-		inline void SetEventCallback(const EventCallbackFn& callback) override { m_EventCallbackFn = callback; }
+		inline uint32_t GetWidth() const override { return m_Data.Width; }
+		inline uint32_t GetHeight() const override { return m_Data.Height; }
 
-		inline uint32_t GetWidth() const override { return m_Width; }
-		inline uint32_t GetHeight() const override { return m_Height; }
-	protected:
-		virtual void Init(const WindowProps& props);
+		// Window attributes
+		inline void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallback = callback; }
+		void SetVSync(bool enabled);
+		bool IsVSync() const;
+	private:
+		virtual void Init();
 		virtual void Shutdown();
 	private:
-		std::string m_Title;
-		uint32_t m_Width, m_Height;
+		SDL_Window* m_Window = nullptr;
+		SDL_WindowID m_WindowID = 0;
+		SDL_Event m_Event{};
 
-		EventCallbackFn m_EventCallbackFn;
+		WindowSpecification m_Specification;
+
+		struct WindowData
+		{
+			std::string Title;
+			unsigned int Width, Height;
+			bool VSync;
+
+			EventCallbackFn EventCallback;
+		}; WindowData m_Data;
 	};
 
 }

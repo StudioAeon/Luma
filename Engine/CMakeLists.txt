@@ -22,11 +22,13 @@ target_precompile_headers(Luma PRIVATE ${LUMA_SRC_DIR}/lmpch.hpp)
 target_compile_features(Luma PUBLIC cxx_std_23)
 target_include_directories(Luma PUBLIC ${LUMA_SRC_DIR})
 
+add_definitions(-DSDL_MAIN_HANDLED)
 target_link_libraries(Luma
 		PUBLIC
 
 		# ==== Core Dependencies ====
 		spdlog
+		SDL3::SDL3-static
 )
 
 luma_enable_lto(Luma)

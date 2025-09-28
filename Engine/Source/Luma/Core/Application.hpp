@@ -14,6 +14,7 @@ namespace Luma {
 	{
 		std::string Name = "Luma";
 		uint32_t WindowWidth = 1600, WindowHeight = 900;
+		bool VSync = true;
 	};
 
 	class Application
