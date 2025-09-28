@@ -15,6 +15,7 @@ add_library(Luma STATIC)
 target_sources(Luma PRIVATE ${LUMA_ROOT_SOURCES} ${LUMA_ROOT_HEADERS})
 
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Core)
+add_subdirectory(${LUMA_SRC_DIR}/Luma/Debug)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Events)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Platform)
 

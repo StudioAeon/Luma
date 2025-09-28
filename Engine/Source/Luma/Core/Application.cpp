@@ -85,7 +85,7 @@ namespace Luma {
 		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
 
-		//ZN_CORE_TRACE("{}", event.ToString());
+		LM_CORE_TRACE("{}", event.ToString());
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
 		{
 			(*--it)->OnEvent(event);

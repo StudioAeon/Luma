@@ -1,6 +1,8 @@
 if(WIN32)
 	target_sources(Luma
 			PRIVATE
+			Windows/WindowsInput.cpp
+			Windows/WindowsInput.hpp
 			Windows/WindowsWindow.cpp
 			Windows/WindowsWindow.hpp
 	)

@@ -1,6 +1,7 @@
 #include "EditorLayer.hpp"
 
 #include "Luma/EntryPoint.hpp"
+#include "Luma/Debug/ImGuiLayer.hpp"
 
 class LumaEditorApplication : public Luma::Application
 {
@@ -11,7 +12,7 @@ public:
 
 	virtual void OnInit() override
 	{
-		PushLayer(new Luma::EditorLayer());
+		PushLayer(new Luma::ImGuiLayer("ImGui"));
 	}
 };
 

@@ -53,4 +53,8 @@ target_include_directories(imgui PUBLIC
 		${IMGUI_DIR}/backends
 )
 
+target_compile_definitions(imgui PUBLIC
+		IMGUI_DEFINE_MATH_OPERATORS
+)
+
 target_link_libraries(imgui PUBLIC SDL3::SDL3-static)
