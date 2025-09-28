@@ -68,8 +68,8 @@ namespace Luma {
 		{
 			if (!m_Minimized)
 			{
-				glClearColor(1, 0, 1, 1);
-				glClear(GL_COLOR_BUFFER_BIT);
+				glClearColor(0, 0, 0, 1);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 				for (Layer* layer : m_LayerStack)
 					layer->OnUpdate();
@@ -85,7 +85,7 @@ namespace Luma {
 		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
 
-		LM_CORE_TRACE("{}", event.ToString());
+		//LM_CORE_TRACE("{}", event.ToString());
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
 		{
 			(*--it)->OnEvent(event);

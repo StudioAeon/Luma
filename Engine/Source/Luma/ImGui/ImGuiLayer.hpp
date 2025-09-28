@@ -1,10 +1,7 @@
 #pragma once
 
+#include "lmpch.hpp"
 #include "Luma/Core/Layer.hpp"
-
-#include "Luma/Events/KeyEvent.hpp"
-#include "Luma/Events/MouseEvent.hpp"
-#include "Luma/Events/ApplicationEvent.hpp"
 
 namespace Luma {
 
@@ -18,12 +15,8 @@ namespace Luma {
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
 		virtual void OnUpdate() override;
-		virtual void OnEvent(Event& event) override;
-
-		void SetBlockEvents(bool block);
-
 	private:
-		bool m_BlockEvents = true;
+		float m_Time = 0.0f;
 	};
 
 }
