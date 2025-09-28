@@ -1,6 +1,8 @@
 #include "lmpch.hpp"
 #include "Application.hpp"
 
+#include <glad/glad.h>
+
 bool g_ApplicationRunning = true;
 namespace Luma {
 
@@ -66,6 +68,9 @@ namespace Luma {
 		{
 			if (!m_Minimized)
 			{
+				glClearColor(1, 0, 1, 1);
+				glClear(GL_COLOR_BUFFER_BIT);
+
 				for (Layer* layer : m_LayerStack)
 					layer->OnUpdate();
 			}

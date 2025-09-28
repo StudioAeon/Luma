@@ -29,6 +29,8 @@ target_link_libraries(Luma
 		# ==== Core Dependencies ====
 		spdlog
 		SDL3::SDL3-static
+		glad
+		imgui
 )
 
 luma_enable_lto(Luma)

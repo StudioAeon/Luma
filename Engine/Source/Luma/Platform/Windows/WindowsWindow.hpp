@@ -21,11 +21,14 @@ namespace Luma {
 		inline void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallback = callback; }
 		void SetVSync(bool enabled);
 		bool IsVSync() const;
+
+		inline void* GetNativeWindow() const { return m_Window; }
 	private:
 		virtual void Init();
 		virtual void Shutdown();
 	private:
 		SDL_Window* m_Window = nullptr;
+		SDL_GLContext m_GLContext = nullptr;
 		SDL_WindowID m_WindowID = 0;
 		SDL_Event m_Event{};
 

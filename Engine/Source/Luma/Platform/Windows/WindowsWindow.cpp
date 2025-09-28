@@ -1,4 +1,5 @@
 #include "lmpch.hpp"
+#include <glad/glad.h>
 #include "WindowsWindow.hpp"
 
 #include "Luma/Events/ApplicationEvent.hpp"
@@ -54,6 +55,16 @@ namespace Luma {
 		}
 
 		m_WindowID = SDL_GetWindowID(m_Window);
+
+		m_GLContext = SDL_GL_CreateContext(m_Window);
+		SDL_GL_MakeCurrent(m_Window, m_GLContext);
+
+		if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(SDL_GL_GetProcAddress)))
+		{
+			LM_CORE_ERROR("Failed to initialize GLAD!");
+			LM_CORE_ASSERT(false, "Failed to initialize GLAD!");
+			return;
+		}
 
 		SetVSync(true);
 	}
@@ -154,12 +165,15 @@ namespace Luma {
 			}
 		}
 
-		// SDL_GL_SwapWindow(m_Window);
+		SDL_GL_SwapWindow(m_Window);
 	}
 
 	void WindowsWindow::SetVSync(bool enabled)
 	{
-		// SDL3 VSync is controlled through the renderer or graphics context
+		if (enabled)
+			SDL_GL_SetSwapInterval(1);
+		else
+			SDL_GL_SetSwapInterval(0);
 		m_Data.VSync = enabled;
 	}
 

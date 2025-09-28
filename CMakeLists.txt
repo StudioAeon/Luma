@@ -37,9 +37,18 @@ endif()
 # ==== CMake Utilities ====
 include(BuildSystem/CMake/CMakeUtils/znUtilsTarget.cmake)
 
+add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING)
+
 add_compile_options(
 		$<$<CXX_COMPILER_ID:MSVC>:/Gy>
+		$<$<CXX_COMPILER_ID:MSVC>:/EHsc>
 		$<$<CXX_COMPILER_ID:MSVC>:/Zc:preprocessor>
+		$<$<CXX_COMPILER_ID:MSVC>:/Zc:__cplusplus>
+		$<$<CXX_COMPILER_ID:MSVC>:/wd4068>  # -- Disable "Unknown #pragma mark warning"
+)
+
+add_link_options(
+		$<$<CXX_COMPILER_ID:MSVC>:/IGNORE:4099>  # -- Suppress "no PDB found" warning
 )
 
 # ==== Add Subsystems ====
