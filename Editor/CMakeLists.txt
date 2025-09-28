@@ -18,3 +18,4 @@ target_include_directories(Luma-Editor PUBLIC ${EDITOR_SRC_DIR})
 target_link_libraries(Luma-Editor PRIVATE Luma)
 
 luma_enable_lto(Luma-Editor)
+apply_compiler_settings(Luma-Editor)

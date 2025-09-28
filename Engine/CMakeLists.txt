@@ -34,3 +34,4 @@ target_link_libraries(Luma
 )
 
 luma_enable_lto(Luma)
+apply_compiler_settings(Luma)
