@@ -35,7 +35,8 @@ else()
 endif()
 
 # ==== CMake Utilities ====
-include(BuildSystem/CMake/CMakeUtils/znUtilsTarget.cmake)
+include(BuildSystem/CMake/CMakeUtils/LumaCompiler.cmake)
+include(BuildSystem/CMake/CMakeUtils/LumaOptimization.cmake)
 
 # ==== Add Subsystems ====
 add_subdirectory(ThirdParty)

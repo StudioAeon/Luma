@@ -2,6 +2,8 @@
 #include <glad/glad.h>
 #include "WindowsWindow.hpp"
 
+#include "imgui.h"
+#include "imgui_impl_sdl3.h"
 #include "Luma/Events/ApplicationEvent.hpp"
 #include "Luma/Events/KeyEvent.hpp"
 #include "Luma/Events/MouseEvent.hpp"
@@ -85,6 +87,11 @@ namespace Luma {
 	{
 		while (SDL_PollEvent(&m_Event))
 		{
+			if (ImGui::GetCurrentContext() != nullptr && ImGui::GetIO().BackendPlatformUserData != nullptr)
+			{
+				ImGui_ImplSDL3_ProcessEvent(&m_Event);
+			}
+
 			switch (m_Event.type)
 			{
 				case SDL_EVENT_QUIT:

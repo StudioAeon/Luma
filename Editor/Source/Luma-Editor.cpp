@@ -13,7 +13,6 @@ public:
 	virtual void OnInit() override
 	{
 		PushLayer(new Luma::EditorLayer());
-		PushLayer(new Luma::ImGuiLayer("ImGui"));
 	}
 };
 

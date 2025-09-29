@@ -23,6 +23,9 @@ namespace Luma {
 		windowSpec.VSync = specification.VSync;
 		m_Window = std::unique_ptr<Window>(Window::Create(windowSpec));
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+
+		m_ImGuiLayer = new ImGuiLayer("ImGui");
+		PushOverlay(m_ImGuiLayer);
 	}
 
 	Application::~Application()
@@ -52,6 +55,15 @@ namespace Luma {
 		overlay->OnDetach();
 	}
 
+	void Application::RenderImGui()
+	{
+		m_ImGuiLayer->Begin();
+		for (Layer* layer : m_LayerStack)
+			layer->OnImGuiRender();
+
+		m_ImGuiLayer->End();
+	}
+
 	void Application::Close()
 	{
 		m_Running = false;
@@ -72,8 +84,9 @@ namespace Luma {
 				for (Layer* layer : m_LayerStack)
 					layer->OnUpdate();
 
-				for (Layer* layer : m_LayerStack)
-					layer->OnImGuiRender();
+				// Render ImGui on render thread
+				Application* app = this;
+				LM_RENDER_1(app, { app->RenderImGui(); });
 			}
 
 			Renderer::Get().WaitAndRender();

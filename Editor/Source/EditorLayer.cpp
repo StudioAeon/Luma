@@ -4,7 +4,21 @@
 
 namespace Luma {
 
+	static void ImGuiShowHelpMarker(const char* desc)
+	{
+		ImGui::TextDisabled("(?)");
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+			ImGui::TextUnformatted(desc);
+			ImGui::PopTextWrapPos();
+			ImGui::EndTooltip();
+		}
+	}
+
 	EditorLayer::EditorLayer()
+		: m_ClearColor{0.2f, 0.3f, 0.8f, 1.0f}
 	{}
 
 	EditorLayer::~EditorLayer()
@@ -20,21 +34,18 @@ namespace Luma {
 
 	void EditorLayer::OnUpdate()
 	{
-		Renderer::Clear(0.8f, 0.3f, 0.8f, 1);
-
-		float r = 1.0f;
-		float g = 0.0f;
-		float b = 1.0f;
-		LM_RENDER_III(r, g, b, {
-			Luma::RendererAPI::Clear(r, g, b, 1.0f);
-		});
+		Renderer::Clear(m_ClearColor[0], m_ClearColor[1], m_ClearColor[2], m_ClearColor[3]);
 	}
 
 	void EditorLayer::OnImGuiRender()
 	{
-		//ImGui::Begin("Example Window");
-		//ImGui::Text("Hello World!");
-		//ImGui::End();
+		static bool show_demo_window = true;
+		if (show_demo_window)
+			ImGui::ShowDemoWindow(&show_demo_window);
+
+		ImGui::Begin("EditorLayer");
+		ImGui::ColorEdit4("Clear Color", m_ClearColor);
+		ImGui::End();
 	}
 
 	void EditorLayer::OnEvent(Event& e)

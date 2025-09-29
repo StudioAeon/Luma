@@ -12,6 +12,9 @@ namespace Luma {
 		ImGuiLayer(const std::string& name);
 		virtual ~ImGuiLayer();
 
+		void Begin();
+		void End();
+
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
 		virtual void OnImGuiRender() override;

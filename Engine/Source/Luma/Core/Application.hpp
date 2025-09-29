@@ -6,6 +6,8 @@
 
 #include "Luma/Events/ApplicationEvent.hpp"
 
+#include "Luma/ImGui/ImGuiLayer.hpp"
+
 #include <string>
 
 namespace Luma {
@@ -36,6 +38,7 @@ namespace Luma {
 		void PushOverlay(Layer* overlay);
 		void PopLayer(Layer* layer);
 		void PopOverlay(Layer* overlay);
+		void RenderImGui();
 
 		inline Window& GetWindow() { return *m_Window; }
 
@@ -54,6 +57,7 @@ namespace Luma {
 
 		bool m_Running = true, m_Minimized = false;
 		LayerStack m_LayerStack;
+		ImGuiLayer* m_ImGuiLayer;
 
 		static Application* s_Instance;
 	};

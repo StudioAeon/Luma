@@ -52,10 +52,11 @@ namespace Luma {
 		new (mem) LM_RENDER_UNIQUE(LMRenderCommand)();\
 	}\
 
-#define LM_RENDER_I(arg0, code) \
+#define LM_RENDER_1(arg0, code) \
+	do {\
 	struct LM_RENDER_UNIQUE(LMRenderCommand) \
 	{\
-		LM_RENDER_UNIQUE(LMRenderCommand)(typename ::std::remove_const<typename ::std::remove_reference<decltype(param)>::type>::type arg0) \
+		LM_RENDER_UNIQUE(LMRenderCommand)(typename ::std::remove_const<typename ::std::remove_reference<decltype(arg0)>::type>::type arg0) \
 		: arg0(arg0) {}\
 		\
 		static void Execute(void* self)\
@@ -69,9 +70,9 @@ namespace Luma {
 	{\
 		auto mem = ::Luma::Renderer::Submit(LM_RENDER_UNIQUE(LMRenderCommand)::Execute, sizeof(LM_RENDER_UNIQUE(LMRenderCommand)));\
 		new (mem) LM_RENDER_UNIQUE(LMRenderCommand)(arg0);\
-	}\
+	} } while(0)
 
-#define LM_RENDER_II(arg0, arg1, code) \
+#define LM_RENDER_2(arg0, arg1, code) \
 	struct LM_RENDER_UNIQUE(LMRenderCommand) \
 	{\
 		LM_RENDER_UNIQUE(LMRenderCommand)(typename ::std::remove_const<typename ::std::remove_reference<decltype(arg0)>::type>::type arg0,\
@@ -93,7 +94,7 @@ namespace Luma {
 		new (mem) LM_RENDER_UNIQUE(LMRenderCommand)(arg0, arg1);\
 	}\
 
-#define LM_RENDER_III(arg0, arg1, arg2, code) \
+#define LM_RENDER_3(arg0, arg1, arg2, code) \
 	struct LM_RENDER_UNIQUE(LMRenderCommand) \
 	{\
 		LM_RENDER_UNIQUE(LMRenderCommand)(typename ::std::remove_const<typename ::std::remove_reference<decltype(arg0)>::type>::type arg0,\
@@ -118,7 +119,7 @@ namespace Luma {
 		new (mem) LM_RENDER_UNIQUE(LMRenderCommand)(arg0, arg1, arg2);\
 	}\
 
-#define LM_RENDER_IV(arg0, arg1, arg2, arg3, code) \
+#define LM_RENDER_4(arg0, arg1, arg2, arg3, code) \
 	struct LM_RENDER_UNIQUE(LMRenderCommand) \
 	{\
 		LM_RENDER_UNIQUE(LMRenderCommand)(typename ::std::remove_const<typename ::std::remove_reference<decltype(arg0)>::type>::type arg0,\

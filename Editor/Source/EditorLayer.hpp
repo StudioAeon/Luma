@@ -15,6 +15,9 @@ namespace Luma {
 		virtual void OnUpdate() override;
 		virtual void OnImGuiRender() override;
 		virtual void OnEvent(Event& e) override;
+
+	private:
+		float m_ClearColor[4];
 	};
 
 }

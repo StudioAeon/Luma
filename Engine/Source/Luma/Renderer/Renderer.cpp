@@ -13,7 +13,7 @@ namespace Luma {
 
 	void Renderer::Clear(float r, float g, float b, float a)
 	{
-		LM_RENDER_IV(r, g, b, a, {
+		LM_RENDER_4(r, g, b, a, {
 			RendererAPI::Clear(r, g, b, a);
 		});
 	}
