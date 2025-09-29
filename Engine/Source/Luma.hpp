@@ -21,4 +21,8 @@
 
 #include <imgui.h>
 
+// === Luma Render API ======================
 #include "Luma/Renderer/Renderer.hpp"
+#include "Luma/Renderer/VertexBuffer.hpp"
+#include "Luma/Renderer/IndexBuffer.hpp"
+// ==========================================

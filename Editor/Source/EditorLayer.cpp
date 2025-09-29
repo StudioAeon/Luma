@@ -26,7 +26,21 @@ namespace Luma {
 
 	void EditorLayer::OnAttach()
 	{
-		LM_INFO("Hello from app!");
+		static float vertices[] = {
+			-0.5f, -0.5f, 0.0f,
+			 0.5f, -0.5f, 0.0f,
+			 0.0f,  0.5f, 0.0f
+		};
+
+		static uint32_t indices[] = {
+			0, 1, 2
+		};
+
+		m_VB = std::unique_ptr<VertexBuffer>(VertexBuffer::Create());
+		m_VB->SetData(vertices, sizeof(vertices));
+
+		m_IB = std::unique_ptr<IndexBuffer>(IndexBuffer::Create());
+		m_IB->SetData(indices, sizeof(indices));
 	}
 
 	void EditorLayer::OnDetach()
@@ -34,7 +48,12 @@ namespace Luma {
 
 	void EditorLayer::OnUpdate()
 	{
+		using namespace Luma;
 		Renderer::Clear(m_ClearColor[0], m_ClearColor[1], m_ClearColor[2], m_ClearColor[3]);
+
+		m_VB->Bind();
+		m_IB->Bind();
+		Renderer::DrawIndexed(3);
 	}
 
 	void EditorLayer::OnImGuiRender()

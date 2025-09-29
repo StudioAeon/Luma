@@ -17,6 +17,8 @@ namespace Luma {
 		virtual void OnEvent(Event& e) override;
 
 	private:
+		std::unique_ptr<VertexBuffer> m_VB;
+		std::unique_ptr<IndexBuffer> m_IB;
 		float m_ClearColor[4];
 	};
 

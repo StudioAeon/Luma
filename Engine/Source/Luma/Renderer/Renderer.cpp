@@ -4,9 +4,12 @@
 namespace Luma {
 
 	Renderer* Renderer::s_Instance = new Renderer();
-	
+	RendererAPIType RendererAPI::s_CurrentRendererAPI = RendererAPIType::OpenGL;
+
 	void Renderer::Init()
-	{}
+	{
+		LM_RENDER({ RendererAPI::Init(); });
+	}
 
 	void Renderer::Clear()
 	{}
@@ -25,6 +28,13 @@ namespace Luma {
 
 	void Renderer::SetClearColor(float r, float g, float b, float a)
 	{}
+
+	void Renderer::DrawIndexed(uint32_t count)
+	{
+		LM_RENDER_1(count, {
+			RendererAPI::DrawIndexed(count);
+		});
+	}
 
 	void Renderer::WaitAndRender()
 	{

@@ -1,12 +1,16 @@
 set(RENDERER_SOURCES
+		IndexBuffer.cpp
 		RenderCommandQueue.cpp
 		Renderer.cpp
+		VertexBuffer.cpp
 )
 
 set(RENDERER_HEADERS
+		IndexBuffer.hpp
 		RenderCommandQueue.hpp
 		Renderer.hpp
 		RendererAPI.hpp
+		VertexBuffer.hpp
 )
 
 add_subdirectory(Backend/OpenGL)
