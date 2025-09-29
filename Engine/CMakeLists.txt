@@ -18,6 +18,7 @@ add_subdirectory(${LUMA_SRC_DIR}/Luma/Core)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/ImGui)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Events)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Platform)
+add_subdirectory(${LUMA_SRC_DIR}/Luma/Renderer)
 
 target_precompile_headers(Luma PRIVATE ${LUMA_SRC_DIR}/lmpch.hpp)
 target_compile_features(Luma PUBLIC cxx_std_23)

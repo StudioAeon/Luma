@@ -1,6 +1,7 @@
 #include "lmpch.hpp"
 #include "Application.hpp"
 
+#include "Luma/Renderer/Renderer.hpp"
 #include <glad/glad.h>
 
 bool g_ApplicationRunning = true;
@@ -68,12 +69,11 @@ namespace Luma {
 		{
 			if (!m_Minimized)
 			{
-				glClearColor(0, 0, 0, 1);
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 				for (Layer* layer : m_LayerStack)
 					layer->OnUpdate();
 			}
+
+			Renderer::Get().WaitAndRender();
 			m_Window->OnUpdate();
 		}
 		OnShutdown();

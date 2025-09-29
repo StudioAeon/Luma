@@ -19,7 +19,9 @@ namespace Luma {
 	{}
 
 	void EditorLayer::OnUpdate()
-	{}
+	{
+		Renderer::Clear(0.2f, 0.3f, 0.8f, 1);
+	}
 
 	void EditorLayer::OnEvent(Event& e)
 	{}
