@@ -41,6 +41,8 @@ namespace Luma {
 
 		m_IB = std::unique_ptr<IndexBuffer>(IndexBuffer::Create());
 		m_IB->SetData(indices, sizeof(indices));
+
+		auto shader = Shader::Create("Resources/Shaders/shader.glsl");
 	}
 
 	void EditorLayer::OnDetach()

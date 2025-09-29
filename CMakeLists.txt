@@ -37,6 +37,8 @@ endif()
 # ==== CMake Utilities ====
 include(BuildSystem/CMake/CMakeUtils/LumaCompiler.cmake)
 include(BuildSystem/CMake/CMakeUtils/LumaOptimization.cmake)
+include(BuildSystem/CMake/CMakeUtils/LumaFileUtils.cmake)
+
 
 # ==== Add Subsystems ====
 add_subdirectory(ThirdParty)

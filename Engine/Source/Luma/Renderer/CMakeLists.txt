@@ -2,6 +2,7 @@ set(RENDERER_SOURCES
 		IndexBuffer.cpp
 		RenderCommandQueue.cpp
 		Renderer.cpp
+		Shader.cpp
 		VertexBuffer.cpp
 )
 
@@ -10,6 +11,7 @@ set(RENDERER_HEADERS
 		RenderCommandQueue.hpp
 		Renderer.hpp
 		RendererAPI.hpp
+		Shader.hpp
 		VertexBuffer.hpp
 )
 

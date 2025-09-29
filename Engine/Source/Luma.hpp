@@ -25,4 +25,5 @@
 #include "Luma/Renderer/Renderer.hpp"
 #include "Luma/Renderer/VertexBuffer.hpp"
 #include "Luma/Renderer/IndexBuffer.hpp"
+#include "Luma/Renderer/Shader.hpp"
 // ==========================================

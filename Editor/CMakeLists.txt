@@ -12,6 +12,8 @@ set(EDITOR_HEADERS
 
 add_executable(Luma-Editor ${EDITOR_SOURCES} ${EDITOR_HEADERS})
 
+luma_copy_directory(Luma-Editor Editor/Resources Resources)
+
 target_compile_features(Luma-Editor PRIVATE cxx_std_23)
 target_include_directories(Luma-Editor PUBLIC ${EDITOR_SRC_DIR})
 
