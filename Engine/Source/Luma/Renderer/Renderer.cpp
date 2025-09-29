@@ -1,6 +1,5 @@
 #include "lmpch.hpp"
 #include "Renderer.hpp"
-#include "RenderCommand.hpp"
 
 namespace Luma {
 
@@ -10,14 +9,13 @@ namespace Luma {
 	{}
 
 	void Renderer::Clear()
-	{
-		// LM_RENDER(Clear());
-	}
+	{}
 
 	void Renderer::Clear(float r, float g, float b, float a)
 	{
-		float params[4] = { r, g, b, a };
-		s_Instance->m_CommandQueue.SubmitCommand(RenderCommand::Clear, params, sizeof(float) * 4);
+		LM_RENDER_IV(r, g, b, a, {
+			RendererAPI::Clear(r, g, b, a);
+		});
 	}
 
 	void Renderer::ClearMagenta()
@@ -26,9 +24,7 @@ namespace Luma {
 	}
 
 	void Renderer::SetClearColor(float r, float g, float b, float a)
-	{
-		// LM_RENDER(SetClearColor(r, g, b, a));
-	}
+	{}
 
 	void Renderer::WaitAndRender()
 	{

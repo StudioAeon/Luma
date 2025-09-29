@@ -71,9 +71,13 @@ namespace Luma {
 			{
 				for (Layer* layer : m_LayerStack)
 					layer->OnUpdate();
+
+				for (Layer* layer : m_LayerStack)
+					layer->OnImGuiRender();
 			}
 
 			Renderer::Get().WaitAndRender();
+
 			m_Window->OnUpdate();
 		}
 		OnShutdown();

@@ -1,11 +1,9 @@
 set(RENDERER_SOURCES
-		RenderCommand.cpp
 		RenderCommandQueue.cpp
 		Renderer.cpp
 )
 
 set(RENDERER_HEADERS
-		RenderCommand.hpp
 		RenderCommandQueue.hpp
 		Renderer.hpp
 		RendererAPI.hpp

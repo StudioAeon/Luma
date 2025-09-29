@@ -17,48 +17,40 @@ namespace Luma {
 		delete[] m_CommandBuffer;
 	}
 
-	void RenderCommandQueue::Submit(const RenderCommand& command)
+	void* RenderCommandQueue::Allocate(RenderCommandFn fn, uint32_t size)
 	{
-		auto ptr = m_CommandBuffer;
+		// TODO: alignment
+		*(RenderCommandFn*)m_CommandBufferPtr = fn;
+		m_CommandBufferPtr += sizeof(RenderCommandFn);
 
-		memcpy(m_CommandBuffer, &command, sizeof(RenderCommand));
-		m_CommandBufferPtr += sizeof(RenderCommand);
-		m_RenderCommandCount++;
-	}
+		*(int*)m_CommandBufferPtr = size;
+		m_CommandBufferPtr += sizeof(uint32_t);
 
-	void RenderCommandQueue::SubmitCommand(RenderCommandFn fn, void* params, uint32_t size)
-	{
-		uint8_t*& buffer = m_CommandBufferPtr;
-		memcpy(buffer, &fn, sizeof(RenderCommandFn));
-		buffer += sizeof(RenderCommandFn);
-		memcpy(buffer, params, size);
-		buffer += size;
+		void* memory = m_CommandBufferPtr;
+		m_CommandBufferPtr += size;
 
-		auto totalSize = sizeof(RenderCommandFn) + size;
-		auto padding = totalSize % 16; // 16-byte alignment
-		buffer += padding;
-
-		m_RenderCommandCount++;
+		m_CommandCount++;
+		return memory;
 	}
 
 	void RenderCommandQueue::Execute()
 	{
-		LM_RENDER_TRACE("RenderCommandQueue::Execute -- {0} commands, {1} bytes", m_RenderCommandCount, (m_CommandBufferPtr - m_CommandBuffer));
+		LM_RENDER_TRACE("RenderCommandQueue::Execute -- {0} commands, {1} bytes", m_CommandCount, (m_CommandBufferPtr - m_CommandBuffer));
 
 		uint8_t* buffer = m_CommandBuffer;
 
-		for (int i = 0; i < m_RenderCommandCount; i++)
+		for (uint32_t i = 0; i < m_CommandCount; i++)
 		{
-			RenderCommandFn fn = *(RenderCommandFn*)buffer;
+			RenderCommandFn function = *(RenderCommandFn*)buffer;
 			buffer += sizeof(RenderCommandFn);
-			buffer += (*fn)(buffer);
-
-			auto padding = (uintptr_t)buffer % 16;
-			buffer += padding;
+			uint32_t size = *(uint32_t*)buffer;
+			buffer += sizeof(uint32_t);
+			function(buffer);
+			buffer += size;
 		}
 
 		m_CommandBufferPtr = m_CommandBuffer;
-		m_RenderCommandCount = 0;
+		m_CommandCount = 0;
 	}
 
 }

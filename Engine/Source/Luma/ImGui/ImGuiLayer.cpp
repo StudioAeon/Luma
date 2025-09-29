@@ -10,6 +10,8 @@
 #include "Luma/Core/Application.hpp"
 #include <SDL3/SDL.h>
 
+#include "Luma/Renderer/Renderer.hpp"
+
 namespace Luma {
 
 	ImGuiLayer::ImGuiLayer()
@@ -61,7 +63,7 @@ namespace Luma {
 		ImGui::DestroyContext();
 	}
 
-	void ImGuiLayer::OnUpdate()
+	void ImGuiLayer::OnImGuiRender()
 	{
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplSDL3_NewFrame();
