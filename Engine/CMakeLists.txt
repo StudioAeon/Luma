@@ -33,6 +33,7 @@ target_link_libraries(Luma
 		SDL3::SDL3-static
 		glad
 		imgui
+		glm
 )
 
 luma_enable_lto(Luma)

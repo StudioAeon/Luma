@@ -2,6 +2,9 @@
 
 #include <iostream>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 namespace Luma {
 
 	static void ImGuiShowHelpMarker(const char* desc)
@@ -18,7 +21,7 @@ namespace Luma {
 	}
 
 	EditorLayer::EditorLayer()
-		: m_ClearColor{0.2f, 0.3f, 0.8f, 1.0f}
+		: m_ClearColor{ 0.2f, 0.3f, 0.8f, 1.0f }, m_TriangleColor{ 0.8f, 0.2f, 0.3f, 1.0f }
 	{}
 
 	EditorLayer::~EditorLayer()
@@ -53,6 +56,10 @@ namespace Luma {
 		using namespace Luma;
 		Renderer::Clear(m_ClearColor[0], m_ClearColor[1], m_ClearColor[2], m_ClearColor[3]);
 
+		UniformBufferDeclaration<sizeof(glm::vec4), 1> buffer;
+		buffer.Push("u_Color", m_TriangleColor);
+		m_Shader->UploadUniformBuffer(buffer);
+
 		m_Shader->Bind();
 		m_VB->Bind();
 		m_IB->Bind();
@@ -61,12 +68,9 @@ namespace Luma {
 
 	void EditorLayer::OnImGuiRender()
 	{
-		static bool show_demo_window = true;
-		if (show_demo_window)
-			ImGui::ShowDemoWindow(&show_demo_window);
-
 		ImGui::Begin("EditorLayer");
 		ImGui::ColorEdit4("Clear Color", m_ClearColor);
+		ImGui::ColorEdit4("Triangle Color", glm::value_ptr(m_TriangleColor));
 		ImGui::End();
 	}
 

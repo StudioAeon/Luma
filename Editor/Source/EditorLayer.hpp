@@ -21,6 +21,7 @@ namespace Luma {
 		std::unique_ptr<IndexBuffer> m_IB;
 		std::unique_ptr<Shader> m_Shader;
 		float m_ClearColor[4];
+		glm::vec4 m_TriangleColor;
 	};
 
 }

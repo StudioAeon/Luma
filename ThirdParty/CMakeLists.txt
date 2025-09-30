@@ -58,3 +58,15 @@ target_compile_definitions(imgui PUBLIC
 )
 
 target_link_libraries(imgui PUBLIC SDL3::SDL3-static)
+
+# ==== GLM (Header-only library) ====
+set(GLM_BUILD_INSTALL OFF)
+set(GLM_BUILD_TESTS OFF)
+
+FetchContent_Declare(
+		glm
+		GIT_REPOSITORY https://github.com/g-truc/glm.git
+		GIT_TAG 1.0.1
+		SYSTEM
+)
+FetchContent_MakeAvailable(glm)
