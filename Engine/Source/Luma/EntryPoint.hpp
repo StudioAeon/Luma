@@ -27,7 +27,7 @@ namespace Luma {
 
 }
 
-#if defined(ZN_PLATFORM_WINDOWS)
+#if defined(LM_DIST) && defined(LM_PLATFORM_WINDOWS)
 #include <Windows.h>
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, int nCmdShow)

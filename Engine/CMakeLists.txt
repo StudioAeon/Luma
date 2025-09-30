@@ -36,4 +36,5 @@ target_link_libraries(Luma
 )
 
 luma_enable_lto(Luma)
+luma_set_distribution_config(Luma)
 apply_compiler_settings(Luma)

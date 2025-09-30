@@ -9,3 +9,9 @@ function(luma_enable_lto target)
 		message(STATUS "  -> IPO enabled for Release builds")
 	endif()
 endfunction()
+
+function(luma_set_distribution_config target)
+	target_compile_definitions(${target} PRIVATE
+			$<$<CONFIG:Release>:LM_DIST>
+	)
+endfunction()

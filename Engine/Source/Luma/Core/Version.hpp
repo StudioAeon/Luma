@@ -15,6 +15,8 @@
 	#define LM_BUILD_CONFIG_NAME "Debug"
 #elif defined(LM_RELEASE)
 	#define LM_BUILD_CONFIG_NAME "Release"
+#elif defined(LM_DIST)
+	#define LM_BUILD_CONFIG_NAME "Dist"
 #else
 	#define LM_BUILD_CONFIG_NAME "Unknown"
 #endif
