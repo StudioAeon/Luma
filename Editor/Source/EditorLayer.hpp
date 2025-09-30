@@ -19,6 +19,7 @@ namespace Luma {
 	private:
 		std::unique_ptr<VertexBuffer> m_VB;
 		std::unique_ptr<IndexBuffer> m_IB;
+		std::unique_ptr<Shader> m_Shader;
 		float m_ClearColor[4];
 	};
 

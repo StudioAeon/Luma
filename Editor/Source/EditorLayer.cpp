@@ -42,7 +42,7 @@ namespace Luma {
 		m_IB = std::unique_ptr<IndexBuffer>(IndexBuffer::Create());
 		m_IB->SetData(indices, sizeof(indices));
 
-		auto shader = Shader::Create("Resources/Shaders/shader.glsl");
+		m_Shader.reset(Shader::Create("Resources/Shaders/shader.glsl"));
 	}
 
 	void EditorLayer::OnDetach()
@@ -53,6 +53,7 @@ namespace Luma {
 		using namespace Luma;
 		Renderer::Clear(m_ClearColor[0], m_ClearColor[1], m_ClearColor[2], m_ClearColor[3]);
 
+		m_Shader->Bind();
 		m_VB->Bind();
 		m_IB->Bind();
 		Renderer::DrawIndexed(3);

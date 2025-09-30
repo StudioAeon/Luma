@@ -1,21 +1,12 @@
 #pragma once
 
 #include "Luma/Renderer/Shader.hpp"
+#include <glad/glad.h>
 
 namespace Luma {
 
 	class OpenGLShader : public Shader
 	{
-	public:
-		enum class ShaderType
-		{
-			None       = 0,
-			Vertex     = 1,
-
-			// Fragment and Pixel shaders are the same
-			Fragment   = 2,
-			Pixel      = 2
-		};
 	public:
 		OpenGLShader(const std::string& filepath);
 
@@ -24,7 +15,7 @@ namespace Luma {
 		void ReadShaderFromFile(const std::string& filepath);
 		void CompileAndUploadShader();
 
-		static ShaderType ShaderTypeFromString(const std::string& type);
+		static GLenum ShaderTypeFromString(const std::string& type);
 	private:
 		RendererID m_RendererID;
 
