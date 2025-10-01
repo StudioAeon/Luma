@@ -136,7 +136,7 @@ namespace Luma {
 
 	void OpenGLShader::UploadUniformBuffer(const UniformBufferBase& uniformBuffer)
 	{
-		for (unsigned int i = 0; i < uniformBuffer.GetUniformCount(); i++)
+		for (uint32_t i = 0; i < uniformBuffer.GetUniformCount(); i++)
 		{
 			const UniformDecl& decl = uniformBuffer.GetUniforms()[i];
 			switch (decl.Type)

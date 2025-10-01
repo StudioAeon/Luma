@@ -2,7 +2,9 @@
 #include "Application.hpp"
 
 #include "Luma/Renderer/Renderer.hpp"
-#include <glad/glad.h>
+#include <SDL3/SDL.h>
+
+#include <imgui.h>
 
 bool g_ApplicationRunning = true;
 namespace Luma {
@@ -60,6 +62,13 @@ namespace Luma {
 	void Application::RenderImGui()
 	{
 		m_ImGuiLayer->Begin();
+
+		ImGui::Begin("Renderer");
+		//auto& caps = RendererAPI::GetCapabilities();
+		//ImGui::Text("Vendor: %s", caps.Vendor.c_str());
+		//ImGui::Text("Renderer: %s", caps.Renderer.c_str());
+		//ImGui::Text("Version: %s", caps.Version.c_str());
+		ImGui::End();
 		for (Layer* layer : m_LayerStack)
 			layer->OnImGuiRender();
 
@@ -132,6 +141,31 @@ namespace Luma {
 	const char* Application::GetPlatformName()
 	{
 		return LM_BUILD_PLATFORM_NAME;
+	}
+
+	std::string Application::OpenFile(const std::string& filter) const
+	{
+		OPENFILENAMEA ofn;       // common dialog box structure
+		CHAR szFile[260] = { 0 };       // if using TCHAR macros
+
+		// Initialize OPENFILENAME
+		ZeroMemory(&ofn, sizeof(OPENFILENAME));
+		ofn.lStructSize = sizeof(OPENFILENAME);
+		ofn.hwndOwner = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties((SDL_Window*)m_Window->GetNativeWindow()), SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
+		ofn.lpstrFile = szFile;
+		ofn.nMaxFile = sizeof(szFile);
+		ofn.lpstrFilter = "All\0*.*\0";
+		ofn.nFilterIndex = 1;
+		ofn.lpstrFileTitle = NULL;
+		ofn.nMaxFileTitle = 0;
+		ofn.lpstrInitialDir = NULL;
+		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+		if (GetOpenFileNameA(&ofn) == TRUE)
+		{
+			return ofn.lpstrFile;
+		}
+		return std::string();
 	}
 
 }

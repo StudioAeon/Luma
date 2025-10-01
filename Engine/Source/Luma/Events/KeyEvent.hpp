@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Event.hpp"
+#include "Luma/Core/KeyCodes.hpp"
 
 #include <sstream>
 

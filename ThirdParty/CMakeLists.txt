@@ -70,3 +70,24 @@ FetchContent_Declare(
 		SYSTEM
 )
 FetchContent_MakeAvailable(glm)
+
+# ==== STB (Header-only library) ====
+add_library(stb INTERFACE)
+target_include_directories(stb INTERFACE ${CMAKE_CURRENT_LIST_DIR}/stb/include)
+
+# ==== Assimp ====
+include(FetchContent)
+set(ASSIMP_BUILD_TESTS OFF)
+set(ASSIMP_BUILD_SAMPLES OFF)
+set(ASSIMP_BUILD_DOCS OFF)
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF)
+set(ASSIMP_INSTALL OFF)
+set(ASSIMP_WARNINGS_AS_ERRORS OFF)
+
+FetchContent_Declare(
+		assimp
+		GIT_REPOSITORY https://github.com/assimp/assimp.git
+		GIT_TAG v6.0.2
+		SYSTEM
+)
+FetchContent_MakeAvailable(assimp)

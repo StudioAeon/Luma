@@ -21,7 +21,7 @@ namespace Luma {
 	}
 
 	EditorLayer::EditorLayer()
-		: m_ClearColor{ 0.2f, 0.3f, 0.8f, 1.0f }, m_TriangleColor{ 0.8f, 0.2f, 0.3f, 1.0f }
+		: m_ClearColor{ 0.1f, 0.1f, 0.1f, 1.0f }, m_TriangleColor{ 0.8f, 0.2f, 0.3f, 1.0f }
 	{}
 
 	EditorLayer::~EditorLayer()

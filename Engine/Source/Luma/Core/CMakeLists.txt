@@ -11,6 +11,7 @@ set(CORE_HEADERS
 		Assert.hpp
 		Base.hpp
 		Input.hpp
+		KeyCodes.hpp
 		Layer.hpp
 		LayerStack.hpp
 		Log.hpp

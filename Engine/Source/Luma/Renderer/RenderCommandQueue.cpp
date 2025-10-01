@@ -35,7 +35,7 @@ namespace Luma {
 
 	void RenderCommandQueue::Execute()
 	{
-		LM_RENDER_TRACE("RenderCommandQueue::Execute -- {0} commands, {1} bytes", m_CommandCount, (m_CommandBufferPtr - m_CommandBuffer));
+		//LM_RENDER_TRACE("RenderCommandQueue::Execute -- {0} commands, {1} bytes", m_CommandCount, (m_CommandBufferPtr - m_CommandBuffer));
 
 		uint8_t* buffer = m_CommandBuffer;
 
