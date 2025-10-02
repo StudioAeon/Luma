@@ -39,8 +39,16 @@ include(BuildSystem/CMake/CMakeUtils/LumaCompiler.cmake)
 include(BuildSystem/CMake/CMakeUtils/LumaOptimization.cmake)
 include(BuildSystem/CMake/CMakeUtils/LumaFileUtils.cmake)
 
+# ==== Distribution Options ====
+option(LUMA_BUILD_TESTS "Build Luma test suite" OFF)
+
 
 # ==== Add Subsystems ====
 add_subdirectory(ThirdParty)
 add_subdirectory(Engine)
 add_subdirectory(Editor)
+
+if(LUMA_BUILD_TESTS)
+	include(CTest)
+	add_subdirectory(Tests)
+endif()
