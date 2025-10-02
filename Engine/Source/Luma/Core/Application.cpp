@@ -2,7 +2,10 @@
 #include "Application.hpp"
 
 #include "Luma/Renderer/Renderer.hpp"
+#include "Luma/Renderer/Framebuffer.hpp"
 #include <SDL3/SDL.h>
+
+#include <glad/glad.h>
 
 #include <imgui.h>
 
@@ -64,10 +67,10 @@ namespace Luma {
 		m_ImGuiLayer->Begin();
 
 		ImGui::Begin("Renderer");
-		//auto& caps = RendererAPI::GetCapabilities();
-		//ImGui::Text("Vendor: %s", caps.Vendor.c_str());
-		//ImGui::Text("Renderer: %s", caps.Renderer.c_str());
-		//ImGui::Text("Version: %s", caps.Version.c_str());
+		auto& caps = RendererAPI::GetCapabilities();
+		ImGui::Text("Vendor: %s", caps.Vendor.c_str());
+		ImGui::Text("Renderer: %s", caps.Renderer.c_str());
+		ImGui::Text("Version: %s", caps.Version.c_str());
 		ImGui::End();
 		for (Layer* layer : m_LayerStack)
 			layer->OnImGuiRender();
@@ -124,6 +127,11 @@ namespace Luma {
 
 	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{
+		int width = e.GetWidth(), height = e.GetHeight();
+		LM_RENDER_2(width, height, { glViewport(0, 0, width, height); });
+		auto& fbs = FramebufferPool::GetGlobal()->GetAll();
+		for (auto& fb : fbs)
+			fb->Resize(width, height);
 		return false;
 	}
 

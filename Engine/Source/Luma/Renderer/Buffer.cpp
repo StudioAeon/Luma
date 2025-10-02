@@ -14,7 +14,7 @@ namespace Luma {
 		return nullptr;
 
 	}
-	
+
 	IndexBuffer* IndexBuffer::Create(uint32_t size)
 	{
 		switch (RendererAPI::Current())

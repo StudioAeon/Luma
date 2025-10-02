@@ -55,7 +55,7 @@ namespace Luma {
 		Application& app = Application::Get();
 		SDL_Window* window = static_cast<SDL_Window*>(app.GetWindow().GetNativeWindow());
 
-		// Setup Platform/Renderer bindings
+		// Setup Renderer/Backend/Renderer bindings
 		ImGui_ImplSDL3_InitForOpenGL(window, SDL_GL_GetCurrentContext());
 		ImGui_ImplOpenGL3_Init("#version 410");
 	}

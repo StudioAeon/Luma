@@ -12,7 +12,18 @@ namespace Luma {
 	}
 
 	void Renderer::Clear()
-	{}
+	{
+		LM_RENDER({
+			RendererAPI::Clear(0.0f, 0.0f, 0.0f, 1.0f);
+		});
+	}
+
+	void Renderer::DrawIndexed(uint32_t count, bool depthTest)
+	{
+		LM_RENDER_2(count, depthTest, {
+			RendererAPI::DrawIndexed(count, depthTest);
+		});
+	}
 
 	void Renderer::Clear(float r, float g, float b, float a)
 	{
@@ -27,13 +38,7 @@ namespace Luma {
 	}
 
 	void Renderer::SetClearColor(float r, float g, float b, float a)
-	{}
-
-	void Renderer::DrawIndexed(uint32_t count)
 	{
-		LM_RENDER_1(count, {
-			RendererAPI::DrawIndexed(count);
-		});
 	}
 
 	void Renderer::WaitAndRender()
