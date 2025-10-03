@@ -30,4 +30,5 @@
 #include "Luma/Renderer/Renderer.hpp"
 #include "Luma/Renderer/Shader.hpp"
 #include "Luma/Renderer/Texture.hpp"
+#include "Luma/Renderer/Material.hpp"
 // ==========================================

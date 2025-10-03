@@ -8,7 +8,14 @@ namespace Luma {
 	static void OpenGLLogMessage(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 	{
 		if (severity != GL_DEBUG_SEVERITY_NOTIFICATION)
+		{
 			LM_CORE_ERROR("{0}", message);
+			LM_CORE_ASSERT(false, "");
+		}
+		else
+		{
+			LM_CORE_TRACE("{0}", message);
+		}
 	}
 
 	void RendererAPI::Init()
@@ -36,10 +43,18 @@ namespace Luma {
 
 		glGetIntegerv(GL_MAX_SAMPLES, &caps.MaxSamples);
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &caps.MaxAnisotropy);
+
+		GLenum error = glGetError();
+		while (error != GL_NO_ERROR)
+		{
+			LM_CORE_ERROR("OpenGL Error {0}", error);
+			error = glGetError();
+		}
 	}
 
 	void RendererAPI::Shutdown()
-	{}
+	{
+	}
 
 	void RendererAPI::Clear(float r, float g, float b, float a)
 	{
@@ -54,12 +69,13 @@ namespace Luma {
 
 	void RendererAPI::DrawIndexed(uint32_t count, bool depthTest)
 	{
-		if (depthTest)
-			glEnable(GL_DEPTH_TEST);
-		else
+		if (!depthTest)
 			glDisable(GL_DEPTH_TEST);
 
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+
+		if (!depthTest)
+			glEnable(GL_DEPTH_TEST);
 	}
 
 }

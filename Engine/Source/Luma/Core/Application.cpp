@@ -6,6 +6,7 @@
 #include <SDL3/SDL.h>
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 
 #include <imgui.h>
 
@@ -95,6 +96,10 @@ namespace Luma {
 		OnInit();
 		while (m_Running)
 		{
+			m_Frametime = GetFrameDelta();
+			m_TimeStep = glm::min<float>(m_Frametime, 0.0333f);
+			m_LastFrameTime += m_Frametime; // Keep total time
+
 			if (!m_Minimized)
 			{
 				for (Layer* layer : m_LayerStack)
@@ -108,10 +113,6 @@ namespace Luma {
 			}
 
 			m_Window->OnUpdate();
-
-			float time = GetFrameDelta();
-			m_TimeStep = time - m_LastFrameTime;
-			m_LastFrameTime = time;
 		}
 		OnShutdown();
 	}
@@ -194,7 +195,7 @@ namespace Luma {
 		uint64_t now = SDL_GetTicksNS();
 		uint64_t delta = now - last;
 		last = now;
-		return delta * 1e-9f;
+		return static_cast<float>(delta * 1e-9f);
 	}
 
 }

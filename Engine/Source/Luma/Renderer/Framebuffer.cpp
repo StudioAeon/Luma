@@ -26,7 +26,9 @@ namespace Luma {
 	}
 
 	FramebufferPool::~FramebufferPool()
-	{}
+	{
+		
+	}
 
 	std::weak_ptr<Framebuffer> FramebufferPool::AllocateBuffer()
 	{

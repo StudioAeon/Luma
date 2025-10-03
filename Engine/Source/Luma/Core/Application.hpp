@@ -47,9 +47,11 @@ namespace Luma {
 
 		static inline Application& Get() { return *s_Instance; }
 
-		float GetFrameDelta(); // TODO: This should be in "Platform"
-
+		TimeStep GetTimestep() const { return m_TimeStep; }
+		TimeStep GetFrametime() const { return m_Frametime; }
 		const ApplicationSpecification& GetSpecification() const { return m_Specification; }
+
+		float GetFrameDelta(); // TODO: This should be in "Platform"
 
 		static const char* GetConfigurationName();
 		static const char* GetPlatformName();
@@ -63,6 +65,7 @@ namespace Luma {
 		bool m_Running = true, m_Minimized = false;
 		LayerStack m_LayerStack;
 		ImGuiLayer* m_ImGuiLayer;
+		TimeStep m_Frametime;
 		TimeStep m_TimeStep;
 
 		float m_LastFrameTime = 0.0f;

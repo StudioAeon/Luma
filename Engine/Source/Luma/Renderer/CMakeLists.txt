@@ -2,6 +2,7 @@ set(RENDERER_SOURCES
 		Buffer.cpp
 		Camera.cpp
 		Framebuffer.cpp
+		Material.cpp
 		Mesh.cpp
 		RenderCommandQueue.cpp
 		Renderer.cpp
@@ -13,11 +14,13 @@ set(RENDERER_HEADERS
 		Buffer.hpp
 		Camera.hpp
 		Framebuffer.hpp
+		Material.hpp
 		Mesh.hpp
 		RenderCommandQueue.hpp
 		Renderer.hpp
 		RendererAPI.hpp
 		Shader.hpp
+		ShaderUniform.hpp
 		Texture.hpp
 )
 
