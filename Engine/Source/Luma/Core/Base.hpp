@@ -55,3 +55,16 @@ namespace Luma
 	#define LM_FORCE_INLINE    inline
 	#define LM_EXPLICIT_STATIC
 #endif
+
+// Pointer wrappers
+namespace Luma {
+
+	template<typename T>
+	using Scope = std::unique_ptr<T>;
+
+	template<typename T>
+	using Ref = std::shared_ptr<T>;
+
+	using byte = uint8_t;
+
+}

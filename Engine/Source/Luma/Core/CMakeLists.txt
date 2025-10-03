@@ -4,18 +4,23 @@ set(CORE_SOURCES
 		Layer.cpp
 		LayerStack.cpp
 		Log.cpp
+		TimeStep.cpp
+		Window.cpp
 )
 
 set(CORE_HEADERS
 		Application.hpp
 		Assert.hpp
 		Base.hpp
+		Buffer.hpp
 		Input.hpp
 		KeyCodes.hpp
 		Layer.hpp
 		LayerStack.hpp
 		Log.hpp
+		TimeStep.hpp
 		Version.hpp
+		Window.hpp
 )
 
 target_sources(Luma

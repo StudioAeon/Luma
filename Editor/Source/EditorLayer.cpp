@@ -89,7 +89,7 @@ namespace Luma {
 	void EditorLayer::OnDetach()
 	{}
 
-	void EditorLayer::OnUpdate()
+	void EditorLayer::OnUpdate(TimeStep ts)
 	{
 		// THINGS TO LOOK AT:
 		// - BRDF LUT
@@ -98,7 +98,7 @@ namespace Luma {
 		using namespace Luma;
 		using namespace glm;
 
-		m_Camera.Update();
+		m_Camera.Update(ts);
 		auto viewProjection = m_Camera.GetProjectionMatrix() * m_Camera.GetViewMatrix();
 
 		m_Framebuffer->Bind();

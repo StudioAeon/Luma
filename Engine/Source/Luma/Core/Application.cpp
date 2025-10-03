@@ -28,6 +28,7 @@ namespace Luma {
 		windowSpec.VSync = specification.VSync;
 		m_Window = std::unique_ptr<Window>(Window::Create(windowSpec));
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+		m_Window->SetVSync(false);
 
 		m_ImGuiLayer = new ImGuiLayer("ImGui");
 		PushOverlay(m_ImGuiLayer);
@@ -71,6 +72,7 @@ namespace Luma {
 		ImGui::Text("Vendor: %s", caps.Vendor.c_str());
 		ImGui::Text("Renderer: %s", caps.Renderer.c_str());
 		ImGui::Text("Version: %s", caps.Version.c_str());
+		ImGui::Text("Frame Time: %.2fms\n", m_TimeStep.GetMilliseconds());
 		ImGui::End();
 		for (Layer* layer : m_LayerStack)
 			layer->OnImGuiRender();
@@ -96,7 +98,7 @@ namespace Luma {
 			if (!m_Minimized)
 			{
 				for (Layer* layer : m_LayerStack)
-					layer->OnUpdate();
+					layer->OnUpdate(m_TimeStep);
 
 				// Render ImGui on render thread
 				Application* app = this;
@@ -106,6 +108,10 @@ namespace Luma {
 			}
 
 			m_Window->OnUpdate();
+
+			float time = GetFrameDelta();
+			m_TimeStep = time - m_LastFrameTime;
+			m_LastFrameTime = time;
 		}
 		OnShutdown();
 	}
@@ -116,7 +122,7 @@ namespace Luma {
 		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
 
-		LM_CORE_TRACE("{}", event.ToString());
+		//LM_CORE_TRACE("{}", event.ToString());
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
 		{
 			(*--it)->OnEvent(event);
@@ -180,6 +186,15 @@ namespace Luma {
 			return ofn.lpstrFile;
 		}
 		return std::string();
+	}
+
+	float Application::GetFrameDelta()
+	{
+		static uint64_t last = SDL_GetTicksNS();
+		uint64_t now = SDL_GetTicksNS();
+		uint64_t delta = now - last;
+		last = now;
+		return delta * 1e-9f;
 	}
 
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Luma/Core/Base.hpp"
+#include "Luma/Core/TimeStep.hpp"
 #include "Luma/Core/Window.hpp"
 #include "Luma/Core/LayerStack.hpp"
 
@@ -30,7 +31,7 @@ namespace Luma {
 
 		virtual void OnInit() {}
 		virtual void OnShutdown();
-		virtual void OnUpdate() {}
+		virtual void OnUpdate(TimeStep ts) {}
 
 		virtual void OnEvent(Event& event);
 
@@ -46,6 +47,8 @@ namespace Luma {
 
 		static inline Application& Get() { return *s_Instance; }
 
+		float GetFrameDelta(); // TODO: This should be in "Platform"
+
 		const ApplicationSpecification& GetSpecification() const { return m_Specification; }
 
 		static const char* GetConfigurationName();
@@ -60,6 +63,9 @@ namespace Luma {
 		bool m_Running = true, m_Minimized = false;
 		LayerStack m_LayerStack;
 		ImGuiLayer* m_ImGuiLayer;
+		TimeStep m_TimeStep;
+
+		float m_LastFrameTime = 0.0f;
 
 		static Application* s_Instance;
 	};
