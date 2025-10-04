@@ -3,6 +3,8 @@
 
 #include <glad/glad.h>
 
+#include "Luma/Renderer/Shader.hpp"
+
 namespace Luma {
 
 	static void OpenGLLogMessage(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
@@ -14,13 +16,14 @@ namespace Luma {
 		}
 		else
 		{
-			LM_CORE_TRACE("{0}", message);
+			//LM_CORE_TRACE("{0}", message);
 		}
 	}
 
 	void RendererAPI::Init()
 	{
 		glDebugMessageCallback(OpenGLLogMessage, nullptr);
+		glEnable(GL_DEBUG_OUTPUT);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
 		uint32_t vao;
@@ -50,11 +53,15 @@ namespace Luma {
 			LM_CORE_ERROR("OpenGL Error {0}", error);
 			error = glGetError();
 		}
+
+		LoadRequiredAssets();
 	}
 
 	void RendererAPI::Shutdown()
-	{
-	}
+	{}
+
+	void RendererAPI::LoadRequiredAssets()
+	{}
 
 	void RendererAPI::Clear(float r, float g, float b, float a)
 	{

@@ -1,6 +1,8 @@
 #include "lmpch.hpp"
 #include "Renderer.hpp"
 
+#include "Shader.hpp"
+
 namespace Luma {
 
 	Renderer* Renderer::s_Instance = new Renderer();
@@ -8,7 +10,11 @@ namespace Luma {
 
 	void Renderer::Init()
 	{
+		s_Instance->m_ShaderLibrary = std::make_unique<ShaderLibrary>();
 		LM_RENDER({ RendererAPI::Init(); });
+
+		Renderer::GetShaderLibrary()->Load("Resources/Shaders/StaticPBR_Mesh.glsl");
+		Renderer::GetShaderLibrary()->Load("Resources/Shaders/AnimPBR_Mesh.glsl");
 	}
 
 	void Renderer::Clear()

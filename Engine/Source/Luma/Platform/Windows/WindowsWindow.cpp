@@ -83,6 +83,13 @@ namespace Luma {
 		// not per window destruction in case multiple windows exist
 	}
 
+	std::pair<float, float> WindowsWindow::GetWindowPos() const
+	{
+		int x, y;
+		SDL_GetWindowPosition(m_Window, &x, &y);
+		return { static_cast<float>(x), static_cast<float>(y) };
+	}
+
 	void WindowsWindow::OnUpdate()
 	{
 		while (SDL_PollEvent(&m_Event))

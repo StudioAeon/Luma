@@ -5,6 +5,8 @@
 
 namespace Luma {
 
+	class ShaderLibrary;
+
 	// TODO: Maybe this should be renamed to RendererAPI? Because we want an actual renderer vs API calls...
 	class Renderer
 	{
@@ -22,6 +24,8 @@ namespace Luma {
 
 		static void Init();
 
+		static const Scope<ShaderLibrary>& GetShaderLibrary() { return Get().m_ShaderLibrary; }
+
 		static void* Submit(RenderCommandFn fn, uint32_t size)
 		{
 			return s_Instance->m_CommandQueue.Allocate(fn, size);
@@ -34,6 +38,7 @@ namespace Luma {
 		static Renderer* s_Instance;
 
 		RenderCommandQueue m_CommandQueue;
+		Scope<ShaderLibrary> m_ShaderLibrary;
 	};
 
 }
