@@ -31,4 +31,5 @@
 #include "Luma/Renderer/Shader.hpp"
 #include "Luma/Renderer/Texture.hpp"
 #include "Luma/Renderer/Material.hpp"
+#include "Luma/Renderer/VertexArray.hpp"
 // ==========================================
