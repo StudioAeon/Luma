@@ -173,6 +173,8 @@ namespace Luma {
 
 	void MaterialInstance::Bind() const
 	{
+		m_Material->m_Shader->Bind();
+
 		if (m_VSUniformStorageBuffer)
 			m_Material->m_Shader->SetVSMaterialUniformBuffer(m_VSUniformStorageBuffer);
 

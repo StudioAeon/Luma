@@ -15,6 +15,7 @@ namespace Luma {
 		virtual void OnUpdate(TimeStep ts) override;
 		virtual void OnImGuiRender() override;
 		virtual void OnEvent(Event& e) override;
+		bool OnKeyPressedEvent(KeyPressedEvent& e);
 	private:
 		Ref<Shader> m_QuadShader;
 		Ref<Shader> m_HDRShader;
@@ -93,6 +94,9 @@ namespace Luma {
 
 		// Editor resources
 		Ref<Texture2D> m_CheckerboardTex;
+
+		int m_GizmoType = -1; // -1 = no gizmo
+		glm::mat4 m_Transform;
 	};
 
 }

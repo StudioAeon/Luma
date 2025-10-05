@@ -2,6 +2,7 @@
 #include "ImGuiLayer.hpp"
 
 #include "imgui.h"
+#include "ImGuizmo.h"
 
 #define IMGUI_IMPL_API
 #include "backends/imgui_impl_sdl3.h"
@@ -72,6 +73,7 @@ namespace Luma {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplSDL3_NewFrame();
 		ImGui::NewFrame();
+		ImGuizmo::BeginFrame();
 
 	}
 

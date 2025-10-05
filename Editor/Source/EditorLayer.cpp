@@ -11,6 +11,8 @@
 
 #include <string>
 
+#include "Luma/ImGui/ImGuizmo.h"
+
 static void ImGuiShowHelpMarker(const char* desc)
 {
 	ImGui::TextDisabled("(?)");
@@ -35,6 +37,64 @@ namespace Luma {
 
 	void EditorLayer::OnAttach()
 	{
+		//Imgui colors
+		ImVec4* colors = ImGui::GetStyle().Colors;
+		colors[ImGuiCol_Text]                   = ImVec4(0.92f, 0.92f, 0.95f, 1.00f);
+		colors[ImGuiCol_TextDisabled]           = ImVec4(0.44f, 0.44f, 0.50f, 1.00f);
+		colors[ImGuiCol_WindowBg]               = ImVec4(0.13f, 0.14f, 0.15f, 1.00f);
+		colors[ImGuiCol_ChildBg]                = ImVec4(0.13f, 0.14f, 0.15f, 0.00f);
+		colors[ImGuiCol_PopupBg]                = ImVec4(0.11f, 0.11f, 0.12f, 0.98f);
+		colors[ImGuiCol_Border]                 = ImVec4(0.24f, 0.24f, 0.27f, 0.50f);
+		colors[ImGuiCol_BorderShadow]           = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+		colors[ImGuiCol_FrameBg]                = ImVec4(0.20f, 0.21f, 0.22f, 1.00f);
+		colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.25f, 0.26f, 0.28f, 1.00f);
+		colors[ImGuiCol_FrameBgActive]          = ImVec4(0.28f, 0.29f, 0.31f, 1.00f);
+		colors[ImGuiCol_TitleBg]                = ImVec4(0.10f, 0.10f, 0.11f, 1.00f);
+		colors[ImGuiCol_TitleBgActive]          = ImVec4(0.15f, 0.15f, 0.17f, 1.00f);
+		colors[ImGuiCol_TitleBgCollapsed]       = ImVec4(0.10f, 0.10f, 0.11f, 0.75f);
+		colors[ImGuiCol_MenuBarBg]              = ImVec4(0.15f, 0.15f, 0.17f, 1.00f);
+		colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.13f, 0.14f, 0.15f, 1.00f);
+		colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.31f, 0.31f, 0.35f, 1.00f);
+		colors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.41f, 0.41f, 0.45f, 1.00f);
+		colors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.48f, 0.48f, 0.53f, 1.00f);
+		colors[ImGuiCol_CheckMark]              = ImVec4(0.78f, 0.82f, 0.90f, 1.00f);
+		colors[ImGuiCol_SliderGrab]             = ImVec4(0.65f, 0.68f, 0.75f, 1.00f);
+		colors[ImGuiCol_SliderGrabActive]       = ImVec4(0.78f, 0.82f, 0.90f, 1.00f);
+		colors[ImGuiCol_Button]                 = ImVec4(0.24f, 0.25f, 0.27f, 1.00f);
+		colors[ImGuiCol_ButtonHovered]          = ImVec4(0.32f, 0.33f, 0.36f, 1.00f);
+		colors[ImGuiCol_ButtonActive]           = ImVec4(0.38f, 0.40f, 0.43f, 1.00f);
+		colors[ImGuiCol_Header]                 = ImVec4(0.24f, 0.25f, 0.27f, 0.80f);
+		colors[ImGuiCol_HeaderHovered]          = ImVec4(0.32f, 0.33f, 0.36f, 0.90f);
+		colors[ImGuiCol_HeaderActive]           = ImVec4(0.38f, 0.40f, 0.43f, 1.00f);
+		colors[ImGuiCol_Separator]              = ImVec4(0.24f, 0.24f, 0.27f, 0.60f);
+		colors[ImGuiCol_SeparatorHovered]       = ImVec4(0.48f, 0.50f, 0.55f, 0.80f);
+		colors[ImGuiCol_SeparatorActive]        = ImVec4(0.65f, 0.68f, 0.75f, 1.00f);
+		colors[ImGuiCol_ResizeGrip]             = ImVec4(0.65f, 0.68f, 0.75f, 0.25f);
+		colors[ImGuiCol_ResizeGripHovered]      = ImVec4(0.65f, 0.68f, 0.75f, 0.67f);
+		colors[ImGuiCol_ResizeGripActive]       = ImVec4(0.78f, 0.82f, 0.90f, 0.95f);
+		colors[ImGuiCol_Tab]                    = ImVec4(0.18f, 0.19f, 0.21f, 1.00f);
+		colors[ImGuiCol_TabHovered]             = ImVec4(0.32f, 0.33f, 0.36f, 1.00f);
+		colors[ImGuiCol_TabActive]              = ImVec4(0.24f, 0.25f, 0.27f, 1.00f);
+		colors[ImGuiCol_TabUnfocused]           = ImVec4(0.15f, 0.15f, 0.17f, 1.00f);
+		colors[ImGuiCol_TabUnfocusedActive]     = ImVec4(0.20f, 0.21f, 0.22f, 1.00f);
+		colors[ImGuiCol_DockingPreview]         = ImVec4(0.65f, 0.68f, 0.75f, 0.70f);
+		colors[ImGuiCol_DockingEmptyBg]         = ImVec4(0.13f, 0.14f, 0.15f, 1.00f);
+		colors[ImGuiCol_PlotLines]              = ImVec4(0.65f, 0.68f, 0.75f, 1.00f);
+		colors[ImGuiCol_PlotLinesHovered]       = ImVec4(0.85f, 0.65f, 0.30f, 1.00f);
+		colors[ImGuiCol_PlotHistogram]          = ImVec4(0.78f, 0.82f, 0.90f, 1.00f);
+		colors[ImGuiCol_PlotHistogramHovered]   = ImVec4(0.85f, 0.88f, 0.95f, 1.00f);
+		colors[ImGuiCol_TableHeaderBg]          = ImVec4(0.19f, 0.20f, 0.22f, 1.00f);
+		colors[ImGuiCol_TableBorderStrong]      = ImVec4(0.31f, 0.31f, 0.35f, 1.00f);
+		colors[ImGuiCol_TableBorderLight]       = ImVec4(0.24f, 0.24f, 0.27f, 1.00f);
+		colors[ImGuiCol_TableRowBg]             = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+		colors[ImGuiCol_TableRowBgAlt]          = ImVec4(1.00f, 1.00f, 1.00f, 0.06f);
+		colors[ImGuiCol_TextSelectedBg]         = ImVec4(0.65f, 0.68f, 0.75f, 0.35f);
+		colors[ImGuiCol_DragDropTarget]         = ImVec4(0.78f, 0.82f, 0.90f, 0.90f);
+		colors[ImGuiCol_NavHighlight]           = ImVec4(0.65f, 0.68f, 0.75f, 1.00f);
+		colors[ImGuiCol_NavWindowingHighlight]  = ImVec4(0.78f, 0.82f, 0.90f, 0.70f);
+		colors[ImGuiCol_NavWindowingDimBg]      = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
+		colors[ImGuiCol_ModalWindowDimBg]       = ImVec4(0.20f, 0.20f, 0.20f, 0.55f);
+
 		using namespace glm;
 
 		m_Mesh.reset(new Mesh("Resources/Models/m1911/m1911.fbx"));
@@ -129,6 +189,8 @@ namespace Luma {
 		// Set lights
 		m_Light.Direction = { -0.5f, -0.5f, 1.0f };
 		m_Light.Radiance = { 1.0f, 1.0f, 1.0f };
+
+		m_Transform = glm::scale(glm::mat4(1.0f), glm::vec3(m_MeshScale));
 	}
 
 	void EditorLayer::OnDetach()
@@ -215,7 +277,7 @@ namespace Luma {
 		else if (m_Scene == Scene::Model)
 		{
 			if (m_Mesh)
-				m_Mesh->Render(ts, scale(mat4(1.0f), vec3(m_MeshScale)), m_MeshMaterial);
+				m_Mesh->Render(ts, m_Transform, m_MeshMaterial);
 		}
 
 		m_GridMaterial->Set("u_MVP", viewProjection * glm::scale(glm::mat4(1.0f), glm::vec3(16.0f)));
@@ -566,6 +628,18 @@ namespace Luma {
 		m_Camera.SetProjectionMatrix(glm::perspectiveFov(glm::radians(45.0f), viewportSize.x, viewportSize.y, 0.1f, 10000.0f));
 		m_Camera.SetViewportSize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
 		ImGui::Image((void*)m_FinalPresentBuffer->GetColorAttachmentRendererID(), viewportSize, { 0, 1 }, { 1, 0 });
+
+		// Gizmos
+		if (m_GizmoType != -1)
+		{
+			float rw = (float)ImGui::GetWindowWidth();
+			float rh = (float)ImGui::GetWindowHeight();
+			ImGuizmo::SetOrthographic(false);
+			ImGuizmo::SetDrawlist();
+			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, rw, rh);
+			ImGuizmo::Manipulate(glm::value_ptr(m_Camera.GetViewMatrix()), glm::value_ptr(m_Camera.GetProjectionMatrix()), (ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(m_Transform));
+		}
+
 		ImGui::End();
 		ImGui::PopStyleVar();
 
@@ -607,6 +681,29 @@ namespace Luma {
 	}
 
 	void EditorLayer::OnEvent(Event& e)
-	{}
+	{
+		EventDispatcher dispatcher(e);
+		dispatcher.Dispatch<KeyPressedEvent>(LM_BIND_EVENT_FN(EditorLayer::OnKeyPressedEvent));
+	}
+
+	bool EditorLayer::OnKeyPressedEvent(KeyPressedEvent& e)
+	{
+		switch (e.GetKeyCode())
+		{
+			case LM_KEY_Q:
+				m_GizmoType = -1;
+				break;
+			case LM_KEY_W:
+				m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+				break;
+			case LM_KEY_E:
+				m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+				break;
+			case LM_KEY_R:
+				m_GizmoType = ImGuizmo::OPERATION::SCALE;
+				break;
+		}
+		return false;
+	}
 
 }
