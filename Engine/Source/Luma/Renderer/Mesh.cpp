@@ -17,6 +17,8 @@
 
 #include "imgui.h"
 
+#include "Luma/Renderer/Renderer.hpp"
+
 namespace Luma {
 
 	static const uint32_t s_MeshImportFlags =
@@ -457,8 +459,8 @@ namespace Luma {
 					}
 				}
 
-				if (!materialOverride)
-					self->m_MeshShader->SetMat4FromRenderThread("u_ModelMatrix", transform * submesh.Transform);
+				//if (!materialOverride)
+					//self->m_MeshShader->SetMat4FromRenderThread("u_ModelMatrix", transform * submesh.Transform, false);
 				glDrawElementsBaseVertex(GL_TRIANGLES, submesh.IndexCount, GL_UNSIGNED_INT, (void*)(sizeof(uint32_t) * submesh.BaseIndex), submesh.BaseVertex);
 			}
 		});

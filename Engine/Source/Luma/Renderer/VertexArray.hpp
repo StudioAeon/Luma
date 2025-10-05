@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+
 #include "Luma/Renderer/Buffer.hpp"
 
 namespace Luma {

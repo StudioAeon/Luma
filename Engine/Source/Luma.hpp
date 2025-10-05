@@ -32,4 +32,5 @@
 #include "Luma/Renderer/Texture.hpp"
 #include "Luma/Renderer/Material.hpp"
 #include "Luma/Renderer/VertexArray.hpp"
+#include "Luma/Renderer/RenderPass.hpp"
 // ==========================================

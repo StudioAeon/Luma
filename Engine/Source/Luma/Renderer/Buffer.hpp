@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Luma/Renderer/Renderer.hpp"
+#include "RendererAPI.hpp"
 
 namespace Luma {
 

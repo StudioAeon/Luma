@@ -1,5 +1,7 @@
 #include "lmpch.hpp"
 
+#include "Renderer.hpp"
+
 #include "Luma/Renderer/Backend/OpenGL/OpenGLBuffer.hpp"
 
 namespace Luma {

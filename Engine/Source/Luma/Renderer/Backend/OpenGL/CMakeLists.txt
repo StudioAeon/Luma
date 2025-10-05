@@ -2,6 +2,7 @@ set(OPENGL_SOURCES
 		OpenGLBuffer.cpp
 		OpenGLFramebuffer.cpp
 		OpenGLRendererAPI.cpp
+		OpenGLRenderPass.cpp
 		OpenGLShader.cpp
 		OpenGLShaderUniform.cpp
 		OpenGLTexture.cpp
@@ -11,6 +12,7 @@ set(OPENGL_SOURCES
 set(OPENGL_HEADERS
 		OpenGLBuffer.hpp
 		OpenGLFramebuffer.hpp
+		OpenGLRenderPass.hpp
 		OpenGLShader.hpp
 		OpenGLShaderUniform.hpp
 		OpenGLTexture.hpp

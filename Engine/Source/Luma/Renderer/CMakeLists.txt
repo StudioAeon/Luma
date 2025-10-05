@@ -6,6 +6,7 @@ set(RENDERER_SOURCES
 		Mesh.cpp
 		RenderCommandQueue.cpp
 		Renderer.cpp
+		RenderPass.cpp
 		Shader.cpp
 		Texture.cpp
 		VertexArray.cpp
@@ -20,6 +21,7 @@ set(RENDERER_HEADERS
 		RenderCommandQueue.hpp
 		Renderer.hpp
 		RendererAPI.hpp
+		RenderPass.hpp
 		Shader.hpp
 		ShaderUniform.hpp
 		Texture.hpp
