@@ -148,10 +148,7 @@ namespace Luma {
 			
 		}
 
-		LM_CORE_TRACE("NODES:");
-		LM_CORE_TRACE("-----------------------------");
 		TraverseNodes(scene->mRootNode);
-		LM_CORE_TRACE("-----------------------------");
 
 		// Bones
 		if (m_IsAnimated)
@@ -228,15 +225,10 @@ namespace Luma {
 	}
 
 	Mesh::~Mesh()
-	{
-	}
+	{}
 
-	void Mesh::TraverseNodes(aiNode* node, int level)
+	void Mesh::TraverseNodes(aiNode* node)
 	{
-		std::string levelText;
-		for (int i = 0; i < level; i++)
-			levelText += "-";
-		LM_CORE_TRACE("{0}Node name: {1}", levelText, std::string(node->mName.data));
 		for (uint32_t i = 0; i < node->mNumMeshes; i++)
 		{
 			uint32_t mesh = node->mMeshes[i];
@@ -244,10 +236,7 @@ namespace Luma {
 		}
 
 		for (uint32_t i = 0; i < node->mNumChildren; i++)
-		{
-			aiNode* child = node->mChildren[i];
-			TraverseNodes(child, level + 1);
-		}
+			TraverseNodes(node->mChildren[i]);
 	}
 
 	uint32_t Mesh::FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim)
@@ -447,20 +436,20 @@ namespace Luma {
 		bool materialOverride = !!materialInstance;
 
 		// TODO: replace with render API calls
-		LM_RENDER_S2(transform, materialOverride, {
-			for (Submesh& submesh : self->m_Submeshes)
+		Renderer::Submit([=]() {
+			for (Submesh& submesh : m_Submeshes)
 			{
-				if (self->m_IsAnimated)
+				if (m_IsAnimated)
 				{
-					for (size_t i = 0; i < self->m_BoneTransforms.size(); i++)
+					for (size_t i = 0; i < m_BoneTransforms.size(); i++)
 					{
 						std::string uniformName = std::string("u_BoneTransforms[") + std::to_string(i) + std::string("]");
-						self->m_MeshShader->SetMat4FromRenderThread(uniformName, self->m_BoneTransforms[i]);
+						m_MeshShader->SetMat4FromRenderThread(uniformName, m_BoneTransforms[i]);
 					}
 				}
 
 				//if (!materialOverride)
-					//self->m_MeshShader->SetMat4FromRenderThread("u_ModelMatrix", transform * submesh.Transform, false);
+				//	m_MeshShader->SetMat4FromRenderThread("u_ModelMatrix", transform * submesh.Transform, false);
 				glDrawElementsBaseVertex(GL_TRIANGLES, submesh.IndexCount, GL_UNSIGNED_INT, (void*)(sizeof(uint32_t) * submesh.BaseIndex), submesh.BaseVertex);
 			}
 		});
