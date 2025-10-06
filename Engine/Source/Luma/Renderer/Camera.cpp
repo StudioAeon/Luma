@@ -54,7 +54,7 @@ namespace Luma {
 		return speed;
 	}
 
-	void Camera::Update(TimeStep ts)
+	void Camera::Update(Timestep ts)
 	{
 		if (Input::IsKeyPressed(SDL_SCANCODE_LALT))
 		{

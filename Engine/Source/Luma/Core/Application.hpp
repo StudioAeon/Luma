@@ -31,7 +31,7 @@ namespace Luma {
 
 		virtual void OnInit() {}
 		virtual void OnShutdown();
-		virtual void OnUpdate(TimeStep ts) {}
+		virtual void OnUpdate(Timestep ts) {}
 
 		virtual void OnEvent(Event& event);
 
@@ -47,8 +47,8 @@ namespace Luma {
 
 		static inline Application& Get() { return *s_Instance; }
 
-		TimeStep GetTimestep() const { return m_TimeStep; }
-		TimeStep GetFrametime() const { return m_Frametime; }
+		Timestep GetTimestep() const { return m_TimeStep; }
+		Timestep GetFrametime() const { return m_Frametime; }
 		const ApplicationSpecification& GetSpecification() const { return m_Specification; }
 
 		float GetFrameDelta(); // TODO: This should be in "Platform"
@@ -65,8 +65,8 @@ namespace Luma {
 		bool m_Running = true, m_Minimized = false;
 		LayerStack m_LayerStack;
 		ImGuiLayer* m_ImGuiLayer;
-		TimeStep m_Frametime;
-		TimeStep m_TimeStep;
+		Timestep m_Frametime;
+		Timestep m_TimeStep;
 
 		float m_LastFrameTime = 0.0f;
 

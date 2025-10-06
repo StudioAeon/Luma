@@ -118,8 +118,7 @@ namespace Luma {
 		Mesh(const std::string& filename);
 		~Mesh();
 
-		void Render(TimeStep ts, Ref<MaterialInstance> materialInstance = Ref<MaterialInstance>());
-		void Render(TimeStep ts, const glm::mat4& transform = glm::mat4(1.0f), Ref<MaterialInstance> materialInstance = Ref<MaterialInstance>());
+		void OnUpdate(Timestep ts);
 		void OnImGuiRender();
 		void DumpVertexBuffer();
 
