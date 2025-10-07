@@ -7,6 +7,7 @@ set(RENDERER_SOURCES
 		RenderCommandQueue.cpp
 		Renderer.cpp
 		RenderPass.cpp
+		SceneRenderer.cpp
 		Shader.cpp
 		Texture.cpp
 		VertexArray.cpp
@@ -22,6 +23,7 @@ set(RENDERER_HEADERS
 		Renderer.hpp
 		RendererAPI.hpp
 		RenderPass.hpp
+		SceneRenderer.hpp
 		Shader.hpp
 		ShaderUniform.hpp
 		Texture.hpp

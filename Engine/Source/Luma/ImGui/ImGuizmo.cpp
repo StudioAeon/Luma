@@ -33,6 +33,9 @@
 #include "imgui_internal.h"
 #include "ImGuizmo.h"
 
+#include "Luma/Core/Input.hpp"
+#include "Luma/Core/KeyCodes.hpp"
+
 #if defined(_MSC_VER) || defined(__MINGW32__)
 #include <malloc.h>
 #endif
@@ -1651,6 +1654,10 @@ namespace IMGUIZMO_NAMESPACE
 
    static bool CanActivate()
    {
+      // Check for modifiers
+      if (Luma::Input::IsKeyPressed(LM_KEY_LEFT_ALT) || Luma::Input::IsKeyPressed(LM_KEY_LEFT_SHIFT) || Luma::Input::IsKeyPressed(LM_KEY_LEFT_CONTROL))
+         return false;
+
       if (ImGui::IsMouseClicked(0) && !ImGui::IsAnyItemHovered() && !ImGui::IsAnyItemActive())
       {
          return true;

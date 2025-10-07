@@ -33,4 +33,9 @@
 #include "Luma/Renderer/Material.hpp"
 #include "Luma/Renderer/VertexArray.hpp"
 #include "Luma/Renderer/RenderPass.hpp"
+#include "Luma/Renderer/SceneRenderer.hpp"
 // ==========================================
+
+// Scenes
+#include "Luma/Scene/Entity.hpp"
+#include "Luma/Scene/Scene.hpp"

@@ -45,7 +45,8 @@ namespace Luma {
 	void OpenGLShader::Load(const std::string& source)
 	{
 		m_ShaderSource = PreProcess(source);
-		Parse();
+		if (!m_IsCompute)
+			Parse();
 
 		Renderer::Submit([this]()
 		{
@@ -53,8 +54,11 @@ namespace Luma {
 				glDeleteShader(m_RendererID);
 
 			CompileAndUploadShader();
-			ResolveUniforms();
-			ValidateUniforms();
+			if (!m_IsCompute)
+			{
+				ResolveUniforms();
+				ValidateUniforms();
+			}
 
 			if (m_Loaded)
 			{
@@ -73,7 +77,7 @@ namespace Luma {
 
 	void OpenGLShader::Bind()
 	{
-		Renderer::Submit([this]() {
+		Renderer::Submit([=]() {
 			glUseProgram(m_RendererID);
 		});
 	}
@@ -92,7 +96,7 @@ namespace Luma {
 		}
 		else
 		{
-			LM_CORE_WARN("Could not read shader file {0}", filepath);
+			LM_CORE_ASSERT(false, "Could not load shader!");
 		}
 
 		return result;
@@ -111,11 +115,19 @@ namespace Luma {
 			LM_CORE_ASSERT(eol != std::string::npos, "Syntax error");
 			size_t begin = pos + typeTokenLength + 1;
 			std::string type = source.substr(begin, eol - begin);
-			LM_CORE_ASSERT(type == "vertex" || type == "fragment" || type == "pixel", "Invalid shader type specified");
+			LM_CORE_ASSERT(type == "vertex" || type == "fragment" || type == "pixel" || type == "compute", "Invalid shader type specified");
 
 			size_t nextLinePos = source.find_first_not_of("\r\n", eol);
 			pos = source.find(typeToken, nextLinePos);
-			shaderSources[ShaderTypeFromString(type)] = source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
+			auto shaderType = ShaderTypeFromString(type);
+			shaderSources[shaderType] = source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
+
+			// Compute shaders cannot contain other types
+			if (shaderType == GL_COMPUTE_SHADER)
+			{
+				m_IsCompute = true;
+				break;
+			}
 		}
 
 		return shaderSources;
@@ -522,6 +534,8 @@ namespace Luma {
 			return GL_VERTEX_SHADER;
 		if (type == "fragment" || type == "pixel")
 			return GL_FRAGMENT_SHADER;
+		if (type == "compute")
+			return GL_COMPUTE_SHADER;
 
 		return GL_NONE;
 	}

@@ -15,17 +15,9 @@ namespace Luma {
 		{
 			case Luma::TextureFormat::RGB:     return GL_RGB;
 			case Luma::TextureFormat::RGBA:    return GL_RGBA;
+			case Luma::TextureFormat::Float16: return GL_RGBA16F;
 		}
 		return 0;
-	}
-
-	static int CalculateMipMapCount(int width, int height)
-	{
-		int levels = 1;
-		while ((width | height) >> levels) {
-			levels++;
-		}
-		return levels;
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////
@@ -59,21 +51,36 @@ namespace Luma {
 		: m_FilePath(path)
 	{
 		int width, height, channels;
-		LM_CORE_INFO("Loading texture {0}, srgb={1}", path, srgb);
-		m_ImageData.Data = stbi_load(path.c_str(), &width, &height, &channels, srgb ? STBI_rgb : STBI_rgb_alpha);
+		if (stbi_is_hdr(path.c_str()))
+		{
+			LM_CORE_INFO("Loading HDR texture {0}, srgb={1}", path, srgb);
+			m_ImageData.Data = (byte*)stbi_loadf(path.c_str(), &width, &height, &channels, 0);
+			m_IsHDR = true;
+			m_Format = TextureFormat::Float16;
+		}
+		else
+		{
+			LM_CORE_INFO("Loading texture {0}, srgb={1}", path, srgb);
+			m_ImageData.Data = stbi_load(path.c_str(), &width, &height, &channels, srgb ? STBI_rgb : STBI_rgb_alpha);
+			LM_CORE_ASSERT(m_ImageData.Data, "Could not read image!");
+			m_Format = TextureFormat::RGBA;
+		}
+
+		if (!m_ImageData.Data)
+			return;
+
+		m_Loaded = true;
 
 		m_Width = width;
 		m_Height = height;
-		m_Format = TextureFormat::RGBA;
 
-		Renderer::Submit([this, srgb]()
+		Renderer::Submit([=]()
 		{
 			// TODO: Consolidate properly
 			if (srgb)
 			{
 				glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-				int levels = CalculateMipMapCount(m_Width, m_Height);
-				LM_CORE_INFO("Creating srgb texture width {0} mips", levels);
+				int levels = Texture::CalculateMipMapCount(m_Width, m_Height);
 				glTextureStorage2D(m_RendererID, levels, GL_SRGB8, m_Width, m_Height);
 				glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, levels > 1 ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
 				glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -90,8 +97,12 @@ namespace Luma {
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-				glTexImage2D(GL_TEXTURE_2D, 0, LumaToOpenGLTextureFormat(m_Format), m_Width, m_Height, 0, srgb ? GL_SRGB8 : LumaToOpenGLTextureFormat(m_Format), GL_UNSIGNED_BYTE, m_ImageData.Data);
+				GLenum internalFormat = LumaToOpenGLTextureFormat(m_Format);
+				GLenum format = srgb ? GL_SRGB8 : (m_IsHDR ? GL_RGB : LumaToOpenGLTextureFormat(m_Format)); // HDR = GL_RGB for now
+				GLenum type = internalFormat == GL_RGBA16F ? GL_FLOAT : GL_UNSIGNED_BYTE;
+				glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_Width, m_Height, 0, format, type, m_ImageData.Data);
 				glGenerateMipmap(GL_TEXTURE_2D);
 
 				glBindTexture(GL_TEXTURE_2D, 0);
@@ -143,9 +154,35 @@ namespace Luma {
 		return m_ImageData;
 	}
 
+	uint32_t OpenGLTexture2D::GetMipLevelCount() const
+	{
+		return Texture::CalculateMipMapCount(m_Width, m_Height);
+	}
+
 	//////////////////////////////////////////////////////////////////////////////////
 	// TextureCube
 	//////////////////////////////////////////////////////////////////////////////////
+
+	OpenGLTextureCube::OpenGLTextureCube(TextureFormat format, uint32_t width, uint32_t height)
+	{
+		m_Width = width;
+		m_Height = height;
+		m_Format = format;
+
+		uint32_t levels = Texture::CalculateMipMapCount(width, height);
+
+		Renderer::Submit([=]() {
+			glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_RendererID);
+			glTextureStorage2D(m_RendererID, levels, LumaToOpenGLTextureFormat(m_Format), width, height);
+			glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, levels > 1 ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
+			glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+			// glTextureParameterf(m_RendererID, GL_TEXTURE_MAX_ANISOTROPY, 16);
+		});
+	}
 
 	OpenGLTextureCube::OpenGLTextureCube(const std::string& path)
 		: m_FilePath(path)
@@ -212,6 +249,7 @@ namespace Luma {
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 			glTextureParameterf(m_RendererID, GL_TEXTURE_MAX_ANISOTROPY, RendererAPI::GetCapabilities().MaxAnisotropy);
 
 			auto format = LumaToOpenGLTextureFormat(m_Format);
@@ -248,6 +286,11 @@ namespace Luma {
 		Renderer::Submit([this, slot]() {
 			glBindTextureUnit(slot, m_RendererID);
 		});
+	}
+
+	uint32_t OpenGLTextureCube::GetMipLevelCount() const
+	{
+		return Texture::CalculateMipMapCount(m_Width, m_Height);
 	}
 
 }

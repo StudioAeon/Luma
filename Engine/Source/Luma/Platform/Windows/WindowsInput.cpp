@@ -1,5 +1,5 @@
 #include "lmpch.hpp"
-#include "WindowsInput.hpp"
+#include "Luma/Core/Input.hpp"
 #include "WindowsWindow.hpp"
 
 #include "Luma/Core/Application.hpp"
@@ -8,9 +8,7 @@
 
 namespace Luma {
 
-	Input* Input::s_Instance = new WindowsInput;
-
-	bool WindowsInput::IsKeyPressedImpl(int keycode)
+	bool Input::IsKeyPressed(int keycode)
 	{
 		const bool* state = SDL_GetKeyboardState(nullptr);
 
@@ -19,7 +17,7 @@ namespace Luma {
 		return state[scancode];
 	}
 
-	bool WindowsInput::IsMouseButtonPressedImpl(int button)
+	bool Input::IsMouseButtonPressed(int button)
 	{
 		Uint32 mouseState = SDL_GetMouseState(nullptr, nullptr);
 
@@ -28,7 +26,7 @@ namespace Luma {
 		return (mouseState & buttonFlag) != 0;
 	}
 
-	float WindowsInput::GetMouseXImpl()
+	float Input::GetMouseX()
 	{
 		float xpos, ypos;
 		SDL_GetMouseState(&xpos, &ypos);
@@ -36,7 +34,7 @@ namespace Luma {
 		return xpos;
 	}
 
-	float WindowsInput::GetMouseYImpl()
+	float Input::GetMouseY()
 	{
 		float xpos, ypos;
 		SDL_GetMouseState(&xpos, &ypos);
