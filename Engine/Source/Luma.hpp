@@ -13,6 +13,7 @@
 
 #include "Luma/Core/Application.hpp"
 #include "Luma/Core/Log.hpp"
+#include "Luma/Core/Input.hpp"
 #include "Luma/Core/TimeStep.hpp"
 
 #include "Luma/Events/Event.hpp"

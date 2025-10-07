@@ -6,6 +6,7 @@ set(RENDERER_SOURCES
 		Mesh.cpp
 		RenderCommandQueue.cpp
 		Renderer.cpp
+		Renderer2D.cpp
 		RenderPass.cpp
 		SceneRenderer.cpp
 		Shader.cpp
@@ -21,6 +22,7 @@ set(RENDERER_HEADERS
 		Mesh.hpp
 		RenderCommandQueue.hpp
 		Renderer.hpp
+		Renderer2D.hpp
 		RendererAPI.hpp
 		RenderPass.hpp
 		SceneRenderer.hpp
