@@ -21,6 +21,9 @@
 #include "Luma/Events/KeyEvent.hpp"
 #include "Luma/Events/MouseEvent.hpp"
 
+#include "Luma/Math/AABB.hpp"
+#include "Luma/Math/Ray.hpp"
+
 #include <imgui.h>
 
 // === Luma Render API ======================

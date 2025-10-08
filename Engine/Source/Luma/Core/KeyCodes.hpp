@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL3/SDL_scancode.h>
+#include <SDL3/SDL_mouse.h>
 
 // Printable keys
 #define LM_KEY_SPACE              SDL_SCANCODE_SPACE
@@ -125,3 +126,7 @@
 #define LM_KEY_RIGHT_ALT          SDL_SCANCODE_RALT
 #define LM_KEY_RIGHT_SUPER        SDL_SCANCODE_RGUI
 #define LM_KEY_MENU               SDL_SCANCODE_MENU
+
+#define LM_MOUSE_BUTTON_LEFT        SDL_BUTTON_LEFT
+#define LM_MOUSE_BUTTON_RIGHT       SDL_BUTTON_RIGHT
+#define LM_MOUSE_BUTTON_MIDDLE      SDL_BUTTON_MIDDLE

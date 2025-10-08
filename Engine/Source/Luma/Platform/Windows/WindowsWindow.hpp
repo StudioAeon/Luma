@@ -17,6 +17,7 @@ namespace Luma {
 		inline uint32_t GetWidth() const override { return m_Data.Width; }
 		inline uint32_t GetHeight() const override { return m_Data.Height; }
 
+		virtual std::pair<uint32_t, uint32_t> GetSize() const override { return { m_Data.Width, m_Data.Height }; }
 		virtual std::pair<float, float> GetWindowPos() const override;
 
 		// Window attributes

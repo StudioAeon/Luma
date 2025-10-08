@@ -3,7 +3,9 @@ set(MATH_SOURCES
 )
 
 set(MATH_HEADERS
+		AABB.hpp
 		Mat4.hpp
+		Ray.hpp
 )
 
 target_sources(Luma

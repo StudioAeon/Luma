@@ -28,18 +28,24 @@ namespace Luma {
 
 	float Input::GetMouseX()
 	{
-		float xpos, ypos;
-		SDL_GetMouseState(&xpos, &ypos);
-
-		return xpos;
+		auto [x, y] = GetMousePosition();
+		return (float)x;
 	}
 
 	float Input::GetMouseY()
 	{
-		float xpos, ypos;
-		SDL_GetMouseState(&xpos, &ypos);
+		auto [x, y] = GetMousePosition();
+		return (float)y;
+	}
 
-		return ypos;
+	std::pair<float, float> Input::GetMousePosition()
+	{
+		auto& window = static_cast<WindowsWindow&>(Application::Get().GetWindow());
+
+		float x, y;
+		SDL_GetMouseState(&x, &y);
+
+		return { x, y };
 	}
 
 }

@@ -69,6 +69,14 @@ namespace Luma {
 		}
 
 		SetVSync(true);
+
+		// Update window size to actual size
+		{
+			int width, height;
+			SDL_GetWindowSize(m_Window, &width, &height);
+			m_Data.Width = width;
+			m_Data.Height= height;
+		}
 	}
 
 	void WindowsWindow::Shutdown()
