@@ -1,17 +1,17 @@
 #include "lmpch.hpp"
 #include "ImGuiLayer.hpp"
 
-#include "imgui.h"
+#include "Luma/Core/Application.hpp"
+#include "Luma/Renderer/Renderer.hpp"
+
+#include <imgui.h>
 #include "ImGuizmo.h"
 
 #define IMGUI_IMPL_API
 #include "backends/imgui_impl_sdl3.h"
 #include "backends/imgui_impl_opengl3.h"
 
-#include "Luma/Core/Application.hpp"
 #include <SDL3/SDL.h>
-
-#include "Luma/Renderer/Renderer.hpp"
 
 namespace Luma {
 

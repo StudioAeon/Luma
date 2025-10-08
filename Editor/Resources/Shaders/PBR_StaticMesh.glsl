@@ -24,7 +24,7 @@ uniform mat4 u_Transform;
 out VertexOutput
 {
 	vec3 WorldPosition;
-    vec3 Normal;
+	vec3 Normal;
 	vec2 TexCoord;
 	mat3 WorldNormals;
 	mat3 WorldTransform;
@@ -63,7 +63,7 @@ struct Light {
 in VertexOutput
 {
 	vec3 WorldPosition;
-    vec3 Normal;
+	vec3 Normal;
 	vec2 TexCoord;
 	mat3 WorldNormals;
 	mat3 WorldTransform;
@@ -141,23 +141,23 @@ float gaSchlickGGX(float cosLi, float NdotV, float roughness)
 
 float GeometrySchlickGGX(float NdotV, float roughness)
 {
-    float r = (roughness + 1.0);
-    float k = (r*r) / 8.0;
+	float r = (roughness + 1.0);
+	float k = (r*r) / 8.0;
 
-    float nom   = NdotV;
-    float denom = NdotV * (1.0 - k) + k;
+	float nom   = NdotV;
+	float denom = NdotV * (1.0 - k) + k;
 
-    return nom / denom;
+	return nom / denom;
 }
 
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 {
-    float NdotV = max(dot(N, V), 0.0);
-    float NdotL = max(dot(N, L), 0.0);
-    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
-    float ggx1 = GeometrySchlickGGX(NdotL, roughness);
+	float NdotV = max(dot(N, V), 0.0);
+	float NdotL = max(dot(N, L), 0.0);
+	float ggx2 = GeometrySchlickGGX(NdotV, roughness);
+	float ggx1 = GeometrySchlickGGX(NdotL, roughness);
 
-    return ggx1 * ggx2;
+	return ggx1 * ggx2;
 }
 
 // Shlick's approximation of the Fresnel factor.
@@ -168,7 +168,7 @@ vec3 fresnelSchlick(vec3 F0, float cosTheta)
 
 vec3 fresnelSchlickRoughness(vec3 F0, float cosTheta, float roughness)
 {
-    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
+	return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 } 
 
 // ---------------------------------------------------------------------------------------------------
@@ -177,17 +177,17 @@ vec3 fresnelSchlickRoughness(vec3 F0, float cosTheta, float roughness)
 // so turning this on online will cause poor performance
 float RadicalInverse_VdC(uint bits) 
 {
-    bits = (bits << 16u) | (bits >> 16u);
-    bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
-    bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);
-    bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);
-    bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);
-    return float(bits) * 2.3283064365386963e-10; // / 0x100000000
+	bits = (bits << 16u) | (bits >> 16u);
+	bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
+	bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);
+	bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);
+	bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);
+	return float(bits) * 2.3283064365386963e-10; // / 0x100000000
 }
 
 vec2 Hammersley(uint i, uint N)
 {
-    return vec2(float(i)/float(N), RadicalInverse_VdC(i));
+	return vec2(float(i)/float(N), RadicalInverse_VdC(i));
 }
 
 vec3 ImportanceSampleGGX(vec2 Xi, float Roughness, vec3 N)
@@ -234,11 +234,11 @@ vec3 PrefilterEnvMap(float Roughness, vec3 R)
 
 vec3 RotateVectorAboutY(float angle, vec3 vec)
 {
-    angle = radians(angle);
-    mat3x3 rotationMatrix ={vec3(cos(angle),0.0,sin(angle)),
-                            vec3(0.0,1.0,0.0),
-                            vec3(-sin(angle),0.0,cos(angle))};
-    return rotationMatrix * vec;
+	angle = radians(angle);
+	mat3x3 rotationMatrix ={vec3(cos(angle),0.0,sin(angle)),
+							vec3(0.0,1.0,0.0),
+							vec3(-sin(angle),0.0,cos(angle))};
+	return rotationMatrix * vec;
 }
 
 vec3 Lighting(vec3 F0)
@@ -294,7 +294,7 @@ void main()
 	m_Params.Albedo = u_AlbedoTexToggle > 0.5 ? texture(u_AlbedoTexture, vs_Input.TexCoord).rgb : u_AlbedoColor; 
 	m_Params.Metalness = u_MetalnessTexToggle > 0.5 ? texture(u_MetalnessTexture, vs_Input.TexCoord).r : u_Metalness;
 	m_Params.Roughness = u_RoughnessTexToggle > 0.5 ?  texture(u_RoughnessTexture, vs_Input.TexCoord).r : u_Roughness;
-    m_Params.Roughness = max(m_Params.Roughness, 0.05); // Minimum roughness of 0.05 to keep specular highlight
+	m_Params.Roughness = max(m_Params.Roughness, 0.05); // Minimum roughness of 0.05 to keep specular highlight
 
 	// Normals (either from vertex or map)
 	m_Params.Normal = normalize(vs_Input.Normal);

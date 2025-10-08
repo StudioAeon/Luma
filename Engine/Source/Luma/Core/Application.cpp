@@ -3,11 +3,10 @@
 
 #include "Luma/Renderer/Renderer.hpp"
 #include "Luma/Renderer/Framebuffer.hpp"
-#include <SDL3/SDL.h>
 
+#include <SDL3/SDL.h>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
-
 #include <imgui.h>
 
 bool g_ApplicationRunning = true;

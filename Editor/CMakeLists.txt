@@ -7,7 +7,6 @@ set(EDITOR_SOURCES
 
 set(EDITOR_HEADERS
 		${EDITOR_SRC_DIR}/EditorLayer.hpp
-		${EDITOR_SRC_DIR}/Luma-Editor.cpp
 )
 
 add_executable(Luma-Editor ${EDITOR_SOURCES} ${EDITOR_HEADERS})

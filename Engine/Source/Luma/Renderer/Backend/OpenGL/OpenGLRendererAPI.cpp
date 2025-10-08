@@ -1,9 +1,9 @@
 #include "lmpch.hpp"
 #include "Luma/Renderer/RendererAPI.hpp"
 
-#include <glad/glad.h>
-
 #include "Luma/Renderer/Shader.hpp"
+
+#include <glad/glad.h>
 
 namespace Luma {
 

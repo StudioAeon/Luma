@@ -12,5 +12,4 @@ target_sources(Luma
 		PRIVATE
 		${MATH_SOURCES}
 		${MATH_HEADERS}
-
 )

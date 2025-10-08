@@ -5,7 +5,7 @@
 #include "Luma/Renderer/Renderer.hpp"
 
 #include <glad/glad.h>
-#include "stb/stb_image.h"
+#include <stb/stb_image.h>
 
 namespace Luma {
 

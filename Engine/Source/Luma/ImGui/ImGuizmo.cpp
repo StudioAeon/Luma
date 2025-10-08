@@ -26,15 +26,15 @@
 
 #include "lmpch.hpp"
 
+#include "Luma/Core/Input.hpp"
+#include "Luma/Core/KeyCodes.hpp"
+
 #ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
 #endif
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "ImGuizmo.h"
-
-#include "Luma/Core/Input.hpp"
-#include "Luma/Core/KeyCodes.hpp"
 
 #if defined(_MSC_VER) || defined(__MINGW32__)
 #include <malloc.h>

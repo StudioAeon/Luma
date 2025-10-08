@@ -2,6 +2,7 @@
 #include "OpenGLFramebuffer.hpp"
 
 #include "Luma/Renderer/Renderer.hpp"
+
 #include <glad/glad.h>
 
 namespace Luma {

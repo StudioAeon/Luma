@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Luma/Renderer/Shader.hpp"
-#include <glad/glad.h>
-
 #include "OpenGLShaderUniform.hpp"
+
+#include <glad/glad.h>
 
 namespace Luma {
 

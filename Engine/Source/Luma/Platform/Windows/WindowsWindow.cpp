@@ -1,12 +1,13 @@
 #include "lmpch.hpp"
-#include <glad/glad.h>
 #include "WindowsWindow.hpp"
 
-#include "imgui.h"
-#include "imgui_impl_sdl3.h"
 #include "Luma/Events/ApplicationEvent.hpp"
 #include "Luma/Events/KeyEvent.hpp"
 #include "Luma/Events/MouseEvent.hpp"
+
+#include <imgui.h>
+#include <imgui_impl_sdl3.h>
+#include <glad/glad.h>
 
 namespace Luma {
 
@@ -47,13 +48,11 @@ namespace Luma {
 			s_SDLInitialized = true;
 		}
 
-		m_Window = SDL_CreateWindow(m_Data.Title.c_str(), (int)m_Specification.Width, (int)m_Specification.Height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		m_Window = SDL_CreateWindow(m_Data.Title.c_str(), (int)m_Specification.Width, (int)m_Specification.Height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED);
 		m_WindowID = SDL_GetWindowID(m_Window);
 
 		m_GLContext = SDL_GL_CreateContext(m_Window);
 		SDL_GL_MakeCurrent(m_Window, m_GLContext);
-
-		SDL_MaximizeWindow(m_Window);
 
 		int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(SDL_GL_GetProcAddress));
 		LM_CORE_ASSERT(status, "Failed to initialize Glad!");

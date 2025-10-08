@@ -10,5 +10,4 @@ target_sources(Luma
 		PRIVATE
 		${EDITOR_SOURCES}
 		${EDITOR_HEADERS}
-
 )

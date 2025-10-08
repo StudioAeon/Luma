@@ -1,7 +1,5 @@
 #pragma once
 
-#include "lmpch.hpp"
-
 namespace Luma {
 
 	class RenderCommandQueue

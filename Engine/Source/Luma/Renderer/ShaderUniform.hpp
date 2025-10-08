@@ -20,6 +20,8 @@ namespace Luma {
 		friend class OpenGLShader;
 		friend class ShaderStruct;
 	public:
+		virtual ~ShaderUniformDeclaration() = default;
+
 		virtual const std::string& GetName() const = 0;
 		virtual uint32_t GetSize() const = 0;
 		virtual uint32_t GetCount() const = 0;
@@ -34,6 +36,8 @@ namespace Luma {
 	class ShaderUniformBufferDeclaration
 	{
 	public:
+		virtual ~ShaderUniformBufferDeclaration() = default;
+
 		virtual const std::string& GetName() const = 0;
 		virtual uint32_t GetRegister() const = 0;
 		virtual uint32_t GetSize() const = 0;
@@ -85,6 +89,8 @@ namespace Luma {
 	class ShaderResourceDeclaration
 	{
 	public:
+		virtual ~ShaderResourceDeclaration() = default;
+
 		virtual const std::string& GetName() const = 0;
 		virtual uint32_t GetRegister() const = 0;
 		virtual uint32_t GetCount() const = 0;

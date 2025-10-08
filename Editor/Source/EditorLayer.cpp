@@ -1,18 +1,18 @@
 #include "EditorLayer.hpp"
 
 #include "Luma/ImGui/ImGuiLayer.hpp"
-
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "Luma/Renderer/Renderer2D.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include <string>
-
 #include "Luma/ImGui/ImGuizmo.h"
-#include "Luma/Renderer/Renderer2D.hpp"
+
+#include <string>
+#include <algorithm>
 
 static void ImGuiShowHelpMarker(const char* desc)
 {

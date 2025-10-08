@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Luma/Core/Assert.hpp"
 #include "RendererAPI.hpp"
 
 namespace Luma {

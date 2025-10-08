@@ -1,8 +1,8 @@
 #pragma once
 
-#include <glm/glm.hpp>
-
 #include "Luma/Renderer/Mesh.hpp"
+
+#include <glm/glm.hpp>
 
 namespace Luma {
 

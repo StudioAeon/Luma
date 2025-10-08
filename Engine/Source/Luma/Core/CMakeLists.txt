@@ -5,7 +5,6 @@ set(CORE_SOURCES
 		LayerStack.cpp
 		Log.cpp
 		TimeStep.cpp
-		Window.cpp
 )
 
 set(CORE_HEADERS

@@ -14,7 +14,7 @@ namespace Luma {
 	void TestLayer::OnDetach()
 	{}
 
-	void TestLayer::OnUpdate(TimeStep ts)
+	void TestLayer::OnUpdate(Timestep ts)
 	{
 		Renderer::Clear();
 	}

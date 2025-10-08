@@ -2,7 +2,7 @@
 
 #include "Luma/Core/Window.hpp"
 
-#include "SDL3/SDL.h"
+#include <SDL3/SDL.h>
 
 namespace Luma {
 

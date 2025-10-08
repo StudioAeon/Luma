@@ -1,8 +1,5 @@
 #pragma once
 
-#include <vector>
-#include <glm/glm.hpp>
-
 #include "Luma/Core/TimeStep.hpp"
 
 #include "Luma/Renderer/VertexArray.hpp"
@@ -11,6 +8,10 @@
 #include "Luma/Renderer/Material.hpp"
 
 #include "Luma/Math/AABB.hpp"
+
+#include <glm/glm.hpp>
+
+#include <vector>
 
 struct aiNode;
 struct aiAnimation;

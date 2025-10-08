@@ -12,5 +12,4 @@ target_sources(Luma
 		PRIVATE
 		${SCENE_SOURCES}
 		${SCENE_HEADERS}
-
 )

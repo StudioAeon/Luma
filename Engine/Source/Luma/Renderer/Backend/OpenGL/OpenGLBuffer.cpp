@@ -1,9 +1,9 @@
 #include "lmpch.hpp"
 #include "OpenGLBuffer.hpp"
 
-#include <glad/glad.h>
-
 #include "Luma/Renderer/Renderer.hpp"
+
+#include <glad/glad.h>
 
 namespace Luma {
 

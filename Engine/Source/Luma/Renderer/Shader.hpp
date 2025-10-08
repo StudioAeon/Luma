@@ -6,12 +6,13 @@
 #include "Luma/Renderer/RendererAPI.hpp"
 #include "Luma/Renderer/ShaderUniform.hpp"
 
-#include <string>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-namespace Luma
-{
+#include <string>
+
+namespace Luma {
+
 	struct ShaderUniform
 	{};
 
@@ -104,6 +105,8 @@ namespace Luma
 	class Shader
 	{
 	public:
+		virtual ~Shader() = default;
+
 		using ShaderReloadedCallback = std::function<void()>;
 
 		virtual void Reload() = 0;

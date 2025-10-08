@@ -1,6 +1,5 @@
 #pragma once
 
-#include "lmpch.hpp"
 #include "Luma/Core/Layer.hpp"
 
 namespace Luma {

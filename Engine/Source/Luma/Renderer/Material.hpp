@@ -11,9 +11,9 @@ namespace Luma {
 
 	enum class MaterialFlag
 	{
-		None       = BIT(0),
-		DepthTest  = BIT(1),
-		Blend      = BIT(2)
+		None       = Bit(0),
+		DepthTest  = Bit(1),
+		Blend      = Bit(2)
 	};
 
 	class Material

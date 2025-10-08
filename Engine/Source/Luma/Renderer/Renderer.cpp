@@ -3,11 +3,11 @@
 
 #include "Shader.hpp"
 
-#include <glad/glad.h>
-
 #include "RendererAPI.hpp"
 #include "SceneRenderer.hpp"
 #include "Renderer2D.hpp"
+
+#include <glad/glad.h>
 
 namespace Luma {
 

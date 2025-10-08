@@ -1,14 +1,13 @@
 #include "lmpch.hpp"
 #include "SceneHierarchyPanel.hpp"
 
-#include <imgui.h>
-
 #include "Luma/Renderer/Mesh.hpp"
-#include <assimp/scene.h>
 
 #define GLM_ENABLE_EXPERIMENTAL
+#include <assimp/scene.h>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
+#include <imgui.h>
 
 // TODO:
 // - Eventually change imgui node IDs to be entity/asset GUID

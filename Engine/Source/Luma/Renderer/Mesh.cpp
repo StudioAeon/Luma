@@ -1,7 +1,7 @@
 #include "lmpch.hpp"
 #include "Mesh.hpp"
 
-#include <glad/glad.h>
+#include "Luma/Renderer/Renderer.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -16,9 +16,7 @@
 #include <assimp/DefaultLogger.hpp>
 #include <assimp/LogStream.hpp>
 
-#include "imgui.h"
-
-#include "Luma/Renderer/Renderer.hpp"
+#include <imgui.h>
 
 #include <filesystem>
 
