@@ -98,7 +98,7 @@ namespace Luma {
 
 		using namespace glm;
 
-		auto environment = Environment::Load("Resources/Env/qwantani_dusk_2_puresky_4k.hdr");
+		auto environment = Environment::Load("Resources/Env/Desert/desert.hdr");
 
 		// Model Scene
 		{

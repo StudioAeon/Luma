@@ -48,25 +48,15 @@ namespace Luma {
 		}
 
 		m_Window = SDL_CreateWindow(m_Data.Title.c_str(), (int)m_Specification.Width, (int)m_Specification.Height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-
-		if (!m_Window)
-		{
-			LM_CORE_ERROR("Could not create SDL window: {0}", SDL_GetError());
-			LM_CORE_ASSERT(false, "Could not create SDL window!");
-			return;
-		}
-
 		m_WindowID = SDL_GetWindowID(m_Window);
 
 		m_GLContext = SDL_GL_CreateContext(m_Window);
 		SDL_GL_MakeCurrent(m_Window, m_GLContext);
 
-		if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(SDL_GL_GetProcAddress)))
-		{
-			LM_CORE_ERROR("Failed to initialize GLAD!");
-			LM_CORE_ASSERT(false, "Failed to initialize GLAD!");
-			return;
-		}
+		SDL_MaximizeWindow(m_Window);
+
+		int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(SDL_GL_GetProcAddress));
+		LM_CORE_ASSERT(status, "Failed to initialize Glad!");
 
 		SetVSync(true);
 
