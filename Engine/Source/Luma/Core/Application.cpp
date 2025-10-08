@@ -145,10 +145,7 @@ namespace Luma {
 		Renderer::Submit([=]() { glViewport(0, 0, width, height); });
 		auto& fbs = FramebufferPool::GetGlobal()->GetAll();
 		for (auto& fb : fbs)
-		{
-			if (auto fbp = fb.lock())
-				fbp->Resize(width, height);
-		}
+			fb->Resize(width, height);
 		return false;
 	}
 

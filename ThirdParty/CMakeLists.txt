@@ -98,7 +98,6 @@ set(ASSIMP_BUILD_DOCS OFF)
 set(ASSIMP_BUILD_ASSIMP_TOOLS OFF)
 set(ASSIMP_INSTALL OFF)
 set(ASSIMP_WARNINGS_AS_ERRORS OFF)
-set(BUILD_SHARED_LIBS OFF)
 
 FetchContent_Declare(
 		assimp
@@ -107,3 +106,27 @@ FetchContent_Declare(
 		SYSTEM
 )
 FetchContent_MakeAvailable(assimp)
+
+# ==== EnTT (Header-only ECS) ====
+FetchContent_Declare(
+		EnTT
+		GIT_REPOSITORY https://github.com/skypjack/entt.git
+		GIT_TAG v3.15.0
+		SYSTEM
+)
+
+FetchContent_MakeAvailable(EnTT)
+
+# ==== FastNoise2 ====
+set(FASTNOISE2_NOISETOOL OFF)
+set(FASTNOISE2_TESTS OFF)
+
+FetchContent_Declare(
+		FastNoise2
+		GIT_REPOSITORY https://github.com/Auburn/FastNoise2.git
+		GIT_TAG        v0.10.0-alpha
+		GIT_SHALLOW    TRUE
+		SYSTEM
+)
+
+FetchContent_MakeAvailable(FastNoise2)

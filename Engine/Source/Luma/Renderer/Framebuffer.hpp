@@ -25,10 +25,10 @@ namespace Luma {
 		bool SwapChainTarget = false;
 	};
 
-	class Framebuffer
+	class Framebuffer : public RefCounted
 	{
 	public:
-		virtual ~Framebuffer() {}
+		virtual ~Framebuffer() = default;
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
@@ -52,13 +52,14 @@ namespace Luma {
 		~FramebufferPool();
 
 		std::weak_ptr<Framebuffer> AllocateBuffer();
-		void Add(std::weak_ptr<Framebuffer> framebuffer);
+		void Add(const Ref<Framebuffer>& framebuffer);
 
-		const std::vector<std::weak_ptr<Framebuffer>>& GetAll() const { return m_Pool; }
+		std::vector<Ref<Framebuffer>>& GetAll() { return m_Pool; }
+		const std::vector<Ref<Framebuffer>>& GetAll() const { return m_Pool; }
 
 		inline static FramebufferPool* GetGlobal() { return s_Instance; }
 	private:
-		std::vector<std::weak_ptr<Framebuffer>> m_Pool;
+		std::vector<Ref<Framebuffer>> m_Pool;
 
 		static FramebufferPool* s_Instance;
 	};

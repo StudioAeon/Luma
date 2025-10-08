@@ -33,7 +33,7 @@ namespace Luma {
 
 	typedef std::vector<ShaderUniformDeclaration*> ShaderUniformList;
 
-	class ShaderUniformBufferDeclaration
+	class ShaderUniformBufferDeclaration : public RefCounted
 	{
 	public:
 		virtual ~ShaderUniformBufferDeclaration() = default;

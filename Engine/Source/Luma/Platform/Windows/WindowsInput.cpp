@@ -8,7 +8,7 @@
 
 namespace Luma {
 
-	bool Input::IsKeyPressed(int keycode)
+	bool Input::IsKeyPressed(KeyCode keycode)
 	{
 		const bool* state = SDL_GetKeyboardState(nullptr);
 

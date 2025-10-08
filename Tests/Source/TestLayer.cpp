@@ -3,16 +3,20 @@
 namespace Luma {
 
 	TestLayer::TestLayer()
-	{}
+	{
+	}
 
 	TestLayer::~TestLayer()
-	{}
+	{
+	}
 
 	void TestLayer::OnAttach()
-	{}
+	{
+	}
 
 	void TestLayer::OnDetach()
-	{}
+	{
+	}
 
 	void TestLayer::OnUpdate(Timestep ts)
 	{
@@ -20,9 +24,11 @@ namespace Luma {
 	}
 
 	void TestLayer::OnImGuiRender()
-	{}
+	{
+	}
 
 	void TestLayer::OnEvent(Event& e)
-	{}
+	{
+	}
 
 }

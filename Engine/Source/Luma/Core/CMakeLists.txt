@@ -17,6 +17,8 @@ set(CORE_HEADERS
 		Layer.hpp
 		LayerStack.hpp
 		Log.hpp
+		Ref.hpp
+		Timer.hpp
 		TimeStep.hpp
 		Version.hpp
 		Window.hpp

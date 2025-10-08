@@ -15,6 +15,7 @@
 #include "Luma/Core/Log.hpp"
 #include "Luma/Core/Input.hpp"
 #include "Luma/Core/TimeStep.hpp"
+#include "Luma/Core/Timer.hpp"
 
 #include "Luma/Events/Event.hpp"
 #include "Luma/Events/ApplicationEvent.hpp"
@@ -43,3 +44,4 @@
 // Scenes
 #include "Luma/Scene/Entity.hpp"
 #include "Luma/Scene/Scene.hpp"
+#include "Luma/Scene/Components.hpp"

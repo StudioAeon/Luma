@@ -21,10 +21,10 @@ namespace Luma {
 		Repeat = 2
 	};
 
-	class Texture
+	class Texture : public RefCounted
 	{
 	public:
-		virtual ~Texture() {}
+		virtual ~Texture() = default;
 
 		virtual void Bind(uint32_t slot = 0) const = 0;
 

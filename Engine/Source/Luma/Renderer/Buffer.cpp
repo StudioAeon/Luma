@@ -11,7 +11,7 @@ namespace Luma {
 		switch (RendererAPI::Current())
 		{
 			case RendererAPIType::None:    return nullptr;
-			case RendererAPIType::OpenGL:  return std::make_shared<OpenGLVertexBuffer>(data, size, usage);
+			case RendererAPIType::OpenGL:  return Ref<OpenGLVertexBuffer>::Create(data, size, usage);
 		}
 		LM_CORE_ASSERT(false, "Unknown RendererAPI");
 		return nullptr;
@@ -22,11 +22,22 @@ namespace Luma {
 		switch (RendererAPI::Current())
 		{
 			case RendererAPIType::None:    return nullptr;
-			case RendererAPIType::OpenGL:  return std::make_shared<OpenGLVertexBuffer>(size, usage);
+			case RendererAPIType::OpenGL:  return Ref<OpenGLVertexBuffer>::Create(size, usage);
 		}
 		LM_CORE_ASSERT(false, "Unknown RendererAPI");
 		return nullptr;
 
+	}
+
+	Ref<IndexBuffer> IndexBuffer::Create(uint32_t size)
+	{
+		switch (RendererAPI::Current())
+		{
+			case RendererAPIType::None:    return nullptr;
+			case RendererAPIType::OpenGL:  return Ref<OpenGLIndexBuffer>::Create(size);
+		}
+		LM_CORE_ASSERT(false, "Unknown RendererAPI");
+		return nullptr;
 	}
 
 	Ref<IndexBuffer> IndexBuffer::Create(void* data, uint32_t size)
@@ -34,10 +45,10 @@ namespace Luma {
 		switch (RendererAPI::Current())
 		{
 			case RendererAPIType::None:    return nullptr;
-			case RendererAPIType::OpenGL:  return std::make_shared<OpenGLIndexBuffer>(data, size);
+			case RendererAPIType::OpenGL:  return Ref<OpenGLIndexBuffer>::Create(data, size);
 		}
 		LM_CORE_ASSERT(false, "Unknown RendererAPI");
 		return nullptr;
-
 	}
+
 }

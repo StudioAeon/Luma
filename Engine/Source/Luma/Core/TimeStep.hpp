@@ -5,7 +5,7 @@ namespace Luma {
 	class Timestep
 	{
 	public:
-		Timestep() {}
+		Timestep() = default;
 		Timestep(float time);
 
 		inline float GetSeconds() const { return m_Time; }

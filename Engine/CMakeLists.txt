@@ -17,6 +17,11 @@ set(LUMA_THIRDPARTY_IMPL_SOURCES
 
 add_library(Luma STATIC)
 
+set_source_files_properties(
+		${CMAKE_CURRENT_SOURCE_DIR}/../../ThirdParty/imgui/misc/cpp/imgui_stdlib.cpp
+		PROPERTIES SKIP_PRECOMPILE_HEADERS ON
+)
+
 target_sources(Luma PRIVATE ${LUMA_ROOT_SOURCES} ${LUMA_ROOT_HEADERS} ${LUMA_THIRDPARTY_IMPL_SOURCES})
 
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Core)
@@ -34,20 +39,22 @@ target_include_directories(Luma PUBLIC ${LUMA_SRC_DIR})
 
 target_compile_definitions(Luma PUBLIC
 		GLM_FORCE_DEPTH_ZERO_TO_ONE
+		SDL_MAIN_HANDLED
 )
 
-add_definitions(-DSDL_MAIN_HANDLED)
 target_link_libraries(Luma
 		PUBLIC
-
-		# ==== Core Dependencies ====
+		glm
+		EnTT::EnTT
 		spdlog
 		SDL3::SDL3-static
-		glad
 		imgui
-		glm
+
+		PRIVATE
+		glad
 		stb
 		assimp
+		FastNoise
 )
 
 luma_enable_lto(Luma)

@@ -123,7 +123,7 @@ namespace Luma {
 					if (m_Event.key.windowID == m_WindowID)
 					{
 						int repeatCount = m_Event.key.repeat ? 1 : 0;
-						KeyPressedEvent event((int)m_Event.key.scancode, repeatCount);
+						KeyPressedEvent event((KeyCode)m_Event.key.scancode, repeatCount);
 						m_Data.EventCallback(event);
 					}
 					break;
@@ -132,7 +132,7 @@ namespace Luma {
 				{
 					if (m_Event.key.windowID == m_WindowID)
 					{
-						KeyReleasedEvent event((int)m_Event.key.scancode);
+						KeyReleasedEvent event((KeyCode)m_Event.key.scancode);
 						m_Data.EventCallback(event);
 					}
 					break;
