@@ -38,7 +38,8 @@ namespace Luma {
 	}
 
 	Application::~Application()
-	{}
+	{
+	}
 
 	void Application::PushLayer(Layer* layer)
 	{

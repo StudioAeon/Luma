@@ -2,7 +2,7 @@
 
 #include "Base.hpp"
 
-#define LM_VERSION "25.4.0.1"
+#define LM_VERSION "v0.1.0a"
 
 #ifdef NDEBUG
 	#define LM_RELEASE

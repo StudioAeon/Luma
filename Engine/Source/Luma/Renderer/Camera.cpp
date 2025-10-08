@@ -39,7 +39,8 @@ namespace Luma {
 	}
 
 	void Camera::Focus()
-	{}
+	{
+	}
 
 	std::pair<float, float> Camera::PanSpeed() const
 	{

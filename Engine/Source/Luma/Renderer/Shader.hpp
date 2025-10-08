@@ -14,10 +14,12 @@
 namespace Luma {
 
 	struct ShaderUniform
-	{};
+	{
+	};
 
 	struct ShaderUniformCollection
-	{};
+	{
+	};
 
 	enum class UniformType
 	{

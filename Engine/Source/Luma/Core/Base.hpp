@@ -18,7 +18,7 @@
 #elif defined(__unix__) || defined(__unix)
 	#define LM_PLATFORM_UNIX
 #else
-#error "Unsupported platform! Luma supports Windows, Linux, and BSD."
+	#error "Unsupported platform! Luma supports Windows, Linux, and BSD."
 #endif
 
 // ==========================================================================
@@ -32,7 +32,7 @@
 #elif defined(_MSC_VER)
 	#define LM_COMPILER_MSVC
 #else
-#error "Unknown compiler! Luma only supports MSVC, GCC, and Clang."
+	#error "Unknown compiler! Luma only supports MSVC, GCC, and Clang."
 #endif
 
 // ==========================================================================

@@ -12,11 +12,13 @@ namespace Luma {
 
 		Buffer()
 			: Data(nullptr), Size(0)
-		{}
+		{
+		}
 
 		Buffer(byte* data, uint32_t size)
 			: Data(data), Size(size)
-		{}
+		{
+		}
 
 		static Buffer Copy(void* data, uint32_t size)
 		{

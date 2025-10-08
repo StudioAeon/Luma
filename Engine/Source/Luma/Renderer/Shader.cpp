@@ -35,10 +35,12 @@ namespace Luma {
 	}
 
 	ShaderLibrary::ShaderLibrary()
-	{}
+	{
+	}
 
 	ShaderLibrary::~ShaderLibrary()
-	{}
+	{
+	}
 
 	void ShaderLibrary::Add(const Ref<Shader>& shader)
 	{

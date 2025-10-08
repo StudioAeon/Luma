@@ -5,9 +5,11 @@ namespace Luma {
 
 	OpenGLRenderPass::OpenGLRenderPass(const RenderPassSpecification& spec)
 		: m_Specification(spec)
-	{}
+	{
+	}
 
 	OpenGLRenderPass::~OpenGLRenderPass()
-	{}
+	{
+	}
 
 }

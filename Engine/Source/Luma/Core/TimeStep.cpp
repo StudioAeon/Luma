@@ -5,6 +5,7 @@ namespace Luma {
 
 	Timestep::Timestep(float time)
 		: m_Time(time)
-	{}
+	{
+	}
 
 }

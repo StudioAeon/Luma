@@ -112,7 +112,8 @@ namespace Luma {
 	}
 
 	void Renderer::SetClearColor(float r, float g, float b, float a)
-	{}
+	{
+	}
 
 	void Renderer::WaitAndRender()
 	{

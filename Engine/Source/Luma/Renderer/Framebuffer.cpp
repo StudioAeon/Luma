@@ -21,10 +21,12 @@ namespace Luma {
 	FramebufferPool* FramebufferPool::s_Instance = new FramebufferPool;
 
 	FramebufferPool::FramebufferPool(uint32_t maxFBs /* = 32 */)
-	{}
+	{
+	}
 
 	FramebufferPool::~FramebufferPool()
-	{}
+	{
+	}
 
 	std::weak_ptr<Framebuffer> FramebufferPool::AllocateBuffer()
 	{

@@ -69,10 +69,12 @@ namespace Luma {
 	}
 
 	void RendererAPI::Shutdown()
-	{}
+	{
+	}
 
 	void RendererAPI::LoadRequiredAssets()
-	{}
+	{
+	}
 
 	void RendererAPI::Clear(float r, float g, float b, float a)
 	{

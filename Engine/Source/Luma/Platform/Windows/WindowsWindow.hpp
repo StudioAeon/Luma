@@ -33,7 +33,7 @@ namespace Luma {
 		SDL_Window* m_Window = nullptr;
 		SDL_GLContext m_GLContext = nullptr;
 		SDL_WindowID m_WindowID = 0;
-		SDL_Event m_Event{};
+		SDL_Event m_Event {};
 
 		WindowSpecification m_Specification;
 

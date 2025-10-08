@@ -23,7 +23,8 @@ namespace Luma {
 	}
 
 	Material::~Material()
-	{}
+	{
+	}
 
 	void Material::AllocateStorage()
 	{

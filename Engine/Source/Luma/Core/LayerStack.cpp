@@ -4,7 +4,8 @@
 namespace Luma {
 
 	LayerStack::LayerStack()
-	{}
+	{
+	}
 
 	LayerStack::~LayerStack()
 	{

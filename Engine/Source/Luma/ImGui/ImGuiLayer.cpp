@@ -16,13 +16,16 @@
 namespace Luma {
 
 	ImGuiLayer::ImGuiLayer()
-	{}
+	{
+	}
 
 	ImGuiLayer::ImGuiLayer(const std::string& name)
-	{}
+	{
+	}
 
 	ImGuiLayer::~ImGuiLayer()
-	{}
+	{
+	}
 
 	void ImGuiLayer::OnAttach()
 	{
@@ -98,6 +101,7 @@ namespace Luma {
 	}
 
 	void ImGuiLayer::OnImGuiRender()
-	{}
+	{
+	}
 
 }
