@@ -16,6 +16,7 @@
 #include "Luma/Core/Input.hpp"
 #include "Luma/Core/TimeStep.hpp"
 #include "Luma/Core/Timer.hpp"
+#include "Luma/Core/Version.hpp"
 
 #include "Luma/Events/Event.hpp"
 #include "Luma/Events/ApplicationEvent.hpp"

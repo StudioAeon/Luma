@@ -59,6 +59,6 @@
 #include <Luma/Core/Version.hpp>
 #include <Luma/Core/Base.hpp>
 #include <Luma/Core/Assert.hpp>
-
-// Math
+#include <Luma/Events/Event.hpp>
+#include <Luma/Core/Log.hpp>
 #include <Luma/Math/Mat4.hpp>

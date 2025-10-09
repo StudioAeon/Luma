@@ -3,8 +3,6 @@
 #include "Base.hpp"
 #include "Log.hpp"
 
-#include "Version.hpp"
-
 #ifdef LM_PLATFORM_WINDOWS
 	#define LM_DEBUG_BREAK __debugbreak()
 #elif defined(LM_COMPILER_CLANG)

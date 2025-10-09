@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Luma/Core/Application.hpp"
-#include "Luma/Core/Assert.hpp"
 
 extern Luma::Application* Luma::CreateApplication(int argc, char** argv);
 extern bool g_ApplicationRunning;

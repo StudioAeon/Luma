@@ -5,22 +5,8 @@
 #include <memory>
 #include <type_traits>
 
-// ==========================================================================
-// Platform Detection
-// ==========================================================================
-
-#if defined(_WIN64) || defined(_WIN32)
-	#define LM_PLATFORM_WINDOWS
-#elif defined(__linux__)
-	#define LM_PLATFORM_LINUX
-	#define LM_PLATFORM_UNIX
-#elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
-	#define LM_PLATFORM_BSD
-	#define LM_PLATFORM_UNIX
-#elif defined(__unix__) || defined(__unix)
-	#define LM_PLATFORM_UNIX
-#else
-	#error "Unsupported platform! Luma supports Windows, Linux, and BSD."
+#if !defined(LM_PLATFORM_WINDOWS) && !defined(LM_PLATFORM_LINUX)
+	#error Unknown platform.
 #endif
 
 // ==========================================================================
@@ -87,4 +73,4 @@ namespace Luma {
 
 }
 
-#define LM_BIND_EVENT_FN(fn) std::bind(&##fn, this, std::placeholders::_1)
+#define LM_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)

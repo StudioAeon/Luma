@@ -4,14 +4,27 @@ function(luma_enable_lto target)
 	if(IPO_SUPPORTED)
 		set_target_properties(${target} PROPERTIES
 				INTERPROCEDURAL_OPTIMIZATION_RELEASE ON
-				INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO ON
+				INTERPROCEDURAL_OPTIMIZATION_DISTRIBUTION ON
 		)
-		message(STATUS "  -> IPO enabled for Release builds")
-	endif()
-endfunction()
 
-function(luma_set_distribution_config target)
-	target_compile_definitions(${target} PRIVATE
-			$<$<CONFIG:Release>:LM_DIST>
-	)
+		if(MSVC)
+			target_compile_options(${target} PRIVATE
+					$<$<CONFIG:Distribution>:/GL>  # Whole program optimization
+			)
+			target_link_options(${target} PRIVATE
+					$<$<CONFIG:Distribution>:/LTCG>  # Link-time code generation
+			)
+		elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+			target_compile_options(${target} PRIVATE
+					$<$<CONFIG:Distribution>:-flto>
+			)
+			target_link_options(${target} PRIVATE
+					$<$<CONFIG:Distribution>:-flto>
+			)
+		endif()
+
+		message(STATUS "  -> IPO/LTO enabled for Release and Distribution builds")
+	else()
+		message(STATUS "  -> IPO/LTO not supported by compiler")
+	endif()
 endfunction()

@@ -17,11 +17,6 @@ set(LUMA_THIRDPARTY_IMPL_SOURCES
 
 add_library(Luma STATIC)
 
-set_source_files_properties(
-		${CMAKE_CURRENT_SOURCE_DIR}/../../ThirdParty/imgui/misc/cpp/imgui_stdlib.cpp
-		PROPERTIES SKIP_PRECOMPILE_HEADERS ON
-)
-
 target_sources(Luma PRIVATE ${LUMA_ROOT_SOURCES} ${LUMA_ROOT_HEADERS} ${LUMA_THIRDPARTY_IMPL_SOURCES})
 
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Core)
@@ -33,7 +28,15 @@ add_subdirectory(${LUMA_SRC_DIR}/Luma/Platform)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Renderer)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Scene)
 
+# ==== PCH Configuration ====
 target_precompile_headers(Luma PRIVATE ${LUMA_SRC_DIR}/lmpch.hpp)
+
+set_source_files_properties(
+		${CMAKE_CURRENT_SOURCE_DIR}/../../ThirdParty/imgui/misc/cpp/imgui_stdlib.cpp
+		PROPERTIES SKIP_PRECOMPILE_HEADERS ON
+)
+
+# ==== Target Configuration ====
 target_compile_features(Luma PUBLIC cxx_std_23)
 target_include_directories(Luma PUBLIC ${LUMA_SRC_DIR})
 
@@ -42,6 +45,29 @@ target_compile_definitions(Luma PUBLIC
 		SDL_MAIN_HANDLED
 )
 
+# ==== Platform-Specific Definitions ====
+if(WIN32)
+	target_compile_definitions(Luma PUBLIC LM_PLATFORM_WINDOWS)
+elseif(UNIX AND NOT APPLE)
+	target_compile_definitions(Luma PUBLIC LM_PLATFORM_LINUX)
+endif()
+
+# ==== Compiler Settings ====
+luma_compiler_settings(Luma)
+
+# ==== Configuration-Specific Definitions ====
+target_compile_definitions(Luma PUBLIC
+		$<$<CONFIG:Debug>:LM_DEBUG>
+		$<$<CONFIG:Debug>:_DEBUG>
+
+		$<$<CONFIG:Release>:LM_RELEASE>
+		$<$<CONFIG:Release>:NDEBUG>
+
+		$<$<CONFIG:Distribution>:LM_DIST>
+		$<$<CONFIG:Distribution>:NDEBUG>
+)
+
+# ==== Dependencies ====
 target_link_libraries(Luma
 		PUBLIC
 		glm
@@ -49,7 +75,6 @@ target_link_libraries(Luma
 		spdlog
 		SDL3::SDL3-static
 		imgui
-
 		PRIVATE
 		glad
 		stb
@@ -57,6 +82,5 @@ target_link_libraries(Luma
 		FastNoise
 )
 
+# ==== Optimizations ====
 luma_enable_lto(Luma)
-luma_set_distribution_config(Luma)
-apply_compiler_settings(Luma)
