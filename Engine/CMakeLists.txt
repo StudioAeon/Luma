@@ -80,6 +80,7 @@ target_link_libraries(Luma
 		stb
 		assimp
 		FastNoise
+		yaml-cpp
 )
 
 # ==== Optimizations ====

@@ -45,4 +45,6 @@
 // Scenes
 #include "Luma/Scene/Entity.hpp"
 #include "Luma/Scene/Scene.hpp"
+#include "Luma/Scene/SceneCamera.hpp"
+#include "Luma/Scene/SceneSerializer.hpp"
 #include "Luma/Scene/Components.hpp"

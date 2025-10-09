@@ -5,6 +5,7 @@ set(CORE_SOURCES
 		LayerStack.cpp
 		Log.cpp
 		TimeStep.cpp
+		UUID.cpp
 )
 
 set(CORE_HEADERS
@@ -20,6 +21,7 @@ set(CORE_HEADERS
 		Ref.hpp
 		Timer.hpp
 		TimeStep.hpp
+		UUID.hpp
 		Version.hpp
 		Window.hpp
 )

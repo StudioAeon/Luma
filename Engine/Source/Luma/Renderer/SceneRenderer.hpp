@@ -1,9 +1,7 @@
 #pragma once
 
 #include "Luma/Scene/Scene.hpp"
-
 #include "Luma/Renderer/Mesh.hpp"
-
 #include "RenderPass.hpp"
 
 namespace Luma {
@@ -14,6 +12,12 @@ namespace Luma {
 		bool ShowBoundingBoxes = false;
 	};
 
+	struct SceneRendererCamera
+	{
+		Luma::Camera Camera;
+		glm::mat4 ViewMatrix;
+	};
+
 	class SceneRenderer
 	{
 	public:
@@ -21,10 +25,11 @@ namespace Luma {
 
 		static void SetViewportSize(uint32_t width, uint32_t height);
 
-		static void BeginScene(const Scene* scene, const Camera& camera);
+		static void BeginScene(const Scene* scene, const SceneRendererCamera& camera);
 		static void EndScene();
 
 		static void SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform = glm::mat4(1.0f), Ref<MaterialInstance> overrideMaterial = nullptr);
+		static void SubmitSelectedMesh(Ref<Mesh> mesh, const glm::mat4& transform = glm::mat4(1.0f));
 
 		static std::pair<Ref<TextureCube>, Ref<TextureCube>> CreateEnvironmentMap(const std::string& filepath);
 
