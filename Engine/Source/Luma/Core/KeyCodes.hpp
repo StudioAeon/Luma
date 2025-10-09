@@ -286,6 +286,8 @@ namespace Luma {
 #define LM_KEY_MENU            ::Luma::Key::Menu
 
 // Mouse (TODO: move into separate file probably)
-#define LM_MOUSE_BUTTON_LEFT    0
-#define LM_MOUSE_BUTTON_RIGHT   1
+#define LM_MOUSE_BUTTON_LEFT    1
 #define LM_MOUSE_BUTTON_MIDDLE  2
+#define LM_MOUSE_BUTTON_RIGHT   3
+#define LM_MOUSE_BUTTON_X1      4
+#define LM_MOUSE_BUTTON_X2      5

@@ -1,9 +1,10 @@
 set(RENDERER_SOURCES
-		Buffer.cpp
 		Camera.cpp
 		Framebuffer.cpp
+		IndexBuffer.cpp
 		Material.cpp
 		Mesh.cpp
+		Pipeline.cpp
 		RenderCommandQueue.cpp
 		Renderer.cpp
 		Renderer2D.cpp
@@ -11,15 +12,16 @@ set(RENDERER_SOURCES
 		SceneRenderer.cpp
 		Shader.cpp
 		Texture.cpp
-		VertexArray.cpp
+		VertexBuffer.cpp
 )
 
 set(RENDERER_HEADERS
-		Buffer.hpp
 		Camera.hpp
 		Framebuffer.hpp
+		IndexBuffer.hpp
 		Material.hpp
 		Mesh.hpp
+		Pipeline.hpp
 		RenderCommandQueue.hpp
 		Renderer.hpp
 		Renderer2D.hpp
@@ -29,7 +31,7 @@ set(RENDERER_HEADERS
 		Shader.hpp
 		ShaderUniform.hpp
 		Texture.hpp
-		VertexArray.hpp
+		VertexBuffer.hpp
 )
 
 add_subdirectory(Backend/OpenGL)

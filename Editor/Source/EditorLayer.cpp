@@ -43,14 +43,16 @@ namespace Luma {
 
 	EditorLayer::EditorLayer()
 		: m_SceneType(SceneType::Model), m_EditorCamera(glm::perspectiveFov(glm::radians(45.0f), 1280.0f, 720.0f, 0.1f, 10000.0f))
-	{}
+	{
+	}
 
 	EditorLayer::~EditorLayer()
-	{}
+	{
+	}
 
 	void EditorLayer::OnAttach()
 	{
-		// Zenith Engine Dark Theme
+		// Luma Engine Dark Theme
 		ImVec4* colors = ImGui::GetStyle().Colors;
 
 		// Text Colors
@@ -133,7 +135,7 @@ namespace Luma {
 		m_SceneHierarchyPanel->SetEntityDeletedCallback(std::bind(&EditorLayer::OnEntityDeleted, this, std::placeholders::_1));
 
 		SceneSerializer serializer(m_EditorScene);
-		serializer.Deserialize("Resources/Scenes/desert.zscene");
+		serializer.Deserialize("Resources/Scenes/Desert.lscene");
 	}
 
 	void EditorLayer::OnDetach()
@@ -166,7 +168,7 @@ namespace Luma {
 
 	void EditorLayer::UpdateWindowTitle(const std::string& sceneName)
 	{
-		std::string title = sceneName + " - Zenith-Editor - " + Application::GetPlatformName() + " (" + Application::GetConfigurationName() + ")";
+		std::string title = sceneName + " - Luma-Editor - " + Application::GetPlatformName() + " (" + Application::GetConfigurationName() + ")";
 		Application::Get().GetWindow().SetTitle(title);
 	}
 

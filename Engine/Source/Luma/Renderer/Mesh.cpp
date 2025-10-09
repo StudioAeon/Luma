@@ -2,6 +2,7 @@
 #include "Mesh.hpp"
 
 #include "Luma/Renderer/Renderer.hpp"
+#include "Luma/Renderer/VertexBuffer.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -170,7 +171,6 @@ namespace Luma {
 					m_TriangleCache[m].emplace_back(m_StaticVertices[index.V1 + submesh.BaseVertex], m_StaticVertices[index.V2 + submesh.BaseVertex], m_StaticVertices[index.V3 + submesh.BaseVertex]);
 			}
 
-
 		}
 
 		TraverseNodes(scene->mRootNode);
@@ -239,7 +239,6 @@ namespace Luma {
 				aiMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, aiColor);
 
 				float shininess, metalness;
-				aiMaterial->Get(AI_MATKEY_SHININESS, shininess);
 				if (aiMaterial->Get(AI_MATKEY_SHININESS, shininess) != aiReturn_SUCCESS)
 					shininess = 80.0f; // Default value
 
@@ -462,11 +461,11 @@ namespace Luma {
 			LM_MESH_LOG("------------------------");
 		}
 
-		m_VertexArray = VertexArray::Create();
+		VertexBufferLayout vertexLayout;
 		if (m_IsAnimated)
 		{
-			auto vb = VertexBuffer::Create(m_AnimatedVertices.data(), m_AnimatedVertices.size() * sizeof(AnimatedVertex));
-			vb->SetLayout({
+			m_VertexBuffer = VertexBuffer::Create(m_AnimatedVertices.data(), m_AnimatedVertices.size() * sizeof(AnimatedVertex));
+			vertexLayout = {
 				{ ShaderDataType::Float3, "a_Position" },
 				{ ShaderDataType::Float3, "a_Normal" },
 				{ ShaderDataType::Float3, "a_Tangent" },
@@ -474,24 +473,25 @@ namespace Luma {
 				{ ShaderDataType::Float2, "a_TexCoord" },
 				{ ShaderDataType::Int4, "a_BoneIDs" },
 				{ ShaderDataType::Float4, "a_BoneWeights" },
-			});
-			m_VertexArray->AddVertexBuffer(vb);
+			};
 		}
 		else
 		{
-			auto vb = VertexBuffer::Create(m_StaticVertices.data(), m_StaticVertices.size() * sizeof(Vertex));
-			vb->SetLayout({
+			m_VertexBuffer = VertexBuffer::Create(m_StaticVertices.data(), m_StaticVertices.size() * sizeof(Vertex));
+			vertexLayout = {
 				{ ShaderDataType::Float3, "a_Position" },
 				{ ShaderDataType::Float3, "a_Normal" },
 				{ ShaderDataType::Float3, "a_Tangent" },
 				{ ShaderDataType::Float3, "a_Binormal" },
 				{ ShaderDataType::Float2, "a_TexCoord" },
-			});
-			m_VertexArray->AddVertexBuffer(vb);
+			};
 		}
 
-		auto ib = IndexBuffer::Create(m_Indices.data(), m_Indices.size() * sizeof(Index));
-		m_VertexArray->SetIndexBuffer(ib);
+		m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), m_Indices.size() * sizeof(Index));
+
+		PipelineSpecification pipelineSpecification;
+		pipelineSpecification.Layout = vertexLayout;
+		m_Pipeline = Pipeline::Create(pipelineSpecification);
 	}
 
 	Mesh::~Mesh()

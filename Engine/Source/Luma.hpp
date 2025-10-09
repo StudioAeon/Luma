@@ -29,15 +29,16 @@
 #include <imgui.h>
 
 // === Luma Render API ======================
-#include "Luma/Renderer/Buffer.hpp"
+#include "Luma/Renderer/IndexBuffer.hpp"
 #include "Luma/Renderer/Camera.hpp"
 #include "Luma/Renderer/Framebuffer.hpp"
 #include "Luma/Renderer/Mesh.hpp"
 #include "Luma/Renderer/Renderer.hpp"
 #include "Luma/Renderer/Shader.hpp"
+#include "Luma/Renderer/Pipeline.hpp"
 #include "Luma/Renderer/Texture.hpp"
 #include "Luma/Renderer/Material.hpp"
-#include "Luma/Renderer/VertexArray.hpp"
+#include "Luma/Renderer/VertexBuffer.hpp"
 #include "Luma/Renderer/RenderPass.hpp"
 #include "Luma/Renderer/SceneRenderer.hpp"
 // ==========================================
