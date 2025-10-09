@@ -193,4 +193,10 @@ namespace Luma {
 		return m_Data.VSync;
 	}
 
+	void WindowsWindow::SetTitle(const std::string& title)
+	{
+		m_Data.Title = title;
+		SDL_SetWindowTitle(m_Window, m_Data.Title.c_str());
+	}
+
 }

@@ -9,6 +9,14 @@
 
 #include "Luma/Renderer/Renderer2D.hpp"
 
+// TEMP
+#include "Luma/Core/Input.hpp"
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 namespace Luma {
 
 	static const std::string DefaultEntityName = "Entity";
@@ -44,9 +52,20 @@ namespace Luma {
 		m_SkyboxMaterial->SetFlag(MaterialFlag::DepthTest, false);
 	}
 
+	static std::tuple<glm::vec3, glm::quat, glm::vec3> GetTransformDecomposition(const glm::mat4& transform)
+	{
+		glm::vec3 scale, translation, skew;
+		glm::vec4 perspective;
+		glm::quat orientation;
+		glm::decompose(transform, scale, orientation, translation, skew, perspective);
+
+		return { translation, orientation, scale };
+	}
+
 	// Merge OnUpdate/Render into one function?
 	void Scene::OnUpdate(Timestep ts)
-	{}
+	{
+	}
 
 	void Scene::OnRenderRuntime(Timestep ts)
 	{
@@ -110,7 +129,7 @@ namespace Luma {
 		SceneRenderer::BeginScene(this, { editorCamera, editorCamera.GetViewMatrix() });
 		for (auto entity : group)
 		{
-			auto [transformComponent, meshComponent] = group.get<TransformComponent, MeshComponent>(entity);
+			auto [meshComponent, transformComponent] = group.get<MeshComponent, TransformComponent>(entity);
 			if (meshComponent.Mesh)
 			{
 				meshComponent.Mesh->OnUpdate(ts);
@@ -120,7 +139,7 @@ namespace Luma {
 				if (m_SelectedEntity == entity)
 					SceneRenderer::SubmitSelectedMesh(meshComponent, transformComponent);
 				else
-					SceneRenderer::SubmitMesh(meshComponent, transformComponent, nullptr);
+					SceneRenderer::SubmitMesh(meshComponent, transformComponent);
 			}
 		}
 		SceneRenderer::EndScene();
@@ -257,6 +276,20 @@ namespace Luma {
 		CopyComponentIfExists<MeshComponent>(newEntity.m_EntityHandle, entity.m_EntityHandle, m_Registry);
 		CopyComponentIfExists<CameraComponent>(newEntity.m_EntityHandle, entity.m_EntityHandle, m_Registry);
 		CopyComponentIfExists<SpriteRendererComponent>(newEntity.m_EntityHandle, entity.m_EntityHandle, m_Registry);
+	}
+
+	Entity Scene::FindEntityByTag(const std::string& tag)
+	{
+		// TODO: If this becomes used often, consider indexing by tag
+		auto view = m_Registry.view<TagComponent>();
+		for (auto entity : view)
+		{
+			const auto& canditate = view.get<TagComponent>(entity).Tag;
+			if (canditate == tag)
+				return Entity(entity, this);
+		}
+
+		return Entity{};
 	}
 
 	// Copy to runtime

@@ -19,8 +19,7 @@ namespace Luma {
 		std::string Tag;
 
 		TagComponent() = default;
-		TagComponent(const TagComponent& other)
-			: Tag(other.Tag) {}
+		TagComponent(const TagComponent& other) = default;
 		TagComponent(const std::string& tag)
 			: Tag(tag) {}
 
@@ -33,8 +32,7 @@ namespace Luma {
 		glm::mat4 Transform;
 
 		TransformComponent() = default;
-		TransformComponent(const TransformComponent& other)
-			: Transform(other.Transform) {}
+		TransformComponent(const TransformComponent& other) = default;
 		TransformComponent(const glm::mat4& transform)
 			: Transform(transform) {}
 
@@ -47,8 +45,7 @@ namespace Luma {
 		Ref<Luma::Mesh> Mesh;
 
 		MeshComponent() = default;
-		MeshComponent(const MeshComponent& other)
-			: Mesh(other.Mesh) {}
+		MeshComponent(const MeshComponent& other) = default;
 		MeshComponent(const Ref<Luma::Mesh>& mesh)
 			: Mesh(mesh) {}
 
@@ -57,6 +54,7 @@ namespace Luma {
 
 	struct ScriptComponent
 	{
+		ScriptComponent() = default;
 		//TODO: Find a scripting language
 	};
 
@@ -66,8 +64,7 @@ namespace Luma {
 		bool Primary = true;
 
 		CameraComponent() = default;
-		CameraComponent(const CameraComponent& other)
-			: Camera(other.Camera), Primary(other.Primary) {}
+		CameraComponent(const CameraComponent& other) = default;
 
 		operator SceneCamera& () { return Camera; }
 		operator const SceneCamera& () const { return Camera; }
@@ -80,8 +77,7 @@ namespace Luma {
 		float TilingFactor = 1.0f;
 
 		SpriteRendererComponent() = default;
-		SpriteRendererComponent(const SpriteRendererComponent& other)
-			: Color(other.Color), Texture(other.Texture), TilingFactor(other.TilingFactor) {}
+		SpriteRendererComponent(const SpriteRendererComponent& other) = default;
 	};
 
 }
