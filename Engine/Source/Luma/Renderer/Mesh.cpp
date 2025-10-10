@@ -63,7 +63,7 @@ namespace Luma {
 
 		virtual void write(const char* message) override
 		{
-			LM_CORE_ERROR("Assimp error: {0}", message);
+			LM_CORE_WARN("Assimp: {0}", message);
 		}
 	};
 
