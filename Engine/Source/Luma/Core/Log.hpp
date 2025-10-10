@@ -3,7 +3,8 @@
 #include "Luma/Core/Base.hpp"
 
 #include <spdlog/spdlog.h>
-#include <spdlog/fmt/ostr.h>
+
+#include <glm/glm.hpp>
 
 namespace Luma {
 
@@ -20,6 +21,18 @@ namespace Luma {
 		static std::shared_ptr<spdlog::logger> s_ClientLogger;
 	};
 
+}
+
+template<typename OStream>
+OStream& operator<<(OStream& os, const glm::vec3& vec)
+{
+	return os << '(' << vec.x << ", " << vec.y << ", " << vec.z << ')';
+}
+
+template<typename OStream>
+OStream& operator<<(OStream& os, const glm::vec4& vec)
+{
+	return os << '(' << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << ')';
 }
 
 // Core

@@ -17,6 +17,7 @@ namespace Luma {
 			case Luma::TextureFormat::RGBA:    return GL_RGBA;
 			case Luma::TextureFormat::Float16: return GL_RGBA16F;
 		}
+		LM_CORE_ASSERT(false, "Unknown texture format!");
 		return 0;
 	}
 
@@ -175,7 +176,6 @@ namespace Luma {
 		m_Format = format;
 
 		uint32_t levels = Texture::CalculateMipMapCount(width, height);
-
 		Ref<OpenGLTextureCube> instance = this;
 		Renderer::Submit([instance, levels]() mutable
 		{

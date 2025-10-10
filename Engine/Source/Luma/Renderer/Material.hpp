@@ -13,7 +13,8 @@ namespace Luma {
 	{
 		None       = Bit(0),
 		DepthTest  = Bit(1),
-		Blend      = Bit(2)
+		Blend      = Bit(2),
+		TwoSided   = Bit(3)
 	};
 
 	class Material : public RefCounted
@@ -28,6 +29,8 @@ namespace Luma {
 		uint32_t GetFlags() const { return m_MaterialFlags; }
 		void SetFlag(MaterialFlag flag) { m_MaterialFlags |= (uint32_t)flag; }
 
+		Ref<Shader> GetShader() { return m_Shader; }
+
 		template <typename T>
 		void Set(const std::string& name, const T& value)
 		{
@@ -35,7 +38,7 @@ namespace Luma {
 			LM_CORE_ASSERT(decl, "Could not find uniform with name 'x'");
 			auto& buffer = GetUniformBufferTarget(decl);
 			buffer.Write((byte*)&value, decl->GetSize(), decl->GetOffset());
-			
+
 			for (auto mi : m_MaterialInstances)
 				mi->OnMaterialValueUpdated(decl);
 		}
@@ -76,6 +79,8 @@ namespace Luma {
 			LM_CORE_ASSERT(slot < m_Textures.size(), "Texture slot is invalid!");
 			return m_Textures[slot];
 		}
+
+		ShaderResourceDeclaration* FindResourceDeclaration(const std::string& name);
 	public:
 		static Ref<Material> Create(const Ref<Shader>& shader);
 	private:
@@ -84,7 +89,6 @@ namespace Luma {
 		void BindTextures();
 
 		ShaderUniformDeclaration* FindUniformDeclaration(const std::string& name);
-		ShaderResourceDeclaration* FindResourceDeclaration(const std::string& name);
 		Buffer& GetUniformBufferTarget(ShaderUniformDeclaration* uniformDeclaration);
 	private:
 		Ref<Shader> m_Shader;

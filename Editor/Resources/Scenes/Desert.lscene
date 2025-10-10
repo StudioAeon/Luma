@@ -34,3 +34,26 @@ Entities:
       Scale: [1, 1, 1]
     MeshComponent:
       AssetPath: Resources\Meshes\TestScene.fbx
+  - Entity: 17607739136225385561
+    TagComponent:
+      Tag: Sky Light
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    SkyLightComponent:
+      EnvironmentAssetPath: Resources\Env\Desert\desert.hdr
+      Intensity: 1
+      Angle: 0
+  - Entity: 864372771446905621
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0.643640459, 0.735499144, 0.209936082, -0.0263580941]
+      Scale: [0.999980569, 0.999993265, 0.999993622]
+    DirectionalLightComponent:
+      Radiance: [0.787644804, 0.294986665, 0.294986665]
+      CastShadows: true
+      SoftShadows: true
+      LightSize: 5.0999999

@@ -8,6 +8,7 @@
 #include "Luma/Renderer/Camera.hpp"
 #include "Luma/Renderer/Texture.hpp"
 #include "Luma/Renderer/Material.hpp"
+#include "Luma/Renderer/SceneEnvironment.hpp"
 
 #include "Luma/Editor/EditorCamera.hpp"
 
@@ -15,21 +16,27 @@
 
 namespace Luma {
 
-	struct Environment
-	{
-		std::string FilePath;
-		Ref<TextureCube> RadianceMap;
-		Ref<TextureCube> IrradianceMap;
-
-		static Environment Load(const std::string& filepath);
-	};
-
 	struct Light
 	{
 		glm::vec3 Direction = { 0.0f, 0.0f, 0.0f };
 		glm::vec3 Radiance = { 0.0f, 0.0f, 0.0f };
 
 		float Multiplier = 1.0f;
+	};
+
+	struct DirectionalLight
+	{
+		glm::vec3 Direction = { 0.0f, 0.0f, 0.0f };
+		glm::vec3 Radiance = { 0.0f, 0.0f, 0.0f };
+		float Multiplier = 0.0f;
+
+		// C++ only
+		bool CastShadows = true;
+	};
+
+	struct LightEnvironment
+	{
+		DirectionalLight DirectionalLights[4];
 	};
 
 	class Entity;
@@ -54,7 +61,6 @@ namespace Luma {
 
 		void SetViewportSize(uint32_t width, uint32_t height);
 
-		void SetEnvironment(const Environment& environment);
 		const Environment& GetEnvironment() const { return m_Environment; }
 		void SetSkybox(const Ref<TextureCube>& skybox);
 
@@ -101,7 +107,10 @@ namespace Luma {
 		Light m_Light;
 		float m_LightMultiplier = 0.3f;
 
+		LightEnvironment m_LightEnvironment;
+
 		Environment m_Environment;
+		float m_EnvironmentIntensity = 1.0f;
 		Ref<TextureCube> m_SkyboxTexture;
 		Ref<MaterialInstance> m_SkyboxMaterial;
 

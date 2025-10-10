@@ -1,0 +1,40 @@
+Scene: Scene Name
+Environment:
+  AssetPath: Resources\Env\Shangai\shangai.hdr
+  Light:
+    Direction: [0.0529999994, 0.795000017, 0]
+    Radiance: [1, 0.999989986, 0.999989986]
+    Multiplier: 0.651000023
+Entities:
+  - Entity: 17359415144565549859
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0.716385961, 0.690598726, 0.0715050101, -0.0689316615]
+      Scale: [0.99999541, 0.999995649, 0.999997437]
+    DirectionalLightComponent:
+      Radiance: [0.156243935, 0.624269903, 0.861003876]
+      CastShadows: true
+      SoftShadows: true
+      LightSize: 2
+  - Entity: 15213035846546605980
+    TagComponent:
+      Tag: Sponza
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [0.100000001, 0.100000001, 0.100000001]
+    MeshComponent:
+      AssetPath: Resources\Meshes\sponza\sponza.gltf
+  - Entity: 7172337265010841038
+    TagComponent:
+      Tag: Sky Light
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [1, 0, 0, 0]
+      Scale: [1, 1, 1]
+    SkyLightComponent:
+      EnvironmentAssetPath: Resources\Env\Shangai\shangai.hdr
+      Intensity: 0.189999998
+      Angle: 0

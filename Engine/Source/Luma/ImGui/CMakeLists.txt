@@ -5,6 +5,7 @@ set(IMGUI_SOURCES
 )
 
 set(IMGUI_HEADERS
+		ImGui.hpp
 		ImGuiLayer.hpp
 		ImGuizmo.h
 )

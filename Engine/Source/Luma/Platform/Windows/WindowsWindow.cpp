@@ -48,7 +48,7 @@ namespace Luma {
 			s_SDLInitialized = true;
 		}
 
-		m_Window = SDL_CreateWindow(m_Data.Title.c_str(), (int)m_Specification.Width, (int)m_Specification.Height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED);
+		m_Window = SDL_CreateWindow(m_Data.Title.c_str(), (int)m_Specification.Width, (int)m_Specification.Height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 		m_WindowID = SDL_GetWindowID(m_Window);
 
 		m_GLContext = SDL_GL_CreateContext(m_Window);
@@ -191,6 +191,11 @@ namespace Luma {
 	bool WindowsWindow::IsVSync() const
 	{
 		return m_Data.VSync;
+	}
+
+	void WindowsWindow::Maximize()
+	{
+		SDL_MaximizeWindow(m_Window);
 	}
 
 	void WindowsWindow::SetTitle(const std::string& title)

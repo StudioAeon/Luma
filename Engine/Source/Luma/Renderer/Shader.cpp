@@ -42,7 +42,7 @@ namespace Luma {
 	{
 	}
 
-	void ShaderLibrary::Add(const Ref<Shader>& shader)
+	void ShaderLibrary::Add(const Luma::Ref<Shader>& shader)
 	{
 		auto& name = shader->GetName();
 		LM_CORE_ASSERT(m_Shaders.find(name) == m_Shaders.end());

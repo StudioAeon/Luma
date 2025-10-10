@@ -10,6 +10,8 @@
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+#include <imgui_internal.h>
+
 #include "Luma/ImGui/ImGuizmo.h"
 
 #include <string>
@@ -42,7 +44,7 @@ static std::tuple<glm::vec3, glm::quat, glm::vec3> GetTransformDecomposition(con
 namespace Luma {
 
 	EditorLayer::EditorLayer()
-		: m_SceneType(SceneType::Model), m_EditorCamera(glm::perspectiveFov(glm::radians(45.0f), 1280.0f, 720.0f, 0.1f, 10000.0f))
+		: m_SceneType(SceneType::Model), m_EditorCamera(glm::perspectiveFov(glm::radians(45.0f), 1280.0f, 720.0f, 0.1f, 1000.0f))
 	{
 	}
 
@@ -58,14 +60,11 @@ namespace Luma {
 		m_CheckerboardTex = Texture2D::Create("Resources/Editor/Checkerboard.tga");
 		m_PlayButtonTex = Texture2D::Create("Resources/Editor/PlayButton.png");
 
-		m_EditorScene = Ref<Scene>::Create();
-		UpdateWindowTitle("Untitled Scene");
 		m_SceneHierarchyPanel = CreateScope<SceneHierarchyPanel>(m_EditorScene);
 		m_SceneHierarchyPanel->SetSelectionChangedCallback(std::bind(&EditorLayer::SelectEntity, this, std::placeholders::_1));
 		m_SceneHierarchyPanel->SetEntityDeletedCallback(std::bind(&EditorLayer::OnEntityDeleted, this, std::placeholders::_1));
 
-		SceneSerializer serializer(m_EditorScene);
-		serializer.Deserialize("Resources/Scenes/Desert.lscene");
+		OpenScene("Resources/Scenes/Desert.lscene");
 	}
 
 	void EditorLayer::OnDetach()
@@ -115,6 +114,10 @@ namespace Luma {
 
 	void EditorLayer::OnUpdate(Timestep ts)
 	{
+		auto [x, y] = GetMouseViewportSpace();
+
+		SceneRenderer::SetFocusPoint({ x * 0.5f + 0.5f, y * 0.5f + 0.5f });
+
 		switch (m_SceneState)
 		{
 			case SceneState::Edit:
@@ -301,31 +304,50 @@ namespace Luma {
 		m_EditorScene->SetSelectedEntity(entity);
 	}
 
+	void EditorLayer::NewScene()
+	{
+		m_EditorScene = Ref<Scene>::Create();
+		m_SceneHierarchyPanel->SetContext(m_EditorScene);
+		UpdateWindowTitle("Untitled Scene");
+		m_SceneFilePath = std::string();
+
+		m_EditorCamera = EditorCamera(glm::perspectiveFov(glm::radians(45.0f), 1280.0f, 720.0f, 0.1f, 1000.0f));
+	}
+
 	void EditorLayer::OpenScene()
 	{
 		auto& app = Application::Get();
 		std::string filepath = app.OpenFile("Luma Scene (*.lscene)\0*.lscene\0");
 		if (!filepath.empty())
-		{
-			Ref<Scene> newScene = Ref<Scene>::Create();
-			SceneSerializer serializer(newScene);
-			serializer.Deserialize(filepath);
-			m_EditorScene = newScene;
-			std::filesystem::path path = filepath;
-			UpdateWindowTitle(path.filename().string());
-			m_SceneHierarchyPanel->SetContext(m_EditorScene);
+			OpenScene(filepath);
+	}
 
-			m_EditorScene->SetSelectedEntity({});
-			m_SelectionContext.clear();
+	void EditorLayer::OpenScene(const std::string& filepath)
+	{
+		Ref<Scene> newScene = Ref<Scene>::Create();
+		SceneSerializer serializer(newScene);
+		serializer.Deserialize(filepath);
+		m_EditorScene = newScene;
 
-			m_SceneFilePath = filepath;
-		}
+		std::filesystem::path path = filepath;
+		UpdateWindowTitle(path.filename().string());
+		m_SceneHierarchyPanel->SetContext(m_EditorScene);
+
+		m_EditorScene->SetSelectedEntity({});
+		m_SelectionContext.clear();
 	}
 
 	void EditorLayer::SaveScene()
 	{
-		SceneSerializer serializer(m_EditorScene);
-		serializer.Serialize(m_SceneFilePath);
+		if (!m_SceneFilePath.empty())
+		{
+			SceneSerializer serializer(m_EditorScene);
+			serializer.Serialize(m_SceneFilePath);
+		}
+		else
+		{
+			SaveSceneAs();
+		}
 	}
 
 	void EditorLayer::SaveSceneAs()
@@ -393,13 +415,6 @@ namespace Luma {
 		// Editor Panel ------------------------------------------------------------------------------
 		ImGui::Begin("Model");
 		ImGui::Begin("Environment");
-
-		if (ImGui::Button("Load Environment Map"))
-		{
-			std::string filename = Application::Get().OpenFile("*.hdr");
-			if (filename != "")
-				m_EditorScene->SetEnvironment(Environment::Load(filename));
-		}
 
 		ImGui::SliderFloat("Skybox LOD", &m_EditorScene->GetSkyboxLod(), 0.0f, 11.0f);
 
@@ -519,7 +534,7 @@ namespace Luma {
 		m_EditorScene->SetViewportSize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
 		if (m_RuntimeScene)
 			m_RuntimeScene->SetViewportSize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-		m_EditorCamera.SetProjectionMatrix(glm::perspectiveFov(glm::radians(45.0f), viewportSize.x, viewportSize.y, 0.1f, 10000.0f));
+		m_EditorCamera.SetProjectionMatrix(glm::perspectiveFov(glm::radians(45.0f), viewportSize.x, viewportSize.y, 0.1f, 1000.0f));
 		m_EditorCamera.SetViewportSize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
 		ImGui::Image((void*)(uintptr_t)SceneRenderer::GetFinalColorBufferRendererID(), viewportSize, { 0, 1 }, { 1, 0 });
 
@@ -583,9 +598,7 @@ namespace Luma {
 			if (ImGui::BeginMenu("File"))
 			{
 				if (ImGui::MenuItem("New Scene", "Ctrl+N"))
-				{
-					// TODO:
-				}
+					NewScene();
 				if (ImGui::MenuItem("Open Scene...", "Ctrl+O"))
 					OpenScene();
 				ImGui::Separator();
@@ -803,6 +816,8 @@ namespace Luma {
 		}
 		ImGui::End();
 
+		SceneRenderer::OnImGuiRender();
+
 		ImGui::End();
 	}
 
@@ -827,23 +842,29 @@ namespace Luma {
 
 	bool EditorLayer::OnKeyPressedEvent(KeyPressedEvent& e)
 	{
-		if (m_ViewportPanelFocused)
+		if (GImGui->ActiveId == 0)
 		{
+			if (m_ViewportPanelMouseOver)
+			{
+				switch (e.GetKeyCode())
+				{
+					case KeyCode::Q:
+						m_GizmoType = -1;
+						break;
+					case KeyCode::W:
+						m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+						break;
+					case KeyCode::E:
+						m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+						break;
+					case KeyCode::R:
+						m_GizmoType = ImGuizmo::OPERATION::SCALE;
+						break;
+				}
+			}
 			switch (e.GetKeyCode())
 			{
-				case KeyCode::Q:
-					m_GizmoType = -1;
-					break;
-				case KeyCode::W:
-					m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
-					break;
-				case KeyCode::E:
-					m_GizmoType = ImGuizmo::OPERATION::ROTATE;
-					break;
-				case KeyCode::R:
-					m_GizmoType = ImGuizmo::OPERATION::SCALE;
-					break;
-				case KeyCode::Delete:
+				case KeyCode::Delete: // TODO: this should be in the scene hierarchy panel
 					if (m_SelectionContext.size())
 					{
 						Entity selectedEntity = m_SelectionContext[0].Entity;
@@ -860,10 +881,6 @@ namespace Luma {
 		{
 			switch (e.GetKeyCode())
 			{
-				case KeyCode::G:
-					// Toggle grid
-					SceneRenderer::GetOptions().ShowGrid = !SceneRenderer::GetOptions().ShowGrid;
-					break;
 				case KeyCode::B:
 					// Toggle bounding boxes
 					m_UIShowBoundingBoxes = !m_UIShowBoundingBoxes;
@@ -876,6 +893,29 @@ namespace Luma {
 						m_EditorScene->DuplicateEntity(selectedEntity);
 					}
 					break;
+				case KeyCode::G:
+					// Toggle grid
+					SceneRenderer::GetOptions().ShowGrid = !SceneRenderer::GetOptions().ShowGrid;
+					break;
+				case KeyCode::N:
+					NewScene();
+					break;
+				case KeyCode::O:
+					OpenScene();
+					break;
+				case KeyCode::S:
+					SaveScene();
+					break;
+			}
+
+			if (Input::IsKeyPressed(LM_KEY_LEFT_SHIFT))
+			{
+				switch (e.GetKeyCode())
+				{
+					case KeyCode::S:
+						SaveSceneAs();
+						break;
+				}
 			}
 		}
 
@@ -885,7 +925,7 @@ namespace Luma {
 	bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 	{
 		auto [mx, my] = Input::GetMousePosition();
-		if (e.GetMouseButton() == LM_MOUSE_BUTTON_LEFT && !Input::IsKeyPressed(KeyCode::LeftAlt) && !ImGuizmo::IsOver() && m_SceneState != SceneState::Play)
+		if (e.GetMouseButton() == LM_MOUSE_BUTTON_LEFT && m_ViewportPanelMouseOver && !Input::IsKeyPressed(KeyCode::LeftAlt) && !ImGuizmo::IsOver() && m_SceneState != SceneState::Play)
 		{
 			auto [mouseX, mouseY] = GetMouseViewportSpace();
 			if (mouseX > -1.0f && mouseX < 1.0f && mouseY > -1.0f && mouseY < 1.0f)

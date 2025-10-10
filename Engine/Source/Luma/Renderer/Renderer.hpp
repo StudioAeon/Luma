@@ -47,6 +47,11 @@ namespace Luma {
 			new (storageBuffer) FuncT(std::forward<FuncT>(func));
 		}
 
+		/*static void* Submit(RenderCommandFn fn, unsigned int size)
+		{
+			return s_Instance->m_CommandQueue.Allocate(fn, size);
+		}*/
+
 		static void WaitAndRender();
 
 		// ~Actual~ Renderer here... TODO: remove confusion later
@@ -56,6 +61,7 @@ namespace Luma {
 		static void SubmitQuad(Ref<MaterialInstance> material, const glm::mat4& transform = glm::mat4(1.0f));
 		static void SubmitFullscreenQuad(Ref<MaterialInstance> material);
 		static void SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform, Ref<MaterialInstance> overrideMaterial = nullptr);
+		static void SubmitMeshWithShader(Ref<Mesh> mesh, const glm::mat4& transform, Ref<Shader> shader);
 
 		static void DrawAABB(const AABB& aabb, const glm::mat4& transform, const glm::vec4& color = glm::vec4(1.0f));
 		static void DrawAABB(Ref<Mesh> mesh, const glm::mat4& transform, const glm::vec4& color = glm::vec4(1.0f));

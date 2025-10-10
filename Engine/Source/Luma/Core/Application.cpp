@@ -27,6 +27,7 @@ namespace Luma {
 		windowSpec.VSync = specification.VSync;
 		m_Window = std::unique_ptr<Window>(Window::Create(windowSpec));
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+		m_Window->Maximize();
 		m_Window->SetVSync(false);
 
 		m_ImGuiLayer = new ImGuiLayer("ImGui");
@@ -144,7 +145,10 @@ namespace Luma {
 		Renderer::Submit([=]() { glViewport(0, 0, width, height); });
 		auto& fbs = FramebufferPool::GetGlobal()->GetAll();
 		for (auto& fb : fbs)
-			fb->Resize(width, height);
+		{
+			if (!fb->GetSpecification().NoResize)
+				fb->Resize(width, height);
+		}
 		return false;
 	}
 

@@ -39,7 +39,9 @@ namespace Luma {
 		void ShowBoundingBoxes(bool show, bool onTop = false);
 		void SelectEntity(Entity entity);
 
+		void NewScene();
 		void OpenScene();
+		void OpenScene(const std::string& filepath);
 		void SaveScene();
 		void SaveSceneAs();
 	private:

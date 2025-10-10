@@ -3,6 +3,7 @@
 #include "Luma/Core/UUID.hpp"
 #include "Luma/Renderer/Texture.hpp"
 #include "Luma/Renderer/Mesh.hpp"
+#include "Luma/Renderer/SceneEnvironment.hpp"
 #include "Luma/Scene/SceneCamera.hpp"
 
 #include <glm/glm.hpp>
@@ -78,6 +79,30 @@ namespace Luma {
 
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(const SpriteRendererComponent& other) = default;
+	};
+
+	// Lights
+
+	// TODO: Move to renderer
+	enum class LightType
+	{
+		None = 0, Directional = 1, Point = 2, Spot = 3
+	};
+
+	struct DirectionalLightComponent
+	{
+		glm::vec3 Radiance = { 1.0f, 1.0f, 1.0f };
+		float Intensity = 1.0f;
+		bool CastShadows = true;
+		bool SoftShadows = true;
+		float LightSize = 0.5f; // For PCSS
+	};
+
+	struct SkyLightComponent
+	{
+		Environment SceneEnvironment;
+		float Intensity = 1.0f;
+		float Angle = 0.0f;
 	};
 
 }

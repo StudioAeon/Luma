@@ -38,6 +38,7 @@ namespace Luma {
 		Ref<Pipeline> QuadPipeline;
 		Ref<VertexBuffer> QuadVertexBuffer;
 		Ref<IndexBuffer> QuadIndexBuffer;
+
 		Ref<Shader> TextureShader;
 		Ref<Texture2D> WhiteTexture;
 
