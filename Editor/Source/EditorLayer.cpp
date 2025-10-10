@@ -52,76 +52,6 @@ namespace Luma {
 
 	void EditorLayer::OnAttach()
 	{
-		// Luma Engine Dark Theme
-		ImVec4* colors = ImGui::GetStyle().Colors;
-
-		// Text Colors
-		colors[ImGuiCol_Text] = ImVec4(0.95f, 0.95f, 0.95f, 1.0f);
-		colors[ImGuiCol_TextDisabled] = ImVec4(0.55f, 0.55f, 0.55f, 1.0f);
-		colors[ImGuiCol_TextSelectedBg] = ImVec4(0.26f, 0.59f, 0.98f, 0.35f);
-
-		// Window & Background
-		colors[ImGuiCol_WindowBg] = ImVec4(0.12f, 0.13f, 0.15f, 1.0f);
-		colors[ImGuiCol_ChildBg] = ImVec4(0.14f, 0.15f, 0.17f, 1.0f);
-		colors[ImGuiCol_PopupBg] = ImVec4(0.10f, 0.11f, 0.13f, 0.95f);
-		colors[ImGuiCol_MenuBarBg] = ImVec4(0.16f, 0.17f, 0.19f, 1.0f);
-
-		// Borders
-		colors[ImGuiCol_Border] = ImVec4(0.25f, 0.27f, 0.30f, 1.0f);
-		colors[ImGuiCol_BorderShadow] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
-
-		// Frame Backgrounds (Inputs, etc.)
-		colors[ImGuiCol_FrameBg] = ImVec4(0.18f, 0.20f, 0.23f, 1.0f);
-		colors[ImGuiCol_FrameBgHovered] = ImVec4(0.22f, 0.24f, 0.27f, 1.0f);
-		colors[ImGuiCol_FrameBgActive] = ImVec4(0.28f, 0.30f, 0.34f, 1.0f);
-
-		// Title Bars
-		colors[ImGuiCol_TitleBg] = ImVec4(0.14f, 0.15f, 0.17f, 1.0f);
-		colors[ImGuiCol_TitleBgActive] = ImVec4(0.20f, 0.22f, 0.24f, 1.0f);
-		colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.12f, 0.13f, 0.15f, 0.75f);
-
-		// Scrollbars
-		colors[ImGuiCol_ScrollbarBg] = ImVec4(0.12f, 0.13f, 0.15f, 1.0f);
-		colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.35f, 0.37f, 0.40f, 1.0f);
-		colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.45f, 0.47f, 0.50f, 1.0f);
-		colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.55f, 0.57f, 0.60f, 1.0f);
-
-		// Interactive Elements
-		colors[ImGuiCol_CheckMark] = ImVec4(0.40f, 0.80f, 1.0f, 1.0f);
-		colors[ImGuiCol_SliderGrab] = ImVec4(0.40f, 0.80f, 1.0f, 0.8f);
-		colors[ImGuiCol_SliderGrabActive] = ImVec4(0.50f, 0.85f, 1.0f, 1.0f);
-
-		// Buttons
-		colors[ImGuiCol_Button] = ImVec4(0.20f, 0.22f, 0.25f, 1.0f);
-		colors[ImGuiCol_ButtonHovered] = ImVec4(0.30f, 0.50f, 0.70f, 1.0f);
-		colors[ImGuiCol_ButtonActive] = ImVec4(0.25f, 0.45f, 0.65f, 1.0f);
-
-		// Headers (TreeNode, etc.)
-		colors[ImGuiCol_Header] = ImVec4(0.22f, 0.24f, 0.27f, 1.0f);
-		colors[ImGuiCol_HeaderHovered] = ImVec4(0.30f, 0.50f, 0.70f, 0.8f);
-		colors[ImGuiCol_HeaderActive] = ImVec4(0.35f, 0.55f, 0.75f, 1.0f);
-
-		// Separators
-		colors[ImGuiCol_Separator] = ImVec4(0.25f, 0.27f, 0.30f, 1.0f);
-		colors[ImGuiCol_SeparatorHovered] = ImVec4(0.40f, 0.80f, 1.0f, 0.8f);
-		colors[ImGuiCol_SeparatorActive] = ImVec4(0.40f, 0.80f, 1.0f, 1.0f);
-
-		// Resize Grips
-		colors[ImGuiCol_ResizeGrip] = ImVec4(0.25f, 0.27f, 0.30f, 0.7f);
-		colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.40f, 0.80f, 1.0f, 0.8f);
-		colors[ImGuiCol_ResizeGripActive] = ImVec4(0.40f, 0.80f, 1.0f, 1.0f);
-
-		// Plots & Graphs
-		colors[ImGuiCol_PlotLines] = ImVec4(0.70f, 0.70f, 0.70f, 1.0f);
-		colors[ImGuiCol_PlotLinesHovered] = ImVec4(1.0f, 0.60f, 0.0f, 1.0f);
-		colors[ImGuiCol_PlotHistogram] = ImVec4(0.40f, 0.80f, 1.0f, 1.0f);
-		colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.50f, 0.85f, 1.0f, 1.0f);
-
-		// Special Elements
-		colors[ImGuiCol_DragDropTarget] = ImVec4(0.40f, 0.80f, 1.0f, 0.9f);
-		colors[ImGuiCol_NavHighlight] = ImVec4(0.40f, 0.80f, 1.0f, 1.0f);
-		colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.0f, 1.0f, 1.0f, 0.7f);
-
 		using namespace glm;
 
 		// Editor
@@ -374,7 +304,7 @@ namespace Luma {
 	void EditorLayer::OpenScene()
 	{
 		auto& app = Application::Get();
-		std::string filepath = app.OpenFile("Zenith Scene (*.lscene)\0*.lscene\0");
+		std::string filepath = app.OpenFile("Luma Scene (*.lscene)\0*.lscene\0");
 		if (!filepath.empty())
 		{
 			Ref<Scene> newScene = Ref<Scene>::Create();
@@ -401,7 +331,7 @@ namespace Luma {
 	void EditorLayer::SaveSceneAs()
 	{
 		auto& app = Application::Get();
-		std::string filepath = app.SaveFile("Zenith Scene (*.lscene)\0*.lscene\0");
+		std::string filepath = app.SaveFile("Luma Scene (*.lscene)\0*.lscene\0");
 		if (!filepath.empty())
 		{
 			SceneSerializer serializer(m_EditorScene);
@@ -449,11 +379,16 @@ namespace Luma {
 
 		// Dockspace
 		ImGuiIO& io = ImGui::GetIO();
+		ImGuiStyle& style = ImGui::GetStyle();
+		float minWinSizeX = style.WindowMinSize.x;
+		style.WindowMinSize.x = 370.0f;
 		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 		{
 			ImGuiID dockspace_id = ImGui::GetID("MyDockspace");
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), opt_flags);
 		}
+
+		style.WindowMinSize.x = minWinSizeX;
 
 		// Editor Panel ------------------------------------------------------------------------------
 		ImGui::Begin("Model");
@@ -647,7 +582,7 @@ namespace Luma {
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("New Scene", "Ctrl-N"))
+				if (ImGui::MenuItem("New Scene", "Ctrl+N"))
 				{
 					// TODO:
 				}

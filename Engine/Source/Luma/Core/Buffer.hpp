@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Base.hpp"
 #include "Assert.hpp"
 
 namespace Luma {

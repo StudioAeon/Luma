@@ -6,7 +6,6 @@
 
 #include <SDL3/SDL.h>
 #include <glad/glad.h>
-#include <glm/glm.hpp>
 #include <imgui.h>
 
 bool g_ApplicationRunning = true;
