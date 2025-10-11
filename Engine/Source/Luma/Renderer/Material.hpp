@@ -127,7 +127,7 @@ namespace Luma {
 			auto decl = m_Material->FindResourceDeclaration(name);
 			if (!decl)
 			{
-				LM_CORE_WARN("Cannot find material property: ", name);
+				LM_CORE_WARN_TAG("Renderer", "Cannot find material property: ", name);
 				return;
 			}
 			uint32_t slot = decl->GetRegister();

@@ -9,13 +9,13 @@ namespace Luma {
 	{
 		Log::Init();
 
-		LM_CORE_TRACE("Luma Engine {}", LM_VERSION);
-		LM_CORE_TRACE("Initializing...");
+		LM_CORE_TRACE_TAG("Core", "Luma Engine {}", LM_VERSION);
+		LM_CORE_TRACE_TAG("Core", "Initializing...");
 	}
 
 	void ShutdownCore()
 	{
-		LM_CORE_TRACE("Shutting down...");
+		LM_CORE_TRACE_TAG("Core", "Shutting down...");
 		Log::Shutdown();
 	}
 

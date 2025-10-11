@@ -19,6 +19,7 @@ set(CORE_HEADERS
 		Layer.hpp
 		LayerStack.hpp
 		Log.hpp
+		LogCustomFormatters.hpp
 		Ref.hpp
 		Timer.hpp
 		TimeStep.hpp

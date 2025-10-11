@@ -55,14 +55,14 @@ namespace Luma {
 		int width, height, channels;
 		if (stbi_is_hdr(path.c_str()))
 		{
-			LM_CORE_INFO("Loading HDR texture {0}, srgb={1}", path, srgb);
+			LM_CORE_INFO_TAG("Renderer", "Loading HDR texture {0}, srgb={1}", path, srgb);
 			m_ImageData.Data = (byte*)stbi_loadf(path.c_str(), &width, &height, &channels, 0);
 			m_IsHDR = true;
 			m_Format = TextureFormat::Float16;
 		}
 		else
 		{
-			LM_CORE_INFO("Loading texture {0}, srgb={1}", path, srgb);
+			LM_CORE_INFO_TAG("Renderer", "Loading texture {0}, srgb={1}", path, srgb);
 			m_ImageData.Data = stbi_load(path.c_str(), &width, &height, &channels, srgb ? STBI_rgb : STBI_rgb_alpha);
 			LM_CORE_ASSERT(m_ImageData.Data, "Could not read image!");
 			m_Format = TextureFormat::RGBA;

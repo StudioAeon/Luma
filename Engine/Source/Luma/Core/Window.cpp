@@ -16,7 +16,7 @@ namespace Luma {
 
 	static void SDLErrorCallback(const char* context)
 	{
-		LM_CORE_ERROR("SDL Error ({}): {}", context, SDL_GetError());
+		LM_CORE_ERROR_TAG("SDL", "SDL Error ({}): {}", context, SDL_GetError());
 	}
 
 	static bool s_SDLInitialized = false;
@@ -41,7 +41,7 @@ namespace Luma {
 		m_Data.Width = m_Specification.Width;
 		m_Data.Height = m_Specification.Height;
 
-		LM_CORE_INFO("Creating window {} ({}x{})", m_Data.Title, m_Data.Width, m_Data.Height);
+		LM_CORE_INFO_TAG("SDL", "Creating window {} ({}x{})", m_Data.Title, m_Data.Width, m_Data.Height);
 
 		if (!s_SDLInitialized)
 		{

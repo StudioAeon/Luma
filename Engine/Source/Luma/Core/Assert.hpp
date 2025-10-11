@@ -13,19 +13,56 @@
 
 #ifdef LM_DEBUG
 	#define LM_ENABLE_ASSERTS
-	#define LM_EXPAND_VARGS(x) x
 #endif
 
+#define LM_ENABLE_VERIFY
+#define LM_ENABLE_ENSURE
+
 #ifdef LM_ENABLE_ASSERTS
-	#define LM_ASSERT_NO_MESSAGE(condition) { if(!(condition)) { LM_ERROR("Assertion Failed"); __debugbreak(); } }
-	#define LM_ASSERT_MESSAGE(condition, ...) { if(!(condition)) { LM_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+	#ifdef LM_COMPILER_CLANG
+		#define LM_CORE_ASSERT_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Core, "Assertion Failed", ##__VA_ARGS__)
+		#define LM_ASSERT_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Client, "Assertion Failed", ##__VA_ARGS__)
+	#else
+		#define LM_CORE_ASSERT_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Core, "Assertion Failed" __VA_OPT__(,) __VA_ARGS__)
+		#define LM_ASSERT_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Client, "Assertion Failed" __VA_OPT__(,) __VA_ARGS__)
+	#endif
 
-	#define LM_ASSERT_RESOLVE(arg1, arg2, macro, ...) macro
-	#define LM_GET_ASSERT_MACRO(...) LM_EXPAND_VARGS(LM_ASSERT_RESOLVE(__VA_ARGS__, LM_ASSERT_MESSAGE, LM_ASSERT_NO_MESSAGE))
-
-	#define LM_ASSERT(...) LM_EXPAND_VARGS( LM_GET_ASSERT_MACRO(__VA_ARGS__)(__VA_ARGS__) )
-	#define LM_CORE_ASSERT(...) LM_EXPAND_VARGS( LM_GET_ASSERT_MACRO(__VA_ARGS__)(__VA_ARGS__) )
+	#define LM_CORE_ASSERT(condition, ...) do { if(!(condition)) { LM_CORE_ASSERT_MESSAGE_INTERNAL(__VA_ARGS__); LM_DEBUG_BREAK; } } while(0)
+	#define LM_ASSERT(condition, ...) do { if(!(condition)) { LM_ASSERT_MESSAGE_INTERNAL(__VA_ARGS__); LM_DEBUG_BREAK; } } while(0)
 #else
-	#define LM_ASSERT(...)
-	#define LM_CORE_ASSERT(...)
+	#define LM_CORE_ASSERT(condition, ...) ((void) (condition))
+	#define LM_ASSERT(condition, ...) ((void) (condition))
+#endif
+
+#ifdef LM_ENABLE_VERIFY
+	#ifdef LM_COMPILER_CLANG
+		#define LM_CORE_VERIFY_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Core, "Verify Failed", ##__VA_ARGS__)
+		#define LM_VERIFY_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Client, "Verify Failed", ##__VA_ARGS__)
+	#else
+		#define LM_CORE_VERIFY_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Core, "Verify Failed" __VA_OPT__(,) __VA_ARGS__)
+		#define LM_VERIFY_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Client, "Verify Failed" __VA_OPT__(,) __VA_ARGS__)
+	#endif
+
+	#define LM_CORE_VERIFY(condition, ...) do { if(!(condition)) { LM_CORE_VERIFY_MESSAGE_INTERNAL(__VA_ARGS__); LM_DEBUG_BREAK; } } while(0)
+	#define LM_VERIFY(condition, ...) do { if(!(condition)) { LM_VERIFY_MESSAGE_INTERNAL(__VA_ARGS__); LM_DEBUG_BREAK; } } while(0)
+#else
+	#define LM_CORE_VERIFY(condition, ...) ((void) (condition))
+	#define LM_VERIFY(condition, ...) ((void) (condition))
+#endif
+
+#ifdef LM_ENABLE_ENSURE
+	#ifdef LM_COMPILER_CLANG
+		#define LM_CORE_ENSURE_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Core, "Ensure Failed", ##__VA_ARGS__)
+		#define LM_ENSURE_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Client, "Ensure Failed", ##__VA_ARGS__)
+	#else
+		#define LM_CORE_ENSURE_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Core, "Ensure Failed" __VA_OPT__(,) __VA_ARGS__)
+		#define LM_ENSURE_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Client, "Ensure Failed" __VA_OPT__(,) __VA_ARGS__)
+	#endif
+
+	#define LM_CORE_ENSURE(condition, ...) [&]{ if(!(condition)) { LM_CORE_ENSURE_MESSAGE_INTERNAL(__VA_ARGS__); LM_DEBUG_BREAK; } return (condition); }()
+	#define LM_ENSURE(condition, ...) [&]{ if(!(condition)) { LM_ENSURE_MESSAGE_INTERNAL(__VA_ARGS__); LM_DEBUG_BREAK; } return (condition) }()
+
+#else
+	#define LM_CORE_ENSURE(condition, ...) (condition)
+	#define LM_ENSURE(condition, ...) (condition)
 #endif

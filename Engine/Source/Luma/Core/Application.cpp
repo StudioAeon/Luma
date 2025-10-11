@@ -141,7 +141,7 @@ namespace Luma {
 		dispatcher.Dispatch<WindowMinimizeEvent>([this](WindowMinimizeEvent& e) { return OnWindowMinimize(e); });
 		dispatcher.Dispatch<WindowCloseEvent>([this](WindowCloseEvent& e) { return OnWindowClose(e); });
 
-		//LM_CORE_TRACE("{}", event.ToString());
+		//LM_CORE_TRACE_TAG("Core", "{}", event.ToString());
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
 		{
 			(*--it)->OnEvent(event);

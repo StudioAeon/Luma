@@ -12,17 +12,17 @@ namespace Luma {
 		switch (severity)
 		{
 			case GL_DEBUG_SEVERITY_HIGH:
-				LM_CORE_ERROR("[OpenGL Debug HIGH] {0}", message);
+				LM_CORE_ERROR_TAG("Renderer", "[OpenGL Debug HIGH] {0}", message);
 				LM_CORE_ASSERT(false, "GL_DEBUG_SEVERITY_HIGH");
 				break;
 			case GL_DEBUG_SEVERITY_MEDIUM:
-				LM_CORE_WARN("[OpenGL Debug MEDIUM] {0}", message);
+				LM_CORE_WARN_TAG("Renderer", "[OpenGL Debug MEDIUM] {0}", message);
 				break;
 			case GL_DEBUG_SEVERITY_LOW:
-				LM_CORE_INFO("[OpenGL Debug LOW] {0}", message);
+				LM_CORE_INFO_TAG("Renderer", "[OpenGL Debug LOW] {0}", message);
 				break;
 			case GL_DEBUG_SEVERITY_NOTIFICATION:
-				// LM_CORE_TRACE("[OpenGL Debug NOTIFICATION] {0}", message);
+				// LM_CORE_TRACE_TAG("Renderer", "[OpenGL Debug NOTIFICATION] {0}", message);
 				break;
 		}
 	}
@@ -62,7 +62,7 @@ namespace Luma {
 		GLenum error = glGetError();
 		while (error != GL_NO_ERROR)
 		{
-			LM_CORE_ERROR("OpenGL Error {0}", error);
+			LM_CORE_ERROR_TAG("Renderer", "OpenGL Error {0}", error);
 			error = glGetError();
 		}
 

@@ -58,7 +58,7 @@ namespace Luma {
 			}
 
 			// TODO: Keep top weights
-			LM_CORE_WARN("Vertex has more than four bones/weights affecting it, extra data will be discarded (BoneID={0}, Weight={1})", BoneID, Weight);
+			LM_CORE_WARN_TAG("Mesh", "Vertex has more than four bones/weights affecting it, extra data will be discarded (BoneID={0}, Weight={1})", BoneID, Weight);
 		}
 	};
 

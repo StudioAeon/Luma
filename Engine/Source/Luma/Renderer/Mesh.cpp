@@ -63,7 +63,7 @@ namespace Luma {
 
 		virtual void write(const char* message) override
 		{
-			LM_CORE_WARN("Assimp: {0}", message);
+			LM_CORE_WARN_TAG("Assimp", "Assimp: {0}", message);
 		}
 	};
 
@@ -72,13 +72,13 @@ namespace Luma {
 	{
 		LogStream::Initialize();
 
-		LM_CORE_INFO("Loading mesh: {0}", filename.c_str());
+		LM_CORE_INFO_TAG("Assimp", "Loading mesh: {0}", filename.c_str());
 
 		m_Importer = std::make_unique<Assimp::Importer>();
 
 		const aiScene* scene = m_Importer->ReadFile(filename, s_MeshImportFlags);
 		if (!scene || !scene->HasMeshes())
-			LM_CORE_ERROR("Failed to load mesh file: {0}", filename);
+			LM_CORE_ERROR_TAG("Assimp", "Failed to load mesh file: {0}", filename);
 
 		m_Scene = scene;
 
@@ -266,7 +266,7 @@ namespace Luma {
 					}
 					else
 					{
-						LM_CORE_ERROR("Could not load texture: {0}", texturePath);
+						LM_CORE_ERROR_TAG("Mesh", "Could not load texture: {0}", texturePath);
 						// Fallback to albedo color
 						mi->Set("u_AlbedoColor", glm::vec3{ aiColor.r, aiColor.g, aiColor.b });
 					}
@@ -295,7 +295,7 @@ namespace Luma {
 					}
 					else
 					{
-						LM_CORE_ERROR("    Could not load texture: {0}", texturePath);
+						LM_CORE_ERROR_TAG("Mesh", "    Could not load texture: {0}", texturePath);
 					}
 				}
 				else
@@ -322,7 +322,7 @@ namespace Luma {
 					}
 					else
 					{
-						LM_CORE_ERROR("    Could not load texture: {0}", texturePath);
+						LM_CORE_ERROR_TAG("Mesh", "    Could not load texture: {0}", texturePath);
 					}
 				}
 				else
@@ -350,7 +350,7 @@ namespace Luma {
 					}
 					else
 					{
-						LM_CORE_ERROR("Could not load texture: {0}", texturePath);
+						LM_CORE_ERROR_TAG("Mesh", "Could not load texture: {0}", texturePath);
 					}
 				}
 				else
@@ -441,7 +441,7 @@ namespace Luma {
 							}
 							else
 							{
-								LM_CORE_ERROR("    Could not load texture: {0}", texturePath);
+								LM_CORE_ERROR_TAG("Mesh", "    Could not load texture: {0}", texturePath);
 								mi->Set("u_Metalness", metalness);
 								mi->Set("u_MetalnessTexToggle", 0.0f);
 							}

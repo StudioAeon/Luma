@@ -13,7 +13,7 @@ namespace Luma {
 
 #define UNIFORM_LOGGING 0
 #if UNIFORM_LOGGING
-#define LM_LOG_UNIFORM(...) LM_CORE_WARN(__VA_ARGS__)
+#define LM_LOG_UNIFORM(...) LM_CORE_WARN_TAG("Renderer", __VA_ARGS__)
 #else
 #define LM_LOG_UNIFORM
 #endif
@@ -524,7 +524,7 @@ namespace Luma {
 	{
 		int32_t result = glGetUniformLocation(m_RendererID, name.c_str());
 		if (result == -1)
-			LM_CORE_WARN("Could not find uniform '{0}' in shader", name);
+			LM_CORE_WARN_TAG("Renderer", "Could not find uniform '{0}' in shader", name);
 
 		return result;
 	}
@@ -568,7 +568,7 @@ namespace Luma {
 				std::vector<GLchar> infoLog(maxLength);
 				glGetShaderInfoLog(shaderRendererID, maxLength, &maxLength, &infoLog[0]);
 
-				LM_CORE_ERROR("Shader compilation failed ({0}):\n{1}", m_AssetPath, &infoLog[0]);
+				LM_CORE_ERROR_TAG("Renderer", "Shader compilation failed ({0}):\n{1}", m_AssetPath, &infoLog[0]);
 
 				// We don't need the shader anymore.
 				glDeleteShader(shaderRendererID);
@@ -594,7 +594,7 @@ namespace Luma {
 			// The maxLength includes the NULL character
 			std::vector<GLchar> infoLog(maxLength);
 			glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
-			LM_CORE_ERROR("Shader linking failed ({0}):\n{1}", m_AssetPath, &infoLog[0]);
+			LM_CORE_ERROR_TAG("Renderer", "Shader linking failed ({0}):\n{1}", m_AssetPath, &infoLog[0]);
 
 			// We don't need the program anymore.
 			glDeleteProgram(program);

@@ -512,7 +512,7 @@ namespace Luma {
 		ImGui::SameLine();
 		if (ImGui::ImageButton("play_button2", (ImTextureID)(m_PlayButtonTex->GetRendererID()), ImVec2(32, 32), ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0), ImVec4(1.0f, 1.0f, 1.0f, 0.6f)))
 		{
-			LM_CORE_INFO("PLAY!");
+			LM_INFO_TAG("Scene", "PLAY!");
 		}
 		ImGui::End();
 		ImGui::PopStyleColor();
@@ -961,7 +961,7 @@ namespace Luma {
 							{
 								if (ray.IntersectsTriangle(triangle.V0.Position, triangle.V1.Position, triangle.V2.Position, t))
 								{
-									LM_WARN("INTERSECTION: {0}, t={1}", submesh.NodeName, t);
+									LM_WARN_TAG("Scene", "INTERSECTION: {0}, t={1}", submesh.NodeName, t);
 									m_SelectionContext.push_back({ entity, &submesh, t });
 									break;
 								}

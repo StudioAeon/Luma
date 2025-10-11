@@ -318,7 +318,7 @@ namespace Luma {
 			return false;
 
 		std::string sceneName = data["Scene"].as<std::string>();
-		LM_CORE_INFO("Deserializing scene '{0}'", sceneName);
+		LM_CORE_INFO_TAG("Scene", "Deserializing scene '{0}'", sceneName);
 
 		auto environment = data["Environment"];
 		if (environment)
@@ -348,7 +348,7 @@ namespace Luma {
 				if (tagComponent)
 					name = tagComponent["Tag"].as<std::string>();
 
-				LM_CORE_INFO("Deserialized entity with ID = {0}, name = {1}", uuid, name);
+				LM_CORE_INFO_TAG("Scene", "Deserialized entity with ID = {0}, name = {1}", uuid, name);
 
 				Entity deserializedEntity = m_Scene->CreateEntityWithID(uuid, name);
 
@@ -364,10 +364,10 @@ namespace Luma {
 					transform = glm::translate(glm::mat4(1.0f), translation) *
 						glm::toMat4(rotation) * glm::scale(glm::mat4(1.0f), scale);
 
-					LM_CORE_INFO("  Entity Transform:");
-					LM_CORE_INFO("    Translation: {0}, {1}, {2}", translation.x, translation.y, translation.z);
-					LM_CORE_INFO("    Rotation: {0}, {1}, {2}, {3}", rotation.w, rotation.x, rotation.y, rotation.z);
-					LM_CORE_INFO("    Scale: {0}, {1}, {2}", scale.x, scale.y, scale.z);
+					LM_CORE_INFO_TAG("Scene", "  Entity Transform:");
+					LM_CORE_INFO_TAG("Scene", "    Translation: {0}, {1}, {2}", translation.x, translation.y, translation.z);
+					LM_CORE_INFO_TAG("Scene", "    Rotation: {0}, {1}, {2}, {3}", rotation.w, rotation.x, rotation.y, rotation.z);
+					LM_CORE_INFO_TAG("Scene", "    Scale: {0}, {1}, {2}", scale.x, scale.y, scale.z);
 				}
 
 				auto meshComponent = entity["MeshComponent"];
@@ -377,7 +377,7 @@ namespace Luma {
 					if (!deserializedEntity.HasComponent<MeshComponent>())
 						deserializedEntity.AddComponent<MeshComponent>(Ref<Mesh>::Create(meshPath));
 
-					LM_CORE_INFO("  Mesh Asset Path: {0}", meshPath);
+					LM_CORE_INFO_TAG("Scene", "  Mesh Asset Path: {0}", meshPath);
 				}
 
 				auto cameraComponent = entity["CameraComponent"];
@@ -387,7 +387,7 @@ namespace Luma {
 					component.Camera = SceneCamera();
 					component.Primary = cameraComponent["Primary"].as<bool>();
 
-					LM_CORE_INFO("  Primary Camera: {0}", component.Primary);
+					LM_CORE_INFO_TAG("Scene", "  Primary Camera: {0}", component.Primary);
 				}
 
 				auto directionalLightComponent = entity["DirectionalLightComponent"];
