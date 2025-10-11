@@ -22,6 +22,8 @@ Luma::Application* Luma::CreateApplication(int argv, char** argc)
 	specification.Name = "Luma-Editor";
 	specification.WindowWidth = 1600;
 	specification.WindowHeight = 900;
+	specification.Mode = WindowMode::ExclusiveFullscreen;
+	specification.VSync = true;
 
 	return new LumaEditorApplication(specification);
 }

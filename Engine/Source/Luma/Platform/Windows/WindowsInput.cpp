@@ -1,6 +1,5 @@
 #include "lmpch.hpp"
 #include "Luma/Core/Input.hpp"
-#include "WindowsWindow.hpp"
 
 #include "Luma/Core/Application.hpp"
 
@@ -40,7 +39,7 @@ namespace Luma {
 
 	std::pair<float, float> Input::GetMousePosition()
 	{
-		auto& window = static_cast<WindowsWindow&>(Application::Get().GetWindow());
+		auto& window = static_cast<Window&>(Application::Get().GetWindow());
 
 		float x, y;
 		SDL_GetMouseState(&x, &y);

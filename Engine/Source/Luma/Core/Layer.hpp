@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Luma/Core/Base.hpp"
 #include "Luma/Events/Event.hpp"
 #include "Luma/Core/TimeStep.hpp"
 

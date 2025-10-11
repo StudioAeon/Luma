@@ -11,8 +11,6 @@
 bool g_ApplicationRunning = true;
 namespace Luma {
 
-#define BIND_EVENT_FN(fn) std::bind(&Application::fn, this, std::placeholders::_1)
-
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application(const ApplicationSpecification& specification)
@@ -24,21 +22,32 @@ namespace Luma {
 		windowSpec.Title = specification.Name;
 		windowSpec.Width = specification.WindowWidth;
 		windowSpec.Height = specification.WindowHeight;
+		windowSpec.Mode = specification.Mode;
 		windowSpec.VSync = specification.VSync;
 		m_Window = std::unique_ptr<Window>(Window::Create(windowSpec));
-		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
-		m_Window->Maximize();
-		m_Window->SetVSync(false);
+		m_Window->Init();
+		m_Window->SetEventCallback([this](Event& e) { OnEvent(e); });
 
 		m_ImGuiLayer = new ImGuiLayer("ImGui");
 		PushOverlay(m_ImGuiLayer);
 
 		Renderer::Init();
 		Renderer::WaitAndRender();
+
+		m_Window->SetResizable(specification.Resizable);
+		if (windowSpec.Mode == WindowMode::Windowed)
+			m_Window->CenterWindow();
 	}
 
 	Application::~Application()
 	{
+		m_Window->SetEventCallback([](Event& e) {});
+
+		for (Layer* layer : m_LayerStack)
+		{
+			layer->OnDetach();
+			delete layer;
+		}
 	}
 
 	void Application::PushLayer(Layer* layer)
@@ -76,20 +85,9 @@ namespace Luma {
 		ImGui::Text("Version: %s", caps.Version.c_str());
 		ImGui::Text("Frame Time: %.2fms\n", m_TimeStep.GetMilliseconds());
 		ImGui::End();
-		for (Layer* layer : m_LayerStack)
-			layer->OnImGuiRender();
 
-		m_ImGuiLayer->End();
-	}
-
-	void Application::Close()
-	{
-		m_Running = false;
-	}
-
-	void Application::OnShutdown()
-	{
-		g_ApplicationRunning = false;
+		for (int i = 0; i < m_LayerStack.Size(); i++)
+			m_LayerStack[i]->OnImGuiRender();
 	}
 
 	void Application::Run()
@@ -97,6 +95,8 @@ namespace Luma {
 		OnInit();
 		while (m_Running)
 		{
+			ProcessEvents();
+
 			m_Frametime = GetFrameDelta();
 			m_TimeStep = glm::min<float>(m_Frametime, 0.0333f);
 			m_LastFrameTime += m_Frametime; // Keep total time
@@ -109,20 +109,37 @@ namespace Luma {
 				// Render ImGui on render thread
 				Application* app = this;
 				Renderer::Submit([app]() { app->RenderImGui(); });
+				Renderer::Submit([=]() { m_ImGuiLayer->End(); });
 
 				Renderer::WaitAndRender();
 			}
-
-			m_Window->OnUpdate();
+			m_Window->SwapBuffers();
 		}
 		OnShutdown();
+	}
+
+	void Application::Close()
+	{
+		m_Running = false;
+	}
+
+	void Application::OnShutdown()
+	{
+		m_EventCallbacks.clear();
+		g_ApplicationRunning = false;
+	}
+
+	void Application::ProcessEvents()
+	{
+		m_Window->ProcessEvents();
 	}
 
 	void Application::OnEvent(Event& event)
 	{
 		EventDispatcher dispatcher(event);
-		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
-		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
+		dispatcher.Dispatch<WindowResizeEvent>([this](WindowResizeEvent& e) { return OnWindowResize(e); });
+		dispatcher.Dispatch<WindowMinimizeEvent>([this](WindowMinimizeEvent& e) { return OnWindowMinimize(e); });
+		dispatcher.Dispatch<WindowCloseEvent>([this](WindowCloseEvent& e) { return OnWindowClose(e); });
 
 		//LM_CORE_TRACE("{}", event.ToString());
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
@@ -130,6 +147,20 @@ namespace Luma {
 			(*--it)->OnEvent(event);
 			if (event.Handled)
 				break;
+
+			if (event.Handled)
+				return;
+
+			// TODO: Should these callbacks be called BEFORE the layers recieve events?
+			//				We may actually want that since most of these callbacks will be functions REQUIRED in order for the game
+			//				to work, and if a layer has already handled the event we may end up with problems
+			for (auto& eventCallback : m_EventCallbacks)
+			{
+				eventCallback(event);
+
+				if (event.Handled)
+					break;
+			}
 		}
 	}
 
@@ -149,6 +180,12 @@ namespace Luma {
 			if (!fb->GetSpecification().NoResize)
 				fb->Resize(width, height);
 		}
+		return false;
+	}
+
+	bool Application::OnWindowMinimize(WindowMinimizeEvent& e)
+	{
+		m_Minimized = e.IsMinimized();
 		return false;
 	}
 
@@ -212,7 +249,7 @@ namespace Luma {
 		return std::string();
 	}
 
-	float Application::GetFrameDelta()
+	float Application::GetFrameDelta() const
 	{
 		static uint64_t last = SDL_GetTicksNS();
 		uint64_t now = SDL_GetTicksNS();

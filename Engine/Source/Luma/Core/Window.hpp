@@ -1,17 +1,27 @@
 #pragma once
 
-#include <functional>
-
 #include "Luma/Core/Base.hpp"
 #include "Luma/Events/Event.hpp"
 
+#include <SDL3/SDL.h>
+
+#include <functional>
+
 namespace Luma {
+
+	enum class WindowMode
+	{
+		Windowed,
+		BorderlessFullscreen,
+		ExclusiveFullscreen
+	};
 
 	struct WindowSpecification
 	{
 		std::string Title = "Luma";
 		uint32_t Width = 1600;
 		uint32_t Height = 900;
+		WindowMode Mode = WindowMode::Windowed;
 		bool VSync = true;
 	};
 
@@ -21,28 +31,55 @@ namespace Luma {
 	public:
 		using EventCallbackFn = std::function<void(Event&)>;
 
-		virtual ~Window() {}
+		Window(const WindowSpecification& specification);
+		virtual ~Window();
 
-		virtual void OnUpdate() = 0;
+		virtual void Init();
+		virtual void ProcessEvents();
+		virtual void SwapBuffers();
 
-		virtual uint32_t GetWidth() const = 0;
-		virtual uint32_t GetHeight() const = 0;
-		virtual std::pair<uint32_t, uint32_t> GetSize() const = 0;
-		virtual std::pair<float, float> GetWindowPos() const = 0;
+		inline uint32_t GetWidth() const { return m_Data.Width; }
+		inline uint32_t GetHeight() const { return m_Data.Height; }
 
-		virtual void Maximize() = 0;
+		virtual std::pair<uint32_t, uint32_t> GetSize() const { return { m_Data.Width, m_Data.Height }; }
+		virtual std::pair<float, float> GetWindowPos() const;
 
 		// Window attributes
-		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
-		virtual void SetVSync(bool enabled) = 0;
-		virtual bool IsVSync() const = 0;
+		virtual void SetEventCallback(const EventCallbackFn& callback) { m_Data.EventCallback = callback; }
+		virtual void SetVSync(bool enabled);
+		virtual bool IsVSync() const;
+		virtual void SetResizable(bool resizable) const;
 
-		virtual const std::string& GetTitle() const = 0;
-		virtual void SetTitle(const std::string& title) = 0;
+		virtual void Maximize();
+		virtual void CenterWindow();
 
-		virtual void* GetNativeWindow() const = 0;
+		virtual const std::string& GetTitle() const { return m_Data.Title; }
+		virtual void SetTitle(const std::string& title);
 
+		SDL_Window* GetNativeWindow() const { return m_Window; }
+	public:
 		static Window* Create(const WindowSpecification& specification = WindowSpecification());
+
+	private:
+		virtual void Shutdown();
+		virtual void PollEvents();
+	private:
+		SDL_Window* m_Window = nullptr;
+		SDL_GLContext m_GLContext;
+		SDL_Cursor* m_ImGuiMouseCursors[8] = { nullptr };
+		SDL_Event m_Event {};
+
+		WindowSpecification m_Specification;
+		struct WindowData
+		{
+			std::string Title;
+			uint32_t Width, Height;
+
+			EventCallbackFn EventCallback;
+		};
+
+		WindowData m_Data;
+		float m_LastFrameTime = 0.0f;
 	};
 
 }

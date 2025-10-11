@@ -2,8 +2,6 @@ if(WIN32)
 	target_sources(Luma
 			PRIVATE
 			Windows/WindowsInput.cpp
-			Windows/WindowsWindow.cpp
-			Windows/WindowsWindow.hpp
 	)
 
 	target_compile_definitions(Luma PRIVATE LM_PLATFORM_WINDOWS)

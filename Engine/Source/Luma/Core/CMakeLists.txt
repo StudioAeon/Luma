@@ -6,6 +6,7 @@ set(CORE_SOURCES
 		Log.cpp
 		TimeStep.cpp
 		UUID.cpp
+		Window.cpp
 )
 
 set(CORE_HEADERS

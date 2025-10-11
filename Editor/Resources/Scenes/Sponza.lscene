@@ -1,6 +1,6 @@
 Scene: Scene Name
 Environment:
-  AssetPath: Resources\Env\Shangai\shangai.hdr
+  AssetPath: Resources\EnvironmentMaps\Shangai\shangai.hdr
   Light:
     Direction: [0.0529999994, 0.795000017, 0]
     Radiance: [1, 0.999989986, 0.999989986]
@@ -35,6 +35,6 @@ Entities:
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
     SkyLightComponent:
-      EnvironmentAssetPath: Resources\Env\Shangai\shangai.hdr
+      EnvironmentAssetPath: Resources\EnvironmentMaps\Shangai\shangai.hdr
       Intensity: 0.189999998
       Angle: 0
