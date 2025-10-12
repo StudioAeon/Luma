@@ -1,5 +1,6 @@
 #include "EditorLayer.hpp"
 #include "Luma/Utilities/FileSystem.hpp"
+#include "Luma/Utilities/CommandLineParser.hpp"
 
 #include "Luma/EntryPoint.hpp"
 
@@ -36,8 +37,15 @@ private:
 	std::filesystem::path m_PersistentStoragePath;
 };
 
-Luma::Application* Luma::CreateApplication(int argv, char** argc)
+Luma::Application* Luma::CreateApplication(int argc, char** argv)
 {
+	Luma::CommandLineParser cli(argc, argv);
+
+	auto cd = cli.GetOpt("C");
+	if(!cd.empty()) {
+		Luma::FileSystem::SetWorkingDirectory(cd);
+	}
+
 	ApplicationSpecification specification;
 	specification.Name = "Luma-Editor";
 	specification.WindowWidth = 1600;

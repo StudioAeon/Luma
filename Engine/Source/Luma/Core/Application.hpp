@@ -84,5 +84,5 @@ namespace Luma {
 	};
 
 	// Implemented by CLIENT
-	Application* CreateApplication(int argc, char** argv);
+	Application* CreateApplication(int argv, char** argc);
 }
