@@ -3,6 +3,7 @@
 
 #include "Luma/Renderer/Renderer.hpp"
 #include "Luma/Renderer/VertexBuffer.hpp"
+#include "Luma/Utilities/AssimpLogStream.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -50,27 +51,10 @@ namespace Luma {
 		aiProcess_OptimizeMeshes |          // Batch draws where possible
 		aiProcess_ValidateDataStructure;    // Validation
 
-	struct LogStream : public Assimp::LogStream
-	{
-		static void Initialize()
-		{
-			if (Assimp::DefaultLogger::isNullLogger())
-			{
-				Assimp::DefaultLogger::create("", Assimp::Logger::VERBOSE);
-				Assimp::DefaultLogger::get()->attachStream(new LogStream, Assimp::Logger::Err | Assimp::Logger::Warn);
-			}
-		}
-
-		virtual void write(const char* message) override
-		{
-			LM_CORE_WARN_TAG("Assimp", "Assimp: {0}", message);
-		}
-	};
-
 	Mesh::Mesh(const std::string& filename)
 		: m_FilePath(filename)
 	{
-		LogStream::Initialize();
+		AssimpLogStream::Initialize();
 
 		LM_CORE_INFO_TAG("Assimp", "Loading mesh: {0}", filename.c_str());
 

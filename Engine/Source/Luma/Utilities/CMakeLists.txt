@@ -5,6 +5,7 @@ set(UTILITIES_SOURCES
 )
 
 set(UTILITIES_HEADERS
+		AssimpLogStream.hpp
 		CommandLineParser.hpp
 		ContainerUtils.hpp
 		FileSystem.hpp
