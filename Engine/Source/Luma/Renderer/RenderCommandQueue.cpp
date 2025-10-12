@@ -7,7 +7,7 @@ namespace Luma {
 
 	RenderCommandQueue::RenderCommandQueue()
 	{
-		m_CommandBuffer = new uint8_t[10 * 1024 * 1024]; // 10mb buffer
+		m_CommandBuffer = lnew uint8_t[10 * 1024 * 1024]; // 10mb buffer
 		m_CommandBufferPtr = m_CommandBuffer;
 		memset(m_CommandBuffer, 0, 10 * 1024 * 1024);
 	}
@@ -19,15 +19,14 @@ namespace Luma {
 
 	void* RenderCommandQueue::Allocate(RenderCommandFn fn, uint32_t size)
 	{
-		// TODO: alignment
 		*(RenderCommandFn*)m_CommandBufferPtr = fn;
-		m_CommandBufferPtr += sizeof(RenderCommandFn);
+		m_CommandBufferPtr += alignof(RenderCommandFn);
 
 		*(uint32_t*)m_CommandBufferPtr = size;
-		m_CommandBufferPtr += sizeof(uint32_t);
+		m_CommandBufferPtr += RoundUp(sizeof(uint32_t), alignof(RenderCommandFn));
 
 		void* memory = m_CommandBufferPtr;
-		m_CommandBufferPtr += size;
+		m_CommandBufferPtr += RoundUp<size_t>(size, alignof(RenderCommandFn));
 
 		m_CommandCount++;
 		return memory;
@@ -45,9 +44,10 @@ namespace Luma {
 			buffer += sizeof(RenderCommandFn);
 
 			uint32_t size = *(uint32_t*)buffer;
-			buffer += sizeof(uint32_t);
+			buffer += RoundUp(sizeof(uint32_t), alignof(RenderCommandFn));
+
 			function(buffer);
-			buffer += size;
+			buffer += RoundUp<size_t>(size, alignof(RenderCommandFn));
 		}
 
 		m_CommandBufferPtr = m_CommandBuffer;

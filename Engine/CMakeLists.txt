@@ -69,6 +69,28 @@ target_compile_definitions(Luma PUBLIC
 		$<$<CONFIG:Distribution>:NDEBUG>
 )
 
+if(LUMA_TRACK_MEMORY)
+	target_compile_definitions(Luma PUBLIC
+			$<$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>:LM_TRACK_MEMORY>
+	)
+endif()
+
+# ==== Linux-Specific Libraries ====
+if(UNIX AND NOT APPLE)
+	target_compile_definitions(Luma PRIVATE
+			__EMULATE_UUID
+			BACKWARD_HAS_DW
+			BACKWARD_HAS_LIBUNWIND
+	)
+
+	target_link_libraries(Luma PRIVATE
+			dw
+			dl
+			unwind
+			pthread
+	)
+endif()
+
 # ==== Dependencies ====
 target_link_libraries(Luma
 		PUBLIC

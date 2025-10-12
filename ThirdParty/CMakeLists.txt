@@ -173,6 +173,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(nfd)
 
 # ==== Tracy ====
+if(LUMA_TRACK_MEMORY)
 set(TRACY_ENABLE ON)
 set(TRACY_ON_DEMAND OFF)
 set(TRACY_CALLSTACK ON)
@@ -180,6 +181,9 @@ set(TRACY_ONLY_LOCALHOST ON)
 set(TRACY_NO_BROADCAST ON)
 set(TRACY_NO_VERIFY OFF)
 set(TRACY_SYMBOL_OFFLINE_RESOLVE OFF)
+else()
+	set(TRACY_ENABLE OFF)
+endif()
 
 FetchContent_Declare(
 		tracy

@@ -2,11 +2,13 @@
 #include "Base.hpp"
 
 #include "Log.hpp"
+#include "Memory.hpp"
 
 namespace Luma {
 
 	void InitializeCore()
 	{
+		Allocator::Init();
 		Log::Init();
 
 		LM_CORE_TRACE_TAG("Core", "Luma Engine {}", LM_VERSION);

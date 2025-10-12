@@ -66,6 +66,7 @@ include(CmakeUtils/LumaFileUtils)
 
 # ==== Distribution Options ====
 option(LUMA_BUILD_TESTS "Build Luma test suite" OFF)
+option(LUMA_TRACK_MEMORY "Enable memory tracking" ON)
 
 # ==== Add Subsystems ====
 add_subdirectory(ThirdParty)

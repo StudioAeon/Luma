@@ -6,6 +6,7 @@ set(CORE_SOURCES
 		Layer.cpp
 		LayerStack.cpp
 		Log.cpp
+		Memory.cpp
 		TimeStep.cpp
 		UUID.cpp
 		Window.cpp
@@ -23,6 +24,7 @@ set(CORE_HEADERS
 		LayerStack.hpp
 		Log.hpp
 		LogCustomFormatters.hpp
+		Memory.hpp
 		Ref.hpp
 		Timer.hpp
 		TimeStep.hpp

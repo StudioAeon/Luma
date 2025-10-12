@@ -46,10 +46,38 @@ target_compile_definitions(Luma-Editor PRIVATE
 		$<$<CONFIG:Distribution>:NDEBUG>
 )
 
+if(LUMA_TRACK_MEMORY)
+	target_compile_definitions(Luma PUBLIC
+			$<$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>:LM_TRACK_MEMORY>
+	)
+endif()
+
 # ==== Linux-Specific Libraries ====
 if(UNIX AND NOT APPLE)
+	target_compile_definitions(Luma-Editor PRIVATE
+			__EMULATE_UUID
+			BACKWARD_HAS_DW
+			BACKWARD_HAS_LIBUNWIND
+	)
+
+	find_package(PkgConfig QUIET)
+	if(PkgConfig_FOUND)
+		pkg_check_modules(GTK3 gtk+-3.0)
+
+		if(GTK3_FOUND)
+			target_link_libraries(Luma-Editor PRIVATE ${GTK3_LIBRARIES})
+			target_include_directories(Luma-Editor PRIVATE ${GTK3_INCLUDE_DIRS})
+			target_compile_options(Luma-Editor PRIVATE ${GTK3_CFLAGS_OTHER})
+			message(STATUS "  -> GTK+3 linked")
+		else()
+			message(STATUS "  -> GTK+3 not found (optional)")
+		endif()
+	endif()
+
 	target_link_libraries(Luma-Editor PRIVATE
+			dw
 			dl
+			unwind
 			pthread
 	)
 endif()

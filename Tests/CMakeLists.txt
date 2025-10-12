@@ -37,9 +37,38 @@ function(luma_configure_test_target TARGET_NAME)
 			$<$<CONFIG:Distribution>:NDEBUG>
 	)
 
+	target_compile_definitions(${TARGET_NAME} PRIVATE
+			$<$<OR:$<CONFIG:Debug>,$<CONFIG:Release>>:LM_TRACK_MEMORY>
+	)
+
 	# Linux-specific libraries
 	if(UNIX AND NOT APPLE)
-		target_link_libraries(${TARGET_NAME} PRIVATE dl pthread)
+		target_compile_definitions(${TARGET_NAME} PRIVATE
+				__EMULATE_UUID
+				BACKWARD_HAS_DW
+				BACKWARD_HAS_LIBUNWIND
+		)
+
+		find_package(PkgConfig QUIET)
+		if(PkgConfig_FOUND)
+			pkg_check_modules(GTK3 gtk+-3.0)
+
+			if(GTK3_FOUND)
+				target_link_libraries(${TARGET_NAME} PRIVATE ${GTK3_LIBRARIES})
+				target_include_directories(${TARGET_NAME} PRIVATE ${GTK3_INCLUDE_DIRS})
+				target_compile_options(${TARGET_NAME} PRIVATE ${GTK3_CFLAGS_OTHER})
+				message(STATUS "  -> GTK+3 linked")
+			else()
+				message(STATUS "  -> GTK+3 not found (optional)")
+			endif()
+		endif()
+
+		target_link_libraries(${TARGET_NAME} PRIVATE
+				dw
+				dl
+				unwind
+				pthread
+		)
 	endif()
 
 	# Optimizations
