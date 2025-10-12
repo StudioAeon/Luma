@@ -1,6 +1,8 @@
 set(CORE_SOURCES
 		Application.cpp
 		Base.cpp
+		FatalSignal.cpp
+		Input.cpp
 		Layer.cpp
 		LayerStack.cpp
 		Log.cpp
@@ -14,6 +16,7 @@ set(CORE_HEADERS
 		Assert.hpp
 		Base.hpp
 		Buffer.hpp
+		FatalSignal.hpp
 		Input.hpp
 		KeyCodes.hpp
 		Layer.hpp

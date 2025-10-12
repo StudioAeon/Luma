@@ -1,6 +1,5 @@
 #include "EditorLayer.hpp"
 
-#include "Luma/ImGui/ImGuiLayer.hpp"
 #include "Luma/Renderer/Renderer2D.hpp"
 #include "Luma/Core/KeyCodes.hpp"
 

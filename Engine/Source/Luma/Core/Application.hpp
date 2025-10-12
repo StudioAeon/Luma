@@ -9,8 +9,6 @@
 
 #include "Luma/ImGui/ImGuiLayer.hpp"
 
-#include <string>
-
 namespace Luma {
 
 	struct ApplicationSpecification
@@ -19,6 +17,7 @@ namespace Luma {
 		uint32_t WindowWidth = 1600, WindowHeight = 900;
 		WindowMode Mode = WindowMode::Windowed;
 		bool VSync = true;
+		std::string WorkingDirectory;
 		bool Resizable = true;
 	};
 

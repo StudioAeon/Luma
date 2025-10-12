@@ -34,7 +34,6 @@ if(NOT SDL3_FOUND)
 			GIT_TAG release-3.2.22
 			SYSTEM
 	)
-
 	FetchContent_MakeAvailable(SDL3)
 endif()
 
@@ -114,7 +113,6 @@ FetchContent_Declare(
 		GIT_TAG v3.15.0
 		SYSTEM
 )
-
 FetchContent_MakeAvailable(EnTT)
 
 # ==== FastNoise2 ====
@@ -128,7 +126,6 @@ FetchContent_Declare(
 		GIT_SHALLOW    TRUE
 		SYSTEM
 )
-
 FetchContent_MakeAvailable(FastNoise2)
 
 # ==== yaml-cpp ====
@@ -139,3 +136,70 @@ set(YAML_CPP_INSTALL OFF)
 set(YAML_BUILD_SHARED_LIBS OFF)
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/yaml-cpp SYSTEM)
+
+# ==== choc (Header-only audio/utility library) ====
+FetchContent_Declare(
+		choc
+		GIT_REPOSITORY https://github.com/Tracktion/choc.git
+		GIT_TAG b262a1fd6352c0d07f946a7bb7122b644bee7ade
+		GIT_SHALLOW TRUE
+		SYSTEM
+)
+FetchContent_MakeAvailable(choc)
+
+add_library(choc_lib INTERFACE)
+target_include_directories(choc_lib INTERFACE ${choc_SOURCE_DIR})
+
+if(WIN32)
+	target_link_libraries(choc_lib INTERFACE ole32 shlwapi)
+elseif(UNIX AND NOT APPLE)
+	find_package(PkgConfig REQUIRED)
+	pkg_check_modules(ALSA REQUIRED alsa)
+	target_link_libraries(choc_lib INTERFACE ${ALSA_LIBRARIES})
+	target_include_directories(choc_lib INTERFACE ${ALSA_INCLUDE_DIRS})
+endif()
+
+# ==== Native File Dialog Extended ====
+set(NFD_BUILD_TESTS OFF)
+set(NFD_BUILD_SDL2_TESTS OFF)
+set(NFD_INSTALL OFF)
+
+FetchContent_Declare(
+		nfd
+		GIT_REPOSITORY https://github.com/btzy/nativefiledialog-extended.git
+		GIT_TAG v1.2.1
+		SYSTEM
+)
+FetchContent_MakeAvailable(nfd)
+
+# ==== Tracy ====
+set(TRACY_ENABLE ON)
+set(TRACY_ON_DEMAND OFF)
+set(TRACY_CALLSTACK ON)
+set(TRACY_ONLY_LOCALHOST ON)
+set(TRACY_NO_BROADCAST ON)
+set(TRACY_NO_VERIFY OFF)
+set(TRACY_SYMBOL_OFFLINE_RESOLVE OFF)
+
+FetchContent_Declare(
+		tracy
+		GIT_REPOSITORY https://github.com/wolfpld/tracy.git
+		GIT_TAG v0.12.2
+		GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(tracy)
+
+if(TARGET TracyClient)
+	luma_enable_lto(TracyClient)
+endif()
+
+# ==== Backward-cpp (Stack traces) ====
+set(BACKWARD_TESTS OFF)
+
+FetchContent_Declare(
+		backward-cpp
+		GIT_REPOSITORY https://github.com/bombela/backward-cpp.git
+		GIT_TAG v1.6
+		SYSTEM
+)
+FetchContent_MakeAvailable(backward-cpp)

@@ -20,6 +20,7 @@ add_library(Luma STATIC)
 target_sources(Luma PRIVATE ${LUMA_ROOT_SOURCES} ${LUMA_ROOT_HEADERS} ${LUMA_THIRDPARTY_IMPL_SOURCES})
 
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Core)
+add_subdirectory(${LUMA_SRC_DIR}/Luma/Debug)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Editor)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Events)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/ImGui)
@@ -27,6 +28,7 @@ add_subdirectory(${LUMA_SRC_DIR}/Luma/Math)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Platform)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Renderer)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Scene)
+add_subdirectory(${LUMA_SRC_DIR}/Luma/Utilities)
 
 # ==== PCH Configuration ====
 target_precompile_headers(Luma PRIVATE ${LUMA_SRC_DIR}/lmpch.hpp)
@@ -81,6 +83,10 @@ target_link_libraries(Luma
 		assimp
 		FastNoise
 		yaml-cpp
+		choc_lib
+		nfd
+		TracyClient
+		backward
 )
 
 # ==== Optimizations ====

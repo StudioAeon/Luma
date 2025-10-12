@@ -20,11 +20,11 @@
 
 #ifdef LM_ENABLE_ASSERTS
 	#ifdef LM_COMPILER_CLANG
-		#define LM_CORE_ASSERT_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Core, "Assertion Failed", ##__VA_ARGS__)
-		#define LM_ASSERT_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Client, "Assertion Failed", ##__VA_ARGS__)
+		#define LM_CORE_ASSERT_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Core, "Assertion Failed (" __FILE__ ":" LM_STRINGIFY(__LINE__) ") ", ##__VA_ARGS__)
+		#define LM_ASSERT_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Client, "Assertion Failed (" __FILE__ ":" LM_STRINGIFY(__LINE__) ") ", ##__VA_ARGS__)
 	#else
-		#define LM_CORE_ASSERT_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Core, "Assertion Failed" __VA_OPT__(,) __VA_ARGS__)
-		#define LM_ASSERT_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Client, "Assertion Failed" __VA_OPT__(,) __VA_ARGS__)
+		#define LM_CORE_ASSERT_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Core, "Assertion Failed (" __FILE__ ":" LM_STRINGIFY(__LINE__) ") " __VA_OPT__(,) __VA_ARGS__)
+		#define LM_ASSERT_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Client, "Assertion Failed (" __FILE__ ":" LM_STRINGIFY(__LINE__) ") " __VA_OPT__(,) __VA_ARGS__)
 	#endif
 
 	#define LM_CORE_ASSERT(condition, ...) do { if(!(condition)) { LM_CORE_ASSERT_MESSAGE_INTERNAL(__VA_ARGS__); LM_DEBUG_BREAK; } } while(0)
@@ -36,11 +36,11 @@
 
 #ifdef LM_ENABLE_VERIFY
 	#ifdef LM_COMPILER_CLANG
-		#define LM_CORE_VERIFY_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Core, "Verify Failed", ##__VA_ARGS__)
-		#define LM_VERIFY_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Client, "Verify Failed", ##__VA_ARGS__)
+		#define LM_CORE_VERIFY_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Core, "Verify Failed (" __FILE__ ":" LM_STRINGIFY(__LINE__) ") ", ##__VA_ARGS__)
+		#define LM_VERIFY_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Client, "Verify Failed (" __FILE__ ":" LM_STRINGIFY(__LINE__) ") ", ##__VA_ARGS__)
 	#else
-		#define LM_CORE_VERIFY_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Core, "Verify Failed" __VA_OPT__(,) __VA_ARGS__)
-		#define LM_VERIFY_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Client, "Verify Failed" __VA_OPT__(,) __VA_ARGS__)
+		#define LM_CORE_VERIFY_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Core, "Verify Failed (" __FILE__ ":" LM_STRINGIFY(__LINE__) ") " __VA_OPT__(,) __VA_ARGS__)
+		#define LM_VERIFY_MESSAGE_INTERNAL(...)  ::Luma::Log::PrintAssertMessage(::Luma::Log::Type::Client, "Verify Failed (" __FILE__ ":" LM_STRINGIFY(__LINE__) ") " __VA_OPT__(,) __VA_ARGS__)
 	#endif
 
 	#define LM_CORE_VERIFY(condition, ...) do { if(!(condition)) { LM_CORE_VERIFY_MESSAGE_INTERNAL(__VA_ARGS__); LM_DEBUG_BREAK; } } while(0)

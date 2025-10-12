@@ -4,9 +4,20 @@
 #include "Luma/Renderer/Renderer.hpp"
 #include "Luma/Renderer/Framebuffer.hpp"
 
+#include "Input.hpp"
+#include "FatalSignal.hpp"
+
+#include "Luma/Utilities/StringUtils.hpp"
+#include "Luma/Debug/Profiler.hpp"
+
 #include <SDL3/SDL.h>
-#include <glad/glad.h>
 #include <imgui.h>
+#include <imgui_internal.h>
+#include <glad/glad.h>
+
+#include <nfd.hpp>
+
+#include <filesystem>
 
 bool g_ApplicationRunning = true;
 namespace Luma {
@@ -16,7 +27,12 @@ namespace Luma {
 	Application::Application(const ApplicationSpecification& specification)
 		: m_Specification(specification)
 	{
+		FatalSignal::Install();
+
 		s_Instance = this;
+
+		if (!specification.WorkingDirectory.empty())
+			std::filesystem::current_path(specification.WorkingDirectory);
 
 		WindowSpecification windowSpec;
 		windowSpec.Title = specification.Name;
@@ -27,6 +43,8 @@ namespace Luma {
 		m_Window = std::unique_ptr<Window>(Window::Create(windowSpec));
 		m_Window->Init();
 		m_Window->SetEventCallback([this](Event& e) { OnEvent(e); });
+
+		LM_CORE_VERIFY(NFD::Init() == NFD_OKAY);
 
 		m_ImGuiLayer = new ImGuiLayer("ImGui");
 		PushOverlay(m_ImGuiLayer);
@@ -41,6 +59,8 @@ namespace Luma {
 
 	Application::~Application()
 	{
+		NFD::Quit();
+
 		m_Window->SetEventCallback([](Event& e) {});
 
 		for (Layer* layer : m_LayerStack)
@@ -76,6 +96,8 @@ namespace Luma {
 
 	void Application::RenderImGui()
 	{
+		LM_PROFILE_FUNC();
+
 		m_ImGuiLayer->Begin();
 
 		ImGui::Begin("Renderer");
@@ -114,6 +136,8 @@ namespace Luma {
 				Renderer::WaitAndRender();
 			}
 			m_Window->SwapBuffers();
+
+			LM_PROFILE_MARK_FRAME;
 		}
 		OnShutdown();
 	}

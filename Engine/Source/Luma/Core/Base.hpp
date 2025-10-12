@@ -38,6 +38,9 @@
 	#define LM_EXPLICIT_STATIC
 #endif
 
+#define LM_STRINGIFY_IMPL(x) #x
+#define LM_STRINGIFY(x) LM_STRINGIFY_IMPL(x)
+
 namespace Luma {
 
 	void InitializeCore();
