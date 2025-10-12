@@ -17,6 +17,8 @@ namespace Luma {
 		TwoSided   = Bit(3)
 	};
 
+	class MaterialInstance;
+
 	class Material : public RefCounted
 	{
 		friend class MaterialInstance;
@@ -32,16 +34,7 @@ namespace Luma {
 		Ref<Shader> GetShader() { return m_Shader; }
 
 		template <typename T>
-		void Set(const std::string& name, const T& value)
-		{
-			auto decl = FindUniformDeclaration(name);
-			LM_CORE_ASSERT(decl, "Could not find uniform with name 'x'");
-			auto& buffer = GetUniformBufferTarget(decl);
-			buffer.Write((byte*)&value, decl->GetSize(), decl->GetOffset());
-
-			for (auto mi : m_MaterialInstances)
-				mi->OnMaterialValueUpdated(decl);
-		}
+		void Set(const std::string& name, const T& value);
 
 		void Set(const std::string& name, const Ref<Texture>& texture)
 		{
@@ -206,5 +199,17 @@ namespace Luma {
 		// TODO: This is temporary; come up with a proper system to track overrides
 		std::unordered_set<std::string> m_OverriddenValues;
 	};
+
+	template <typename T>
+	void Material::Set(const std::string& name, const T& value)
+	{
+		auto decl = FindUniformDeclaration(name);
+		LM_CORE_ASSERT(decl, "Could not find uniform with name 'x'");
+		auto& buffer = GetUniformBufferTarget(decl);
+		buffer.Write((byte*)&value, decl->GetSize(), decl->GetOffset());
+
+		for (auto mi : m_MaterialInstances)
+			mi->OnMaterialValueUpdated(decl);
+	}
 
 }

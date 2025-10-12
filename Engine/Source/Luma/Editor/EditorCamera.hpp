@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Luma/Renderer/Camera.hpp"
-#include "Luma/Core/Timestep.hpp"
+#include "Luma/Core/TimeStep.hpp"
 #include "Luma/Events/MouseEvent.hpp"
 
 namespace Luma {

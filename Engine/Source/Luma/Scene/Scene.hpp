@@ -3,7 +3,7 @@
 #include "SceneCamera.hpp"
 
 #include "Luma/Core/UUID.hpp"
-#include "Luma/Core/Timestep.hpp"
+#include "Luma/Core/TimeStep.hpp"
 
 #include "Luma/Renderer/Camera.hpp"
 #include "Luma/Renderer/Texture.hpp"

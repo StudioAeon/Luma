@@ -1,6 +1,6 @@
 Scene: Scene Name
 Environment:
-  AssetPath: Resources\EnvironmentMaps\Shangai\shangai.hdr
+  AssetPath: Resources/EnvironmentMaps/Shangai/shangai.hdr
   Light:
     Direction: [0.0529999994, 0.795000017, 0]
     Radiance: [1, 0.999989986, 0.999989986]
@@ -26,7 +26,7 @@ Entities:
       Rotation: [1, 0, 0, 0]
       Scale: [0.100000001, 0.100000001, 0.100000001]
     MeshComponent:
-      AssetPath: Resources\Meshes\sponza\sponza.gltf
+      AssetPath: Resources/Meshes/sponza/sponza.gltf
   - Entity: 7172337265010841038
     TagComponent:
       Tag: Sky Light
@@ -35,6 +35,6 @@ Entities:
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
     SkyLightComponent:
-      EnvironmentAssetPath: Resources\EnvironmentMaps\Shangai\shangai.hdr
+      EnvironmentAssetPath: Resources/EnvironmentMaps/Shangai/shangai.hdr
       Intensity: 0.189999998
       Angle: 0

@@ -56,8 +56,6 @@ endif()
 if(UNIX AND NOT APPLE)
 	target_compile_definitions(Luma-Editor PRIVATE
 			__EMULATE_UUID
-			BACKWARD_HAS_DW
-			BACKWARD_HAS_LIBUNWIND
 	)
 
 	find_package(PkgConfig QUIET)

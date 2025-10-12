@@ -1,6 +1,6 @@
 Scene: Scene Name
 Environment:
-  AssetPath: Resources\EnvironmentMaps\Desert\desert.hdr
+  AssetPath: Resources/EnvironmentMaps/Desert/desert.hdr
   Light:
     Direction: [-0.5, -0.5, 1]
     Radiance: [1, 1, 1]
@@ -26,7 +26,7 @@ Entities:
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
     SkyLightComponent:
-      EnvironmentAssetPath: Resources\EnvironmentMaps\Desert\desert.hdr
+      EnvironmentAssetPath: Resources/EnvironmentMaps/Desert/desert.hdr
       Intensity: 1
       Angle: 0
   - Entity: 9095450049242347594
@@ -37,7 +37,7 @@ Entities:
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
     MeshComponent:
-      AssetPath: Resources\Meshes\TestScene.fbx
+      AssetPath: Resources/Meshes/TestScene.fbx
   - Entity: 5178862374589434728
     TagComponent:
       Tag: Camera
@@ -56,4 +56,4 @@ Entities:
       Rotation: [1, 0, 0, 0]
       Scale: [7.2425613, 7.2425613, 7.2425613]
     MeshComponent:
-      AssetPath: Resources\Meshes\Sphere1m.fbx
+      AssetPath: Resources/Meshes/Sphere1m.fbx

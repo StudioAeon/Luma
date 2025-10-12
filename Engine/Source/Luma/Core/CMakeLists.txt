@@ -2,10 +2,13 @@ set(CORE_SOURCES
 		Application.cpp
 		Base.cpp
 		FatalSignal.cpp
+		Hash.cpp
+		HashCRC32.cpp
 		Input.cpp
 		Layer.cpp
 		LayerStack.cpp
 		Log.cpp
+		Ref.cpp
 		Memory.cpp
 		TimeStep.cpp
 		UUID.cpp
@@ -17,7 +20,10 @@ set(CORE_HEADERS
 		Assert.hpp
 		Base.hpp
 		Buffer.hpp
+		FastRandom.hpp
 		FatalSignal.hpp
+		Hash.hpp
+		Identifier.hpp
 		Input.hpp
 		KeyCodes.hpp
 		Layer.hpp

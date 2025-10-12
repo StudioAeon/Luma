@@ -184,7 +184,7 @@ namespace Luma {
 		{
 			auto& buffer = GetUniformBufferTarget(decl);
 			auto& materialBuffer = m_Material->GetUniformBufferTarget(decl);
-			buffer.Write(materialBuffer.Data + decl->GetOffset(), decl->GetSize(), decl->GetOffset());
+			buffer.Write((byte*)materialBuffer.Data + decl->GetOffset(), decl->GetSize(), decl->GetOffset());
 		}
 	}
 

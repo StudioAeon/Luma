@@ -30,10 +30,16 @@ if(IS_MULTI_CONFIG)
 	set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Distribution")
 	message(STATUS "Multi-config generator: Debug, Release, Distribution")
 else()
-	set_property(CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "Distribution")
-	if(NOT CMAKE_BUILD_TYPE)
+	if(NOT DEFINED CMAKE_BUILD_TYPE)
 		set(CMAKE_BUILD_TYPE "Release")
 	endif()
+
+	set(valid_build_types Debug Release Distribution)
+	list(FIND valid_build_types "${CMAKE_BUILD_TYPE}" _index)
+	if(_index EQUAL -1)
+		message(FATAL_ERROR "Invalid build type: ${CMAKE_BUILD_TYPE}. Valid options are: ${valid_build_types}")
+	endif()
+
 	message(STATUS "Single-config generator: ${CMAKE_BUILD_TYPE}")
 endif()
 

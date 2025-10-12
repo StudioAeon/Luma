@@ -2,6 +2,7 @@
 
 #include "Luma/Renderer/Renderer2D.hpp"
 #include "Luma/Core/KeyCodes.hpp"
+#include "Luma/Utilities/FileSystem.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
@@ -315,10 +316,12 @@ namespace Luma {
 
 	void EditorLayer::OpenScene()
 	{
-		auto& app = Application::Get();
-		std::string filepath = app.OpenFile("Luma Scene (*.lscene)\0*.lscene\0");
+		auto filepath = FileSystem::OpenFileDialog({
+			{ "Luma Scene", "lscene" }
+		});
+
 		if (!filepath.empty())
-			OpenScene(filepath);
+			OpenScene(filepath.string());
 	}
 
 	void EditorLayer::OpenScene(const std::string& filepath)
@@ -351,16 +354,17 @@ namespace Luma {
 
 	void EditorLayer::SaveSceneAs()
 	{
-		auto& app = Application::Get();
-		std::string filepath = app.SaveFile("Luma Scene (*.lscene)\0*.lscene\0");
+		auto filepath = FileSystem::SaveFileDialog({
+			{ "Luma Scene", "lscene" }
+		});
+
 		if (!filepath.empty())
 		{
 			SceneSerializer serializer(m_EditorScene);
-			serializer.Serialize(filepath);
+			serializer.Serialize(filepath.string());
 
-			std::filesystem::path path = filepath;
-			UpdateWindowTitle(path.filename().string());
-			m_SceneFilePath = filepath;
+			UpdateWindowTitle(filepath.filename().string());
+			m_SceneFilePath = filepath.string();
 		}
 	}
 
@@ -675,10 +679,13 @@ namespace Luma {
 									}
 									if (ImGui::IsItemClicked())
 									{
-										std::string filename = Application::Get().OpenFile("");
-										if (filename != "")
+										auto filepath = FileSystem::OpenFileDialog({
+											{ "Image Files", "png,jpg,jpeg,tga,bmp,hdr" }
+										});
+
+										if (!filepath.empty())
 										{
-											albedoMap = Texture2D::Create(filename, true/*m_AlbedoInput.SRGB*/);
+											albedoMap = Texture2D::Create(filepath.string(), true/*m_AlbedoInput.SRGB*/);
 											materialInstance->Set("u_AlbedoTexture", albedoMap);
 										}
 									}
@@ -720,10 +727,13 @@ namespace Luma {
 									}
 									if (ImGui::IsItemClicked())
 									{
-										std::string filename = Application::Get().OpenFile("");
-										if (filename != "")
+										auto filepath = FileSystem::OpenFileDialog({
+											{ "Image Files", "png,jpg,jpeg,tga,bmp,hdr" }
+										});
+
+										if (!filepath.empty())
 										{
-											normalMap = Texture2D::Create(filename);
+											normalMap = Texture2D::Create(filepath.string());
 											materialInstance->Set("u_NormalTexture", normalMap);
 										}
 									}
@@ -756,10 +766,13 @@ namespace Luma {
 									}
 									if (ImGui::IsItemClicked())
 									{
-										std::string filename = Application::Get().OpenFile("");
-										if (filename != "")
+										auto filepath = FileSystem::OpenFileDialog({
+											{ "Image Files", "png,jpg,jpeg,tga,bmp,hdr" }
+										});
+
+										if (!filepath.empty())
 										{
-											metalnessMap = Texture2D::Create(filename);
+											metalnessMap = Texture2D::Create(filepath.string());
 											materialInstance->Set("u_MetalnessTexture", metalnessMap);
 										}
 									}
@@ -794,10 +807,13 @@ namespace Luma {
 									}
 									if (ImGui::IsItemClicked())
 									{
-										std::string filename = Application::Get().OpenFile("");
-										if (filename != "")
+										auto filepath = FileSystem::OpenFileDialog({
+											{ "Image Files", "png,jpg,jpeg,tga,bmp,hdr" }
+										});
+
+										if (!filepath.empty())
 										{
-											roughnessMap = Texture2D::Create(filename);
+											roughnessMap = Texture2D::Create(filepath.string());
 											materialInstance->Set("u_RoughnessTexture", roughnessMap);
 										}
 									}

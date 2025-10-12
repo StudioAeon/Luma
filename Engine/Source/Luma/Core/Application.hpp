@@ -45,9 +45,6 @@ namespace Luma {
 
 		void AddEventCallback(const EventCallbackFn& eventCallback) { m_EventCallbacks.push_back(eventCallback); }
 
-		std::string OpenFile(const char* filter = "All\0*.*\0") const;
-		std::string SaveFile(const char* filter = "All\0*.*\0") const;
-
 		inline Window& GetWindow() { return *m_Window; }
 
 		static inline Application& Get() { return *s_Instance; }

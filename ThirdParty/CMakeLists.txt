@@ -17,11 +17,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(spdlog)
 
 # ==== SDL3 ====
-find_package(SDL3 QUIET)
-
-if(NOT SDL3_FOUND)
-	message(STATUS "SDL3 not found, fetching from source...")
-
 	set(SDL_AUDIO OFF)
 	set(SDL_EXAMPLES OFF)
 	set(SDL_SAMPLES OFF)
@@ -35,7 +30,6 @@ if(NOT SDL3_FOUND)
 			SYSTEM
 	)
 	FetchContent_MakeAvailable(SDL3)
-endif()
 
 # ==== OpenGL ====
 find_package(OpenGL REQUIRED)
@@ -69,11 +63,6 @@ target_compile_definitions(imgui PUBLIC
 target_link_libraries(imgui PUBLIC SDL3::SDL3-static)
 
 # ==== GLM (Header-only library) ====
-find_package(glm 1.0.1 QUIET)
-
-if(NOT glm_FOUND)
-	message(STATUS "glm not found, fetching from source...")
-
 	set(GLM_BUILD_INSTALL OFF)
 	set(GLM_BUILD_TESTS OFF)
 
@@ -84,7 +73,6 @@ if(NOT glm_FOUND)
 			SYSTEM
 	)
 	FetchContent_MakeAvailable(glm)
-endif()
 
 # ==== STB (Header-only library) ====
 add_library(stb INTERFACE)

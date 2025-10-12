@@ -1,9 +1,11 @@
 set(MATH_SOURCES
+		Math.cpp
 		Noise.cpp
 )
 
 set(MATH_HEADERS
 		AABB.hpp
+		Math.hpp
 		Noise.hpp
 		Ray.hpp
 )

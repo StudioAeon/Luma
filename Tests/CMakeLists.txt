@@ -45,8 +45,6 @@ function(luma_configure_test_target TARGET_NAME)
 	if(UNIX AND NOT APPLE)
 		target_compile_definitions(${TARGET_NAME} PRIVATE
 				__EMULATE_UUID
-				BACKWARD_HAS_DW
-				BACKWARD_HAS_LIBUNWIND
 		)
 
 		find_package(PkgConfig QUIET)
@@ -80,6 +78,11 @@ set(LUMA_UNIT_TEST_SOURCES
 		${TESTS_SRC_DIR}/Core/UUIDTest.cpp
 		${TESTS_SRC_DIR}/Core/TimestepTest.cpp
 		${TESTS_SRC_DIR}/Core/BufferTest.cpp
+		${TESTS_SRC_DIR}/Core/HashTest.cpp
+		${TESTS_SRC_DIR}/Core/IdentifierTest.cpp
+		# ${TESTS_SRC_DIR}/Core/FastRandomTest.cpp fixme
+
+		${TESTS_SRC_DIR}/Reflection/TypeStructuresTest.cpp
 
 		${TESTS_SRC_DIR}/Math/RayTest.cpp
 )
@@ -136,7 +139,3 @@ luma_configure_test_target(Luma-Tests)
 # ==== CTest Integration ====
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(Catch)
-
-if(TARGET Luma-UnitTests)
-	catch_discover_tests(Luma-UnitTests)
-endif()

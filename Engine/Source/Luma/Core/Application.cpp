@@ -229,50 +229,6 @@ namespace Luma {
 		return LM_BUILD_PLATFORM_NAME;
 	}
 
-	std::string Application::OpenFile(const char* filter) const
-	{
-		OPENFILENAMEA ofn;       // common dialog box structure
-		CHAR szFile[260] = { 0 };       // if using TCHAR macros
-
-		// Initialize OPENFILENAME
-		ZeroMemory(&ofn, sizeof(OPENFILENAME));
-		ofn.lStructSize = sizeof(OPENFILENAME);
-		ofn.hwndOwner = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties((SDL_Window*)m_Window->GetNativeWindow()), SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
-		ofn.lpstrFile = szFile;
-		ofn.nMaxFile = sizeof(szFile);
-		ofn.lpstrFilter = filter;
-		ofn.nFilterIndex = 1;
-		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
-
-		if (GetOpenFileNameA(&ofn) == TRUE)
-		{
-			return ofn.lpstrFile;
-		}
-		return std::string();
-	}
-
-	std::string Application::SaveFile(const char* filter) const
-	{
-		OPENFILENAMEA ofn;       // common dialog box structure
-		CHAR szFile[260] = { 0 };       // if using TCHAR macros
-
-		// Initialize OPENFILENAME
-		ZeroMemory(&ofn, sizeof(OPENFILENAME));
-		ofn.lStructSize = sizeof(OPENFILENAME);
-		ofn.hwndOwner = (HWND)SDL_GetPointerProperty(SDL_GetWindowProperties((SDL_Window*)m_Window->GetNativeWindow()), SDL_PROP_WINDOW_WIN32_HWND_POINTER, NULL);
-		ofn.lpstrFile = szFile;
-		ofn.nMaxFile = sizeof(szFile);
-		ofn.lpstrFilter = filter;
-		ofn.nFilterIndex = 1;
-		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
-
-		if (GetSaveFileNameA(&ofn) == TRUE)
-		{
-			return ofn.lpstrFile;
-		}
-		return std::string();
-	}
-
 	float Application::GetFrameDelta() const
 	{
 		static uint64_t last = SDL_GetTicksNS();

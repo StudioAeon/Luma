@@ -12,6 +12,7 @@
 #include <cstdint>
 #include <cstdarg>
 #include <csignal>
+#include <cstring>
 #include <climits>
 
 #include <algorithm>

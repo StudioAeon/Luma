@@ -647,34 +647,36 @@ namespace Luma {
 		LM_CORE_ASSERT(uniform->GetLocation() != -1, "Uniform has invalid location!");
 
 		uint32_t offset = uniform->GetOffset();
+		auto* data = reinterpret_cast<byte*>(buffer.Data);
+
 		switch (uniform->GetType())
 		{
 		case OpenGLShaderUniformDeclaration::Type::BOOL:
-			UploadUniformFloat(uniform->GetLocation(), *(bool*)&buffer.Data[offset]);
+			UploadUniformFloat(uniform->GetLocation(), *(bool*)(data + offset));
 			break;
 		case OpenGLShaderUniformDeclaration::Type::FLOAT32:
-			UploadUniformFloat(uniform->GetLocation(), *(float*)&buffer.Data[offset]);
+			UploadUniformFloat(uniform->GetLocation(), *(float*)(data + offset));
 			break;
 		case OpenGLShaderUniformDeclaration::Type::INT32:
-			UploadUniformInt(uniform->GetLocation(), *(int32_t*)&buffer.Data[offset]);
+			UploadUniformInt(uniform->GetLocation(), *(int32_t*)(data + offset));
 			break;
 		case OpenGLShaderUniformDeclaration::Type::VEC2:
-			UploadUniformFloat2(uniform->GetLocation(), *(glm::vec2*)&buffer.Data[offset]);
+			UploadUniformFloat2(uniform->GetLocation(), *(glm::vec2*)(data + offset));
 			break;
 		case OpenGLShaderUniformDeclaration::Type::VEC3:
-			UploadUniformFloat3(uniform->GetLocation(), *(glm::vec3*)&buffer.Data[offset]);
+			UploadUniformFloat3(uniform->GetLocation(), *(glm::vec3*)(data + offset));
 			break;
 		case OpenGLShaderUniformDeclaration::Type::VEC4:
-			UploadUniformFloat4(uniform->GetLocation(), *(glm::vec4*)&buffer.Data[offset]);
+			UploadUniformFloat4(uniform->GetLocation(), *(glm::vec4*)(data + offset));
 			break;
 		case OpenGLShaderUniformDeclaration::Type::MAT3:
-			UploadUniformMat3(uniform->GetLocation(), *(glm::mat3*)&buffer.Data[offset]);
+			UploadUniformMat3(uniform->GetLocation(), *(glm::mat3*)(data + offset));
 			break;
 		case OpenGLShaderUniformDeclaration::Type::MAT4:
-			UploadUniformMat4(uniform->GetLocation(), *(glm::mat4*)&buffer.Data[offset]);
+			UploadUniformMat4(uniform->GetLocation(), *(glm::mat4*)(data + offset));
 			break;
 		case OpenGLShaderUniformDeclaration::Type::STRUCT:
-			UploadUniformStruct(uniform, buffer.Data, offset);
+			UploadUniformStruct(uniform, data, offset);
 			break;
 		default:
 			LM_CORE_ASSERT(false, "Unknown uniform type!");
@@ -686,34 +688,36 @@ namespace Luma {
 		//LM_CORE_ASSERT(uniform->GetLocation() != -1, "Uniform has invalid location!");
 
 		uint32_t offset = uniform->GetOffset();
+		auto* data = reinterpret_cast<byte*>(buffer.Data);
+
 		switch (uniform->GetType())
 		{
 		case OpenGLShaderUniformDeclaration::Type::BOOL:
-			UploadUniformFloat(uniform->GetLocation(), *(bool*)&buffer.Data[offset]);
+			UploadUniformFloat(uniform->GetLocation(), *(bool*)(data + offset));
 			break;
 		case OpenGLShaderUniformDeclaration::Type::FLOAT32:
-			UploadUniformFloat(uniform->GetLocation(), *(float*)&buffer.Data[offset]);
+			UploadUniformFloat(uniform->GetLocation(), *(float*)(data + offset));
 			break;
 		case OpenGLShaderUniformDeclaration::Type::INT32:
-			UploadUniformInt(uniform->GetLocation(), *(int32_t*)&buffer.Data[offset]);
+			UploadUniformInt(uniform->GetLocation(), *(int32_t*)(data + offset));
 			break;
 		case OpenGLShaderUniformDeclaration::Type::VEC2:
-			UploadUniformFloat2(uniform->GetLocation(), *(glm::vec2*)&buffer.Data[offset]);
+			UploadUniformFloat2(uniform->GetLocation(), *(glm::vec2*)(data + offset));
 			break;
 		case OpenGLShaderUniformDeclaration::Type::VEC3:
-			UploadUniformFloat3(uniform->GetLocation(), *(glm::vec3*)&buffer.Data[offset]);
+			UploadUniformFloat3(uniform->GetLocation(), *(glm::vec3*)(data + offset));
 			break;
 		case OpenGLShaderUniformDeclaration::Type::VEC4:
-			UploadUniformFloat4(uniform->GetLocation(), *(glm::vec4*)&buffer.Data[offset]);
+			UploadUniformFloat4(uniform->GetLocation(), *(glm::vec4*)(data + offset));
 			break;
 		case OpenGLShaderUniformDeclaration::Type::MAT3:
-			UploadUniformMat3(uniform->GetLocation(), *(glm::mat3*)&buffer.Data[offset]);
+			UploadUniformMat3(uniform->GetLocation(), *(glm::mat3*)(data + offset));
 			break;
 		case OpenGLShaderUniformDeclaration::Type::MAT4:
-			UploadUniformMat4Array(uniform->GetLocation(), *(glm::mat4*)&buffer.Data[offset], uniform->GetCount());
+			UploadUniformMat4Array(uniform->GetLocation(), *(glm::mat4*)(data + offset), uniform->GetCount());
 			break;
 		case OpenGLShaderUniformDeclaration::Type::STRUCT:
-			UploadUniformStruct(uniform, buffer.Data, offset);
+			UploadUniformStruct(uniform, data, offset);
 			break;
 		default:
 			LM_CORE_ASSERT(false, "Unknown uniform type!");

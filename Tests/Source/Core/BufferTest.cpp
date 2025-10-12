@@ -69,7 +69,7 @@ TEST_CASE("Buffer allocation", "[unit][core][buffer]")
 	{
 		Buffer buffer;
 		buffer.Allocate(128);
-		byte* firstPtr = buffer.Data;
+		byte* firstPtr = static_cast<byte*>(buffer.Data);
 
 		buffer.Allocate(256);
 
@@ -103,9 +103,10 @@ TEST_CASE("Buffer zero initialization", "[unit][core][buffer]")
 		buffer.ZeroInitialize();
 
 		// Verify all bytes are zero
+		byte* data = static_cast<byte*>(buffer.Data);
 		for (uint32_t i = 0; i < buffer.Size; ++i)
 		{
-			REQUIRE(buffer.Data[i] == 0);
+			REQUIRE(data[i] == 0);
 		}
 	}
 
@@ -144,7 +145,7 @@ TEST_CASE("Buffer write operations", "[unit][core][buffer]")
 		buffer.Write(&testValue2, sizeof(testValue2), 64);
 
 		uint32_t readValue1 = *reinterpret_cast<uint32_t*>(buffer.Data);
-		uint32_t readValue2 = *reinterpret_cast<uint32_t*>(buffer.Data + 64);
+		uint32_t readValue2 = *reinterpret_cast<uint32_t*>(static_cast<byte*>(buffer.Data) + 64);
 
 		REQUIRE(readValue1 == testValue1);
 		REQUIRE(readValue2 == testValue2);
@@ -439,9 +440,9 @@ TEST_CASE("Buffer practical usage scenarios", "[unit][core][buffer]")
 
 		// Read back
 		uint32_t readId = *reinterpret_cast<uint32_t*>(buffer.Data);
-		float readScale = *reinterpret_cast<float*>(buffer.Data + sizeof(uint32_t));
-		glm::vec3 readPos = *reinterpret_cast<glm::vec3*>(buffer.Data + sizeof(uint32_t) + sizeof(float));
-		
+		float readScale = *reinterpret_cast<float*>(static_cast<byte*>(buffer.Data) + sizeof(uint32_t));
+		glm::vec3 readPos = *reinterpret_cast<glm::vec3*>(static_cast<byte*>(buffer.Data) + sizeof(uint32_t) + sizeof(float));
+
 		REQUIRE(readId == 42);
 		REQUIRE(readScale == 2.5f);
 		REQUIRE(readPos.x == 10.0f);
@@ -488,7 +489,7 @@ TEST_CASE("Buffer edge cases", "[unit][core][buffer]")
 		// Write at last valid position
 		buffer.Write(&value, sizeof(value), 12);
 
-		uint32_t* readPtr = reinterpret_cast<uint32_t*>(buffer.Data + 12);
+		uint32_t* readPtr = reinterpret_cast<uint32_t*>(static_cast<byte*>(buffer.Data) + 12);
 		REQUIRE(*readPtr == value);
 	}
 

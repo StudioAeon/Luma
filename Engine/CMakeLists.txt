@@ -26,8 +26,10 @@ add_subdirectory(${LUMA_SRC_DIR}/Luma/Events)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/ImGui)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Math)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Platform)
+add_subdirectory(${LUMA_SRC_DIR}/Luma/Reflection)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Renderer)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Scene)
+add_subdirectory(${LUMA_SRC_DIR}/Luma/Serialization)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Utilities)
 
 # ==== PCH Configuration ====
@@ -79,8 +81,6 @@ endif()
 if(UNIX AND NOT APPLE)
 	target_compile_definitions(Luma PRIVATE
 			__EMULATE_UUID
-			BACKWARD_HAS_DW
-			BACKWARD_HAS_LIBUNWIND
 	)
 
 	target_link_libraries(Luma PRIVATE

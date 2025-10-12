@@ -5,6 +5,8 @@
 #include "Luma/Renderer/Mesh.hpp"
 #include "Luma/ImGui/ImGui.hpp"
 
+#include "Luma/Utilities/FileSystem.hpp"
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include <assimp/scene.h>
 #include <glm/gtx/quaternion.hpp>
@@ -358,7 +360,7 @@ namespace Luma {
 
 		// ID
 		ImGui::SameLine();
-		ImGui::TextDisabled("%llx", id);
+		ImGui::TextDisabled("%llx", static_cast<uint64_t>(id));
 		float lineHeight = ImGui::GetFontSize() + GImGui->Style.FramePadding.y * 2.0f;
 		ImVec2 textSize = ImGui::CalcTextSize("Add Component");
 		ImGui::SameLine(contentRegionAvailable.x - (textSize.x + GImGui->Style.FramePadding.y));
@@ -445,9 +447,13 @@ namespace Luma {
 			ImGui::NextColumn();
 			if (ImGui::Button("...##openmesh"))
 			{
-				std::string file = Application::Get().OpenFile();
-				if (!file.empty())
-					mc.Mesh = Ref<Mesh>::Create(file);
+				auto filepath = FileSystem::OpenFileDialog({
+					{ "3D Models", "obj,fbx,gltf,glb,dae" },
+					{ "All Files", "*" }
+				});
+
+				if (!filepath.empty())
+					mc.Mesh = Ref<Mesh>::Create(filepath.string());
 			}
 			ImGui::Columns(1);
 		});
@@ -541,9 +547,12 @@ namespace Luma {
 			ImGui::NextColumn();
 			if (ImGui::Button("...##openenv"))
 			{
-				std::string file = Application::Get().OpenFile("*.hdr");
-				if (!file.empty())
-					slc.SceneEnvironment = Environment::Load(file);
+				auto filepath = FileSystem::OpenFileDialog({
+					{ "HDR Environment", "hdr" }
+				});
+
+				if (!filepath.empty())
+					slc.SceneEnvironment = Environment::Load(filepath.string());
 			}
 			ImGui::Columns(1);
 

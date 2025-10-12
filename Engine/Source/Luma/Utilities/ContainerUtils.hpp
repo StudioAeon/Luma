@@ -47,4 +47,4 @@ namespace Luma::Utils {
 		return true;
 	}
 
-}
+} // Luma::Utils
