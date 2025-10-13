@@ -15,7 +15,7 @@ public:
 	{
 		// Persistent Storage
 		{
-			m_PersistentStoragePath = Luma::FileSystem::GetPersistentStoragePath() / "Luma-Editor";
+			m_PersistentStoragePath = Luma::FileSystem::GetPersistentStoragePath() / "Luma-Tests";
 
 			if (!Luma::FileSystem::Exists(m_PersistentStoragePath))
 				Luma::FileSystem::CreateDirectory(m_PersistentStoragePath);
@@ -25,13 +25,25 @@ public:
 		{
 			auto workingDirectory = Luma::FileSystem::GetWorkingDirectory();
 
-			if (workingDirectory.stem().string() == "Luma-Editor")
+			if (workingDirectory.stem().string() == "Luma-Tests")
 				workingDirectory = workingDirectory.parent_path();
 
 			Luma::FileSystem::SetEnvironmentVariable("LUMA_DIR", workingDirectory.string());
 		}
 
 		PushLayer(new Luma::TestLayer());
+
+		LM_INFO("=================================");
+		LM_INFO("  Luma Engine - Test Suite");
+		LM_INFO("=================================");
+		LM_INFO("Build: {}", Application::GetConfigurationName());
+		LM_INFO("Platform: {}", Application::GetPlatformName());
+		LM_INFO("=================================");
+	}
+
+	virtual void OnShutdown() override
+	{
+		LM_INFO("Shutting down test suite...");
 	}
 private:
 	std::filesystem::path m_PersistentStoragePath;
@@ -46,11 +58,12 @@ Luma::Application* Luma::CreateApplication(int argc, char** argv)
 		Luma::FileSystem::SetWorkingDirectory(cd);
 	}
 
+
 	Luma::ApplicationSpecification specification;
-	specification.Name = "Test Suite";
+	specification.Name = "Luma Engine - Test Suite";
 	specification.WindowWidth = 1600;
 	specification.WindowHeight = 900;
-	specification.Mode = WindowMode::ExclusiveFullscreen;
+	specification.Mode = WindowMode::Windowed;
 	specification.VSync = true;
 
 	return new TestMain(specification);

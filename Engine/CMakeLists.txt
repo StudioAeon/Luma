@@ -99,14 +99,13 @@ target_link_libraries(Luma
 		spdlog
 		SDL3::SDL3-static
 		imgui
-		PRIVATE
+		yaml-cpp
+		choc_lib
+		nfd
 		glad
 		stb
 		assimp
 		FastNoise
-		yaml-cpp
-		choc_lib
-		nfd
 		TracyClient
 		backward
 )

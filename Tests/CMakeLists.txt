@@ -115,6 +115,10 @@ set(LUMA_INTEGRATION_TEST_SOURCES
 
 set(LUMA_INTEGRATION_TEST_HEADERS
 		${TESTS_SRC_DIR}/TestLayer.hpp
+		${TESTS_SRC_DIR}/Tests/EventSystemTests.hpp
+		${TESTS_SRC_DIR}/Tests/InputTests.hpp
+		${TESTS_SRC_DIR}/Tests/MemoryTests.hpp
+		${TESTS_SRC_DIR}/Tests/SerializationTests.hpp
 )
 
 add_executable(Luma-Tests
