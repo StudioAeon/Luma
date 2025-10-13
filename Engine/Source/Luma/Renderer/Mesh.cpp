@@ -510,13 +510,15 @@ namespace Luma {
 
 	void Mesh::TraverseNodes(aiNode* node, const glm::mat4& parentTransform, uint32_t level)
 	{
-		glm::mat4 transform = parentTransform * Mat4FromAssimpMat4(node->mTransformation);
+		glm::mat4 localTransform = Mat4FromAssimpMat4(node->mTransformation);
+		glm::mat4 transform = parentTransform * localTransform;
 		for (uint32_t i = 0; i < node->mNumMeshes; i++)
 		{
 			uint32_t mesh = node->mMeshes[i];
 			auto& submesh = m_Submeshes[mesh];
 			submesh.NodeName = node->mName.C_Str();
 			submesh.Transform = transform;
+			submesh.LocalTransform = localTransform;
 		}
 
 		// LM_MESH_LOG("{0} {1}", LevelToSpaces(level), node->mName.C_Str());

@@ -172,7 +172,7 @@ namespace Luma::UI {
 		s_IDBuffer[1] = '#';
 		memset(s_IDBuffer + 2, 0, 14);
 		std::snprintf(s_IDBuffer + 2, sizeof(s_IDBuffer) - 2, "%x", s_Counter++);
-		if (ImGui::DragFloat3(s_IDBuffer, glm::value_ptr(value), delta))
+		if (ImGui::DragFloat2(s_IDBuffer, glm::value_ptr(value), delta))
 			modified = true;
 
 		ImGui::PopItemWidth();

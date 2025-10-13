@@ -1,11 +1,41 @@
 Scene: Scene Name
 Environment:
-  AssetPath: Resources/EnvironmentMaps/NeonStudio/neonStudio.hdr
+  AssetPath: Resources/EnvironmentMaps/CountryClub/countryClub.hdr
   Light:
     Direction: [-0.789, 0.778, -0.783]
     Radiance: [1, 0.99999, 0.99999]
     Multiplier: 0.651
 Entities:
+  - Entity: 7475399290764333888
+    TagComponent:
+      Tag: Sphere
+    TransformComponent:
+      Position: [-1.3215456, 3.6309838, -5.822014]
+      Rotation: [1, 0, 0, 0]
+      Scale: [2.6935997, 2.6935997, 2.6935997]
+    MeshComponent:
+      AssetPath: Resources/Meshes/Sphere1m.fbx
+  - Entity: 11293686930003950360
+    TagComponent:
+      Tag: Scene
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [1, 8.882056e-16, 2.9802322e-08, -2.647059e-23]
+      Scale: [9.15, 9.15, 9.15]
+    MeshComponent:
+      AssetPath: Resources/Meshes/CubeScene.fbx
+  - Entity: 3370882484222092056
+    TagComponent:
+      Tag: Directional Light
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0.71638596, 0.6905987, 0.07150501, -0.06893166]
+      Scale: [0.9999954, 0.99999565, 0.99999744]
+    DirectionalLightComponent:
+      Radiance: [1, 1, 1]
+      CastShadows: true
+      SoftShadows: true
+      LightSize: 0.5
   - Entity: 6605693014656896610
     TagComponent:
       Tag: Sky Light
@@ -14,45 +44,6 @@ Entities:
       Rotation: [1, 0, 0, 0]
       Scale: [1, 1, 1]
     SkyLightComponent:
-      EnvironmentAssetPath: Resources/EnvironmentMaps/NeonStudio/neonStudio.hdr
+      EnvironmentAssetPath: Resources/EnvironmentMaps/CountryClub/countryClub.hdr
       Intensity: 1
       Angle: 0
-  - Entity: 3370882484222092056
-    TagComponent:
-      Tag: Directional Light
-    TransformComponent:
-      Position: [0, 0, 0]
-      Rotation: [0.6897253, 0.7094495, 0.14471878, -0.0041070348]
-      Scale: [1.0000001, 0.999994, 0.9999995]
-    DirectionalLightComponent:
-      Radiance: [1, 1, 1]
-      CastShadows: true
-      SoftShadows: true
-      LightSize: 0.5
-  - Entity: 11293686930003950360
-    TagComponent:
-      Tag: Scene
-    TransformComponent:
-      Position: [-2.903465e-23, -0.27421594, -4.871206e-16]
-      Rotation: [1, 8.882062e-16, 2.9802322e-08, -2.6470606e-23]
-      Scale: [21.1365, 21.1365, 21.1365]
-    MeshComponent:
-      AssetPath: Resources/Meshes/CubeScene.fbx
-  - Entity: 7475399290764333888
-    TagComponent:
-      Tag: Sphere
-    TransformComponent:
-      Position: [-11.445851, 13.484019, -16.112284]
-      Rotation: [1, 0, 0, 0]
-      Scale: [3.7133968, 3.7133968, 3.7133968]
-    MeshComponent:
-      AssetPath: Resources/Meshes/Sphere1m.fbx
-  - Entity: 10259309054909760418
-    TagComponent:
-      Tag: Gun
-    TransformComponent:
-      Position: [-11.157119, 6.59653, 10.355561]
-      Rotation: [0.9531683, -0.06386903, -0.29495826, -0.019764261]
-      Scale: [25.793951, 25.793955, 25.793951]
-    MeshComponent:
-      AssetPath: Resources/Models/m1911/m1911.fbx
