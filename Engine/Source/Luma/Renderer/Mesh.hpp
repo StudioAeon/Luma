@@ -145,6 +145,8 @@ namespace Luma {
 		const std::vector<Ref<Texture2D>>& GetTextures() const { return m_Textures; }
 		const std::string& GetFilePath() const { return m_FilePath; }
 
+		bool IsAnimated() const { return m_IsAnimated; }
+
 		const std::vector<Triangle> GetTriangleCache(uint32_t index) const { return m_TriangleCache.at(index); }
 	private:
 		void BoneTransform(float time);

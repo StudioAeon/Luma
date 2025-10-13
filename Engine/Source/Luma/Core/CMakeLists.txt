@@ -32,6 +32,7 @@ set(CORE_HEADERS
 		LogCustomFormatters.hpp
 		Memory.hpp
 		Ref.hpp
+		Thread.hpp
 		Timer.hpp
 		TimeStep.hpp
 		UUID.hpp
