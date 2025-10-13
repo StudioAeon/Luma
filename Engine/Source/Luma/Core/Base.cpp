@@ -8,6 +8,7 @@ namespace Luma {
 
 	void InitializeCore()
 	{
+		Platform::Init();
 		Allocator::Init();
 		Log::Init();
 

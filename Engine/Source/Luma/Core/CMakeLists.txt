@@ -10,6 +10,7 @@ set(CORE_SOURCES
 		Log.cpp
 		Ref.cpp
 		Memory.cpp
+		Platform.cpp
 		TimeStep.cpp
 		UUID.cpp
 		Window.cpp
@@ -31,6 +32,7 @@ set(CORE_HEADERS
 		Log.hpp
 		LogCustomFormatters.hpp
 		Memory.hpp
+		Platform.hpp
 		Ref.hpp
 		Thread.hpp
 		Timer.hpp

@@ -64,7 +64,7 @@ namespace Luma {
 		SetDarkThemeColors();
 
 		Application& app = Application::Get();
-		SDL_Window* window = static_cast<SDL_Window*>(app.GetWindow().GetNativeWindow());
+		SDL_Window* window = app.GetWindow()->GetNativeWindow();
 
 		// Setup Renderer/Backend/Renderer bindings
 		ImGui_ImplSDL3_InitForOpenGL(window, SDL_GL_GetCurrentContext());
@@ -91,7 +91,7 @@ namespace Luma {
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		Application& app = Application::Get();
-		io.DisplaySize = ImVec2(app.GetWindow().GetWidth(), app.GetWindow().GetHeight());
+		io.DisplaySize = ImVec2(app.GetWindow()->GetWidth(), app.GetWindow()->GetHeight());
 
 		// Rendering
 		ImGui::Render();

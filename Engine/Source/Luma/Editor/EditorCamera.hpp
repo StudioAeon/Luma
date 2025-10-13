@@ -12,7 +12,7 @@ namespace Luma {
 		EditorCamera() = default;
 		EditorCamera(const glm::mat4& projectionMatrix);
 
-		void Focus();
+		void Focus(const glm::vec3& focusPoint);
 		void OnUpdate(Timestep ts);
 		void OnEvent(Event& e);
 
@@ -56,6 +56,8 @@ namespace Luma {
 
 		float m_Distance;
 		float m_Pitch, m_Yaw;
+
+		float m_MinFocusDistance = 100.0f;
 
 		uint32_t m_ViewportWidth = 1280, m_ViewportHeight = 720;
 	};

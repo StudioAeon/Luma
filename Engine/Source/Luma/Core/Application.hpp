@@ -9,6 +9,8 @@
 
 #include "Luma/ImGui/ImGuiLayer.hpp"
 
+#include "Luma/Platform/SDL/SDLWindow.hpp"
+
 namespace Luma {
 
 	struct ApplicationSpecification
@@ -45,13 +47,13 @@ namespace Luma {
 
 		void AddEventCallback(const EventCallbackFn& eventCallback) { m_EventCallbacks.push_back(eventCallback); }
 
-		inline Window& GetWindow() { return *m_Window; }
+		inline Ref<SDLWindow> GetWindow() { return m_Window.As<SDLWindow>(); }
 
 		static inline Application& Get() { return *s_Instance; }
 
 		Timestep GetTimestep() const { return m_TimeStep; }
 		Timestep GetFrametime() const { return m_Frametime; }
-		float GetFrameDelta() const; // TODO: This should be in "Platform"
+		float GetTime() const; // TODO: This should be in "Platform"
 
 		static const char* GetConfigurationName();
 		static const char* GetPlatformName();
@@ -64,7 +66,7 @@ namespace Luma {
 		bool OnWindowMinimize(WindowMinimizeEvent& e);
 		bool OnWindowClose(WindowCloseEvent& e);
 	private:
-		std::unique_ptr<Window> m_Window;
+		Ref<Window> m_Window;
 		ApplicationSpecification m_Specification;
 
 		bool m_Running = true, m_Minimized = false;

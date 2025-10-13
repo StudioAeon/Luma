@@ -39,11 +39,8 @@ namespace Luma {
 
 	std::pair<float, float> Input::GetMousePosition()
 	{
-		auto& window = static_cast<Window&>(Application::Get().GetWindow());
-
 		float x, y;
-		SDL_GetMouseState(&x, &y);
-
+		SDL_GetGlobalMouseState(&x, &y);
 		return { x, y };
 	}
 

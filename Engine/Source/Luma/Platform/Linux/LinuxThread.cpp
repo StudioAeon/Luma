@@ -17,7 +17,8 @@ namespace Luma {
 
 	void Thread::Join()
 	{
-		m_Thread.join();
+		if (m_Thread.joinable())
+			m_Thread.join();
 	}
 
 	// TODO: `ThreadSignal`

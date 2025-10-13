@@ -40,7 +40,7 @@ namespace Luma {
 		windowSpec.Height = specification.WindowHeight;
 		windowSpec.Mode = specification.Mode;
 		windowSpec.VSync = specification.VSync;
-		m_Window = std::unique_ptr<Window>(Window::Create(windowSpec));
+		m_Window = Window::Create(windowSpec);
 		m_Window->Init();
 		m_Window->SetEventCallback([this](Event& e) { OnEvent(e); });
 
@@ -68,6 +68,8 @@ namespace Luma {
 			layer->OnDetach();
 			delete layer;
 		}
+
+		m_Window->Shutdown();
 	}
 
 	void Application::PushLayer(Layer* layer)
@@ -100,14 +102,6 @@ namespace Luma {
 
 		m_ImGuiLayer->Begin();
 
-		ImGui::Begin("Renderer");
-		auto& caps = RendererAPI::GetCapabilities();
-		ImGui::Text("Vendor: %s", caps.Vendor.c_str());
-		ImGui::Text("Renderer: %s", caps.Renderer.c_str());
-		ImGui::Text("Version: %s", caps.Version.c_str());
-		ImGui::Text("Frame Time: %.2fms\n", m_TimeStep.GetMilliseconds());
-		ImGui::End();
-
 		for (int i = 0; i < m_LayerStack.Size(); i++)
 			m_LayerStack[i]->OnImGuiRender();
 	}
@@ -118,10 +112,6 @@ namespace Luma {
 		while (m_Running)
 		{
 			ProcessEvents();
-
-			m_Frametime = GetFrameDelta();
-			m_TimeStep = glm::min<float>(m_Frametime, 0.0333f);
-			m_LastFrameTime += m_Frametime; // Keep total time
 
 			if (!m_Minimized)
 			{
@@ -136,6 +126,11 @@ namespace Luma {
 				Renderer::WaitAndRender();
 			}
 			m_Window->SwapBuffers();
+
+			float time = GetTime();
+			m_Frametime = time - m_LastFrameTime;
+			m_TimeStep = glm::min<float>(m_Frametime, 0.333f);
+			m_LastFrameTime = time;
 
 			LM_PROFILE_MARK_FRAME;
 		}
@@ -219,6 +214,11 @@ namespace Luma {
 		return true;
 	}
 
+	float Application::GetTime() const
+	{
+		return (float)Platform::GetTime();
+	}
+
 	const char* Application::GetConfigurationName()
 	{
 		return LM_BUILD_CONFIG_NAME;
@@ -227,15 +227,6 @@ namespace Luma {
 	const char* Application::GetPlatformName()
 	{
 		return LM_BUILD_PLATFORM_NAME;
-	}
-
-	float Application::GetFrameDelta() const
-	{
-		static uint64_t last = SDL_GetTicksNS();
-		uint64_t now = SDL_GetTicksNS();
-		uint64_t delta = now - last;
-		last = now;
-		return static_cast<float>(delta * 1e-9f);
 	}
 
 }

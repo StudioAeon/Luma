@@ -102,7 +102,7 @@ namespace Luma {
 	void EditorLayer::UpdateWindowTitle(const std::string& sceneName)
 	{
 		std::string title = sceneName + " - Luma-Editor - " + Application::GetPlatformName() + " (" + Application::GetConfigurationName() + ")";
-		Application::Get().GetWindow().SetTitle(title);
+		Application::Get().GetWindow()->SetTitle(title);
 	}
 
 	float EditorLayer::GetSnapValue()
@@ -926,6 +926,15 @@ namespace Luma {
 					case KeyCode::R:
 						m_GizmoType = ImGuizmo::OPERATION::SCALE;
 						break;
+					case KeyCode::F:
+					{
+						if (m_SelectionContext.size() == 0)
+							break;
+
+						Entity selectedEntity = m_SelectionContext[0].Entity;
+						m_EditorCamera.Focus(selectedEntity.Transform().Translation);
+						break;
+					}
 				}
 			}
 			switch (e.GetKeyCode())

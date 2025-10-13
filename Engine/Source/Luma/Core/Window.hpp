@@ -25,61 +25,38 @@ namespace Luma {
 		bool VSync = true;
 	};
 
-	// Interface representing a desktop system based Window
 	class Window : public RefCounted
 	{
 	public:
 		using EventCallbackFn = std::function<void(Event&)>;
 
-		Window(const WindowSpecification& specification);
-		virtual ~Window();
+		virtual ~Window() = default;
 
-		virtual void Init();
-		virtual void ProcessEvents();
-		virtual void SwapBuffers();
+		virtual void Init() = 0;
+		virtual void Shutdown() = 0;
+		virtual void PollEvents() = 0;
+		virtual void ProcessEvents() = 0;
+		virtual void SwapBuffers() = 0;
 
-		inline uint32_t GetWidth() const { return m_Data.Width; }
-		inline uint32_t GetHeight() const { return m_Data.Height; }
+		virtual uint32_t GetWidth() const = 0;
+		virtual uint32_t GetHeight() const = 0;
 
-		virtual std::pair<uint32_t, uint32_t> GetSize() const { return { m_Data.Width, m_Data.Height }; }
-		virtual std::pair<float, float> GetWindowPos() const;
+		virtual std::pair<uint32_t, uint32_t> GetSize() const = 0;
+		virtual std::pair<float, float> GetWindowPos() const = 0;
 
 		// Window attributes
-		virtual void SetEventCallback(const EventCallbackFn& callback) { m_Data.EventCallback = callback; }
-		virtual void SetVSync(bool enabled);
-		virtual bool IsVSync() const;
-		virtual void SetResizable(bool resizable) const;
+		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
+		virtual void SetVSync(bool enabled) = 0;
+		virtual bool IsVSync() const = 0;
+		virtual void SetResizable(bool resizable) const = 0;
 
-		virtual void Maximize();
-		virtual void CenterWindow();
+		virtual void Maximize() = 0;
+		virtual void CenterWindow() = 0;
 
-		virtual const std::string& GetTitle() const { return m_Data.Title; }
-		virtual void SetTitle(const std::string& title);
-
-		SDL_Window* GetNativeWindow() const { return m_Window; }
+		virtual const std::string& GetTitle() const = 0;
+		virtual void SetTitle(const std::string& title) = 0;
 	public:
-		static Window* Create(const WindowSpecification& specification = WindowSpecification());
-
-	private:
-		virtual void Shutdown();
-		virtual void PollEvents();
-	private:
-		SDL_Window* m_Window = nullptr;
-		SDL_GLContext m_GLContext;
-		SDL_Cursor* m_ImGuiMouseCursors[8] = { nullptr };
-		SDL_Event m_Event {};
-
-		WindowSpecification m_Specification;
-		struct WindowData
-		{
-			std::string Title;
-			uint32_t Width, Height;
-
-			EventCallbackFn EventCallback;
-		};
-
-		WindowData m_Data;
-		float m_LastFrameTime = 0.0f;
+		static Ref<Window> Create(const WindowSpecification& specification = WindowSpecification());
 	};
 
 }
