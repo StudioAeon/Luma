@@ -139,7 +139,7 @@ namespace Luma::UI {
 		return modified;
 	}
 
-	static bool Property(const char* label, float& value, float delta = 0.1f, float min = 0.0f, float max = 0.0f)
+	static bool Property(const char* label, float& value, float delta = 0.1f, float min = 0.0f, float max = 0.0f, bool readOnly = false)
 	{
 		bool modified = false;
 
@@ -151,8 +151,15 @@ namespace Luma::UI {
 		s_IDBuffer[1] = '#';
 		memset(s_IDBuffer + 2, 0, 14);
 		std::snprintf(s_IDBuffer + 2, sizeof(s_IDBuffer) - 2, "%x", s_Counter++);
-		if (ImGui::DragFloat(s_IDBuffer, &value, delta, min, max))
-			modified = true;
+		if (!readOnly)
+		{
+			if (ImGui::DragFloat(s_IDBuffer, &value, delta, min, max))
+				modified = true;
+		}
+		else
+		{
+			ImGui::InputFloat(s_IDBuffer, &value, 0.0F, 0.0F, "%.3f", ImGuiInputTextFlags_ReadOnly);
+		}
 
 		ImGui::PopItemWidth();
 		ImGui::NextColumn();
@@ -244,6 +251,39 @@ namespace Luma::UI {
 		return modified;
 	}
 
+	static bool PropertyDropdown(const char* label, const char** options, int32_t optionCount, int32_t* selected)
+	{
+		const char* current = options[*selected];
+		ImGui::Text(label);
+		ImGui::NextColumn();
+		ImGui::PushItemWidth(-1);
+
+		bool changed = false;
+
+		std::string id = "##" + std::string(label);
+		if (ImGui::BeginCombo(id.c_str(), current))
+		{
+			for (int i = 0; i < optionCount; i++)
+			{
+				bool is_selected = (current == options[i]);
+				if (ImGui::Selectable(options[i], is_selected))
+				{
+					current = options[i];
+					*selected = i;
+					changed = true;
+				}
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+
+		ImGui::PopItemWidth();
+		ImGui::NextColumn();
+
+		return changed;
+	}
+
 	static void EndPropertyGrid()
 	{
 		ImGui::Columns(1);
@@ -262,6 +302,42 @@ namespace Luma::UI {
 	static void EndTreeNode()
 	{
 		ImGui::TreePop();
+	}
+
+	static int s_CheckboxCount = 0;
+
+	static void BeginCheckboxGroup(const char* label)
+	{
+		ImGui::Text(label);
+		ImGui::NextColumn();
+		ImGui::PushItemWidth(-1);
+	}
+
+	static bool PropertyCheckboxGroup(const char* label, bool& value)
+	{
+		bool modified = false;
+
+		if (++s_CheckboxCount > 1)
+			ImGui::SameLine();
+
+		ImGui::Text(label);
+		ImGui::SameLine();
+
+		s_IDBuffer[0] = '#';
+		s_IDBuffer[1] = '#';
+		memset(s_IDBuffer + 2, 0, 14);
+		std::snprintf(s_IDBuffer + 2, sizeof(s_IDBuffer) - 2, "%x", s_Counter++);
+		if (ImGui::Checkbox(s_IDBuffer, &value))
+			modified = true;
+
+		return modified;
+	}
+
+	static void EndCheckboxGroup()
+	{
+		ImGui::PopItemWidth();
+		ImGui::NextColumn();
+		s_CheckboxCount = 0;
 	}
 
 }

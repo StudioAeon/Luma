@@ -6,61 +6,76 @@ Environment:
     Radiance: [1, 1, 1]
     Multiplier: 1
 Entities:
-  - Entity: 14269510328955537319
+  - Entity: 1289165777996378215
+    Parent: 0
+    Children:
+      []
     TagComponent:
-      Tag: Camera
+      Tag: Sphere
     TransformComponent:
-      Position: [0, 15, 80]
-      Rotation: [1, 0, 0, 0]
+      Position: [1.0899327, 8.790656, 0]
+      Rotation: [0, 0, 0]
+      Scale: [2, 2, 2]
+    MeshComponent:
+      AssetPath: Resources/Meshes/Sphere1m.fbx
+  - Entity: 9095450049242347594
+    Parent: 0
+    Children:
+      []
+    TagComponent:
+      Tag: Test Entity
+    TransformComponent:
+      Position: [0.24810958, -1.9073486e-06, -0.268641]
+      Rotation: [0, -0, 0]
       Scale: [1, 1, 1]
-    CameraComponent:
-      Camera:
-        ProjectionType: 0
-        PerspectiveFOV: 45
-        PerspectiveNear: 0.00999999978
-        PerspectiveFar: 10000
-        OrthographicSize: 10
-        OrthographicNear: -1
-        OrthographicFar: 1
-      Primary: true
-  - Entity: 864372771446905621
-    TagComponent:
-      Tag: Directional Light
-    TransformComponent:
-      Position: [0, 0, 0]
-      Rotation: [0.643640518, 0.735499144, 0.209936067, -0.0263580922]
-      Scale: [0.999980569, 0.999993205, 0.999993563]
-    DirectionalLightComponent:
-      Radiance: [0.787644804, 0.294986665, 0.294986665]
-      CastShadows: true
-      SoftShadows: true
-      LightSize: 5.0999999
+    MeshComponent:
+      AssetPath: Resources/Meshes/TestScene.fbx
   - Entity: 17607739136225385561
+    Parent: 0
+    Children:
+      []
     TagComponent:
       Tag: Sky Light
     TransformComponent:
       Position: [0, 0, 0]
-      Rotation: [1, 0, 0, 0]
+      Rotation: [0, -0, 0]
       Scale: [1, 1, 1]
     SkyLightComponent:
       EnvironmentAssetPath: Resources/EnvironmentMaps/Desert/desert.hdr
       Intensity: 1
       Angle: 0
-  - Entity: 9095450049242347594
+  - Entity: 864372771446905621
+    Parent: 0
+    Children:
+      []
     TagComponent:
-      Tag: Test Entity
+      Tag: Directional Light
     TransformComponent:
-      Position: [0.248109579, -1.90734863e-06, -0.268640995]
-      Rotation: [1, 0, 0, 0]
+      Position: [0, 0, 0]
+      Rotation: [1.7505797, 0.3141618, 0.29321527]
+      Scale: [0.99998057, 0.9999932, 0.99999356]
+    DirectionalLightComponent:
+      Radiance: [0.7876448, 0.29498667, 0.29498667]
+      CastShadows: true
+      SoftShadows: true
+      LightSize: 5.1
+  - Entity: 14269510328955537319
+    Parent: 0
+    Children:
+      []
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Position: [0, 15, 80]
+      Rotation: [0, -0, 0]
       Scale: [1, 1, 1]
-    MeshComponent:
-      AssetPath: Resources/Meshes/TestScene.fbx
-  - Entity: 1289165777996378215
-    TagComponent:
-      Tag: Sphere
-    TransformComponent:
-      Position: [0, 21.9805069, -1.64006281]
-      Rotation: [1, 0, 0, 0]
-      Scale: [0.100000024, 0.100000024, 0.100000024]
-    MeshComponent:
-      AssetPath: Resources/Meshes/Sphere1m.fbx
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 45
+        PerspectiveNear: 0.01
+        PerspectiveFar: 10000
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 1
+      Primary: true

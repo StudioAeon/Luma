@@ -67,7 +67,7 @@ namespace Luma {
 	private:
 		Scope<SceneHierarchyPanel> m_SceneHierarchyPanel;
 
-		Ref<Scene> m_RuntimeScene, m_EditorScene;
+		Ref<Scene> m_RuntimeScene, m_EditorScene, m_CurrentScene;
 		std::string m_SceneFilePath;
 
 		EditorCamera m_EditorCamera;

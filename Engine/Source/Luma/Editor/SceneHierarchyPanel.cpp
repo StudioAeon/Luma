@@ -2,6 +2,7 @@
 #include "SceneHierarchyPanel.hpp"
 
 #include "Luma/Core/Application.hpp"
+#include "Luma/Math/Math.hpp"
 #include "Luma/Renderer/Mesh.hpp"
 #include "Luma/ImGui/ImGui.hpp"
 
@@ -48,13 +49,44 @@ namespace Luma {
 	void SceneHierarchyPanel::OnImGuiRender()
 	{
 		ImGui::Begin("Scene Hierarchy");
+		ImRect windowRect = { ImGui::GetWindowContentRegionMin(), ImGui::GetWindowContentRegionMax() };
+
 		if (m_Context)
 		{
-			auto view = m_Context->m_Registry.view<IDComponent>();
-			for (auto entity : view)
+			m_Context->m_Registry.view<IDComponent>().each([&](auto entity, auto& idComp)
 			{
 				Entity e(entity, m_Context.Raw());
-				DrawEntityNode(e);
+				if (e.HasComponent<IDComponent>() && e.GetParentUUID() == 0)
+					DrawEntityNode(e);
+			});
+
+			if (ImGui::BeginDragDropTargetCustom(windowRect, ImGui::GetCurrentWindow()->ID))
+			{
+				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("scene_entity_hierarchy", ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
+
+				if (payload)
+				{
+					UUID droppedHandle = *((UUID*)payload->Data);
+					Entity e = m_Context->FindEntityByUUID(droppedHandle);
+					Entity previousParent = m_Context->FindEntityByUUID(e.GetParentUUID());
+
+					if (previousParent)
+					{
+						auto& children = previousParent.Children();
+						children.erase(std::remove(children.begin(), children.end(), droppedHandle), children.end());
+
+						glm::mat4 parentTransform = m_Context->GetTransformRelativeToParent(previousParent);
+						glm::vec3 parentTranslation, parentScale;
+						glm::quat parentRotation;
+						Math::DecomposeTransform(parentTransform, parentTranslation, parentRotation, parentScale);
+
+						e.Transform().Translation = e.Transform().Translation + parentTranslation;
+					}
+
+					e.SetParentUUID(0);
+				}
+
+				ImGui::EndDragDropTarget();
 			}
 
 			if (ImGui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems))
@@ -128,6 +160,10 @@ namespace Luma {
 
 		ImGuiTreeNodeFlags flags = (entity == m_SelectionContext ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
+
+		if (entity.Children().empty())
+			flags |= ImGuiTreeNodeFlags_Leaf;
+
 		bool opened = ImGui::TreeNodeEx((void*)(uint32_t)entity, flags, name);
 		if (ImGui::IsItemClicked())
 		{
@@ -144,9 +180,56 @@ namespace Luma {
 
 			ImGui::EndPopup();
 		}
+
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+		{
+			UUID entityId = entity.GetUUID();
+			ImGui::Text(entity.GetComponent<TagComponent>().Tag.c_str());
+			ImGui::SetDragDropPayload("scene_entity_hierarchy", &entityId, sizeof(UUID));
+			ImGui::EndDragDropSource();
+		}
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("scene_entity_hierarchy", ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
+
+			if (payload)
+			{
+				UUID droppedHandle = *((UUID*)payload->Data);
+				Entity e = m_Context->FindEntityByUUID(droppedHandle);
+
+				if (!entity.IsDescendantOf(e))
+				{
+					// Remove from previous parent
+					Entity previousParent = m_Context->FindEntityByUUID(e.GetParentUUID());
+					if (previousParent)
+					{
+						auto& parentChildren = previousParent.Children();
+						parentChildren.erase(std::remove(parentChildren.begin(), parentChildren.end(), droppedHandle), parentChildren.end());
+					}
+
+					glm::mat4 parentTransform = m_Context->GetTransformRelativeToParent(entity);
+					glm::vec3 parentTranslation, parentScale;
+					glm::quat parentRotation;
+					Math::DecomposeTransform(parentTransform, parentTranslation, parentRotation, parentScale);
+
+					e.Transform().Translation = e.Transform().Translation - parentTranslation;
+					e.SetParentUUID(entity.GetUUID());
+					entity.Children().push_back(droppedHandle);
+				}
+			}
+
+			ImGui::EndDragDropTarget();
+		}
+
 		if (opened)
 		{
-			// TODO: Children
+			for (auto child : entity.Children())
+			{
+				Entity e = m_Context->FindEntityByUUID(child);
+				if (e)
+					DrawEntityNode(e);
+			}
 			ImGui::TreePop();
 		}
 

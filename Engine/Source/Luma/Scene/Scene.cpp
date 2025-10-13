@@ -9,6 +9,8 @@
 
 #include "Luma/Renderer/Renderer2D.hpp"
 
+#include "Luma/Math/Math.hpp"
+
 // TEMP
 #include "Luma/Core/Input.hpp"
 
@@ -28,7 +30,7 @@ namespace Luma {
 		UUID SceneID;
 	};
 
-	Scene::Scene(const std::string& debugName)
+	Scene::Scene(const std::string& debugName, bool isEditorScene)
 		: m_DebugName(debugName)
 	{
 		m_SceneEntity = m_Registry.create();
@@ -65,6 +67,23 @@ namespace Luma {
 	// Merge OnUpdate/Render into one function?
 	void Scene::OnUpdate(Timestep ts)
 	{
+		{
+			auto view = m_Registry.view<TransformComponent>();
+			for (auto entity : view)
+			{
+				auto& transformComponent = view.get<TransformComponent>(entity);
+				glm::mat4 transform = GetTransformRelativeToParent(Entity(entity, this));
+				glm::vec3 translation;
+				glm::quat rotation;
+				glm::vec3 scale;
+				Math::DecomposeTransform(transform, translation, rotation, scale);
+
+				glm::quat rotationQuat = glm::quat(rotation);
+				transformComponent.Up = glm::normalize(glm::rotate(rotationQuat, glm::vec3(0.0f, 1.0f, 0.0f)));
+				transformComponent.Right = glm::normalize(glm::rotate(rotationQuat, glm::vec3(1.0f, 0.0f, 0.0f)));
+				transformComponent.Forward = glm::normalize(glm::rotate(rotationQuat, glm::vec3(0.0f, 0.0f, -1.0f)));
+			}
+		}
 	}
 
 	void Scene::OnRenderRuntime(Timestep ts)
@@ -76,7 +95,7 @@ namespace Luma {
 		if (!cameraEntity)
 			return;
 
-		glm::mat4 cameraViewMatrix = glm::inverse(cameraEntity.Transform().GetTransform());
+		glm::mat4 cameraViewMatrix = glm::inverse(GetTransformRelativeToParent(cameraEntity));
 		LM_CORE_ASSERT(cameraEntity, "Scene does not contain any cameras!");
 		SceneCamera& camera = cameraEntity.GetComponent<CameraComponent>();
 		camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
@@ -123,9 +142,10 @@ namespace Luma {
 			if (meshComponent.Mesh)
 			{
 				meshComponent.Mesh->OnUpdate(ts);
+				glm::mat4 transform = GetTransformRelativeToParent(Entity(entity, this));
 
 				// TODO: Should we render (logically)
-				SceneRenderer::SubmitMesh(meshComponent, transformComponent.GetTransform());
+				SceneRenderer::SubmitMesh(meshComponent, transform);
 			}
 		}
 		SceneRenderer::EndScene();
@@ -197,11 +217,14 @@ namespace Luma {
 			{
 				meshComponent.Mesh->OnUpdate(ts);
 
+				// TODO: Is this any good?
+				glm::mat4 transform = GetTransformRelativeToParent(Entity{ entity, this });
+
 				// TODO: Should we render (logically)
 				if (m_SelectedEntity == entity)
-					SceneRenderer::SubmitSelectedMesh(meshComponent, transformComponent.GetTransform());
+					SceneRenderer::SubmitSelectedMesh(meshComponent, transform);
 				else
-					SceneRenderer::SubmitMesh(meshComponent, transformComponent.GetTransform());
+					SceneRenderer::SubmitMesh(meshComponent, transform);
 			}
 		}
 
@@ -274,6 +297,8 @@ namespace Luma {
 		if (!name.empty())
 			entity.AddComponent<TagComponent>(name);
 
+		entity.AddComponent<RelationshipComponent>();
+
 		m_EntityIDMap[idComponent.ID] = entity;
 		return entity;
 	}
@@ -287,6 +312,8 @@ namespace Luma {
 		entity.AddComponent<TransformComponent>();
 		if (!name.empty())
 			entity.AddComponent<TagComponent>(name);
+
+		entity.AddComponent<RelationshipComponent>();
 
 		LM_CORE_ASSERT(m_EntityIDMap.find(uuid) == m_EntityIDMap.end());
 		m_EntityIDMap[uuid] = entity;
@@ -330,6 +357,7 @@ namespace Luma {
 			newEntity = CreateEntity();
 
 		CopyComponentIfExists<TransformComponent>(newEntity.m_EntityHandle, entity.m_EntityHandle, m_Registry);
+		CopyComponentIfExists<RelationshipComponent>(newEntity.m_EntityHandle, entity.m_EntityHandle, m_Registry);
 		CopyComponentIfExists<MeshComponent>(newEntity.m_EntityHandle, entity.m_EntityHandle, m_Registry);
 		CopyComponentIfExists<DirectionalLightComponent>(newEntity.m_EntityHandle, entity.m_EntityHandle, m_Registry);
 		CopyComponentIfExists<SkyLightComponent>(newEntity.m_EntityHandle, entity.m_EntityHandle, m_Registry);
@@ -351,16 +379,28 @@ namespace Luma {
 		return Entity{};
 	}
 
-	Entity Scene::FindEntityByHandle(uint32_t handle)
+	Entity Scene::FindEntityByUUID(UUID id)
 	{
-		auto view = m_Registry.view<TagComponent>();
+		auto view = m_Registry.view<IDComponent>();
 		for (auto entity : view)
 		{
-			if (entity == (entt::entity)handle)
+			auto& idComponent = m_Registry.get<IDComponent>(entity);
+			if (idComponent.ID == id)
 				return Entity(entity, this);
 		}
 
 		return Entity{};
+	}
+
+	glm::mat4 Scene::GetTransformRelativeToParent(Entity entity)
+	{
+		glm::mat4 transform(1.0F);
+
+		Entity parent = FindEntityByUUID(entity.GetParentUUID());
+		if (parent)
+			transform = GetTransformRelativeToParent(parent);
+
+		return transform * entity.Transform().GetTransform();
 	}
 
 	// Copy to runtime
@@ -386,6 +426,7 @@ namespace Luma {
 
 		CopyComponent<TagComponent>(target->m_Registry, m_Registry, enttMap);
 		CopyComponent<TransformComponent>(target->m_Registry, m_Registry, enttMap);
+		CopyComponent<RelationshipComponent>(target->m_Registry, m_Registry, enttMap);
 		CopyComponent<MeshComponent>(target->m_Registry, m_Registry, enttMap);
 		CopyComponent<DirectionalLightComponent>(target->m_Registry, m_Registry, enttMap);
 		CopyComponent<SkyLightComponent>(target->m_Registry, m_Registry, enttMap);

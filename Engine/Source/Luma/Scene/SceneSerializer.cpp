@@ -168,6 +168,23 @@ namespace Luma {
 		out << YAML::Key << "Entity";
 		out << YAML::Value << uuid;
 
+		if (entity.HasComponent<RelationshipComponent>())
+		{
+			auto& relationshipComponent = entity.GetComponent<RelationshipComponent>();
+			out << YAML::Key << "Parent" << YAML::Value << relationshipComponent.ParentHandle;
+
+			out << YAML::Key << "Children";
+			out << YAML::Value << YAML::BeginSeq;
+
+			for (auto child : relationshipComponent.Children)
+			{
+				out << YAML::BeginMap;
+				out << YAML::Key << "Handle" << YAML::Value << child;
+				out << YAML::EndMap;
+			}
+			out << YAML::EndSeq;
+		}
+
 		if (entity.HasComponent<TagComponent>())
 		{
 			out << YAML::Key << "TagComponent";
@@ -302,15 +319,14 @@ namespace Luma {
 		SerializeEnvironment(out, m_Scene);
 		out << YAML::Key << "Entities";
 		out << YAML::Value << YAML::BeginSeq;
-		auto view = m_Scene->m_Registry.view<IDComponent>();
-		for (auto entityID : view)
+		m_Scene->m_Registry.view<IDComponent>().each([&](auto entityID, auto& idComponent)
 		{
 			Entity entity = { entityID, m_Scene.Raw() };
 			if (!entity)
-				continue;
+				return;
 
 			SerializeEntity(out, entity);
-		}
+		});
 		out << YAML::EndSeq;
 		out << YAML::EndMap;
 
@@ -371,6 +387,20 @@ namespace Luma {
 
 				Entity deserializedEntity = m_Scene->CreateEntityWithID(uuid, name);
 
+				auto& relationshipComponent = deserializedEntity.GetComponent<RelationshipComponent>();
+				uint64_t parentHandle = entity["Parent"] ? entity["Parent"].as<uint64_t>() : 0;
+				relationshipComponent.ParentHandle = parentHandle;
+
+				auto children = entity["Children"];
+				if (children)
+				{
+					for (auto child : children)
+					{
+						uint64_t childHandle = child["Handle"].as<uint64_t>();
+						relationshipComponent.Children.push_back(childHandle);
+					}
+				}
+
 				auto transformComponent = entity["TransformComponent"];
 				if (transformComponent)
 				{
@@ -392,9 +422,9 @@ namespace Luma {
 					transform.Scale = transformComponent["Scale"].as<glm::vec3>();
 
 					LM_CORE_INFO_TAG("Scene", "  Entity Transform:");
-					LM_CORE_INFO("    Translation: {0}, {1}, {2}", transform.Translation.x, transform.Translation.y, transform.Translation.z);
-					LM_CORE_INFO("    Rotation: {0}, {1}, {2}", transform.Rotation.x, transform.Rotation.y, transform.Rotation.z);
-					LM_CORE_INFO("    Scale: {0}, {1}, {2}", transform.Scale.x, transform.Scale.y, transform.Scale.z);
+					LM_CORE_INFO_TAG("Scene", "    Translation: {0}, {1}, {2}", transform.Translation.x, transform.Translation.y, transform.Translation.z);
+					LM_CORE_INFO_TAG("Scene", "    Rotation: {0}, {1}, {2}", transform.Rotation.x, transform.Rotation.y, transform.Rotation.z);
+					LM_CORE_INFO_TAG("Scene", "    Scale: {0}, {1}, {2}", transform.Scale.x, transform.Scale.y, transform.Scale.z);
 				}
 
 				auto meshComponent = entity["MeshComponent"];
@@ -483,10 +513,10 @@ namespace Luma {
 
 		if (missingPaths.size())
 		{
-			LM_CORE_ERROR("The following files could not be loaded:");
+			LM_CORE_ERROR_TAG("Scene", "The following files could not be loaded:");
 			for (auto& path : missingPaths)
 			{
-				LM_CORE_ERROR("  {0}", path);
+				LM_CORE_ERROR_TAG("Scene", "  {0}", path);
 			}
 
 			return false;

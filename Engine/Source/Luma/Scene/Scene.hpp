@@ -45,7 +45,7 @@ namespace Luma {
 	class Scene : public RefCounted
 	{
 	public:
-		Scene(const std::string& debugName = "Scene");
+		Scene(const std::string& debugName = "Scene", bool isEditorScene = false);
 		~Scene();
 
 		void Init();
@@ -84,7 +84,9 @@ namespace Luma {
 		}
 
 		Entity FindEntityByTag(const std::string& tag);
-		Entity FindEntityByHandle(uint32_t handle);
+		Entity FindEntityByUUID(UUID id);
+
+		glm::mat4 GetTransformRelativeToParent(Entity entity);
 
 		const EntityMap& GetEntityMap() const { return m_EntityIDMap; }
 		void CopyTo(Ref<Scene>& target);

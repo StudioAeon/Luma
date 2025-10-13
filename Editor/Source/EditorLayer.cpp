@@ -83,6 +83,7 @@ namespace Luma {
 
 		m_RuntimeScene->OnRuntimeStart();
 		m_SceneHierarchyPanel->SetContext(m_RuntimeScene);
+		m_CurrentScene = m_RuntimeScene;
 	}
 
 	void EditorLayer::OnSceneStop()
@@ -95,6 +96,7 @@ namespace Luma {
 
 		m_SelectionContext.clear();
 		m_SceneHierarchyPanel->SetContext(m_EditorScene);
+		m_CurrentScene = m_EditorScene;
 	}
 
 	void EditorLayer::UpdateWindowTitle(const std::string& sceneName)
@@ -297,13 +299,20 @@ namespace Luma {
 		SelectedSubmesh selection;
 		if (entity.HasComponent<MeshComponent>())
 		{
-			selection.Mesh = &entity.GetComponent<MeshComponent>().Mesh->GetSubmeshes()[0];
+			auto& meshComp = entity.GetComponent<MeshComponent>();
+
+			if (meshComp.Mesh)
+			{
+				selection.Mesh = &meshComp.Mesh->GetSubmeshes()[0];
+			}
 		}
 		selection.Entity = entity;
 		m_SelectionContext.clear();
 		m_SelectionContext.push_back(selection);
 
 		m_EditorScene->SetSelectedEntity(entity);
+
+		m_CurrentScene = m_EditorScene;
 	}
 
 	void EditorLayer::NewScene()
@@ -328,10 +337,11 @@ namespace Luma {
 
 	void EditorLayer::OpenScene(const std::string& filepath)
 	{
-		Ref<Scene> newScene = Ref<Scene>::Create();
+		Ref<Scene> newScene = Ref<Scene>::Create("New Scene", true);
 		SceneSerializer serializer(newScene);
 		serializer.Deserialize(filepath);
 		m_EditorScene = newScene;
+		m_SceneFilePath = filepath;
 
 		std::filesystem::path path = filepath;
 		UpdateWindowTitle(path.filename().string());
@@ -339,6 +349,8 @@ namespace Luma {
 
 		m_EditorScene->SetSelectedEntity({});
 		m_SelectionContext.clear();
+
+		m_CurrentScene = m_EditorScene;
 	}
 
 	void EditorLayer::SaveScene()
@@ -568,7 +580,7 @@ namespace Luma {
 			bool snap = Input::IsKeyPressed(LM_KEY_LEFT_CONTROL);
 
 			TransformComponent& entityTransform = selection.Entity.Transform();
-			glm::mat4 transform = entityTransform.GetTransform();
+			glm::mat4 transform = m_CurrentScene->GetTransformRelativeToParent(selection.Entity);
 			float snapValue = GetSnapValue();
 			float snapValues[3] = { snapValue, snapValue, snapValue };
 
@@ -585,15 +597,36 @@ namespace Luma {
 				if (ImGuizmo::IsUsing())
 				{
 					glm::vec3 translation, scale;
-					glm::quat rotationQuat;
-					Math::DecomposeTransform(transform, translation, rotationQuat, scale);
+					glm::quat rotation;
+					Math::DecomposeTransform(transform, translation, rotation, scale);
 
-					glm::vec3 rotationEuler = glm::eulerAngles(rotationQuat);
+					Entity parent = m_CurrentScene->FindEntityByUUID(selection.Entity.GetParentUUID());
+					if (parent)
+					{
+						glm::vec3 parentTranslation, parentScale;
+						glm::quat parentRotation;
+						Math::DecomposeTransform(m_CurrentScene->GetTransformRelativeToParent(parent),
+								parentTranslation, parentRotation, parentScale);
 
-					glm::vec3 deltaRotation = rotationEuler - entityTransform.Rotation;
-					entityTransform.Translation = translation;
-					entityTransform.Rotation += deltaRotation;
-					entityTransform.Scale = scale;
+						glm::vec3 eulerRotation = glm::degrees(glm::eulerAngles(rotation));
+						glm::vec3 parentEulerRotation = glm::degrees(glm::eulerAngles(parentRotation));
+						glm::vec3 currentEulerRotation = glm::degrees(glm::eulerAngles(glm::quat(glm::radians(entityTransform.Rotation))));
+
+						glm::vec3 deltaRotation = (eulerRotation - parentEulerRotation) - currentEulerRotation;
+
+						entityTransform.Translation = translation - parentTranslation;
+						entityTransform.Rotation += deltaRotation;
+						entityTransform.Scale = scale;
+					}
+					else
+					{
+						glm::vec3 eulerRotation = glm::degrees(glm::eulerAngles(rotation));
+						glm::vec3 deltaRotation = eulerRotation - entityTransform.Rotation;
+
+						entityTransform.Translation = translation;
+						entityTransform.Rotation += deltaRotation;
+						entityTransform.Scale = scale;
+					}
 				}
 			}
 			else
@@ -980,9 +1013,10 @@ namespace Luma {
 					for (uint32_t i = 0; i < submeshes.size(); i++)
 					{
 						auto& submesh = submeshes[i];
+						glm::mat4 transform = m_CurrentScene->GetTransformRelativeToParent(entity);
 						Ray ray = {
-							glm::inverse(entity.Transform().GetTransform() * submesh.Transform) * glm::vec4(origin, 1.0f),
-							glm::inverse(glm::mat3(entity.Transform().GetTransform()) * glm::mat3(submesh.Transform)) * direction
+							glm::inverse(transform * submesh.Transform) * glm::vec4(origin, 1.0f),
+							glm::inverse(glm::mat3(transform) * glm::mat3(submesh.Transform)) * direction
 						};
 
 						float t;
@@ -1044,7 +1078,7 @@ namespace Luma {
 
 	void EditorLayer::OnEntityDeleted(Entity e)
 	{
-		if (m_SelectionContext[0].Entity == e)
+		if (m_SelectionContext.size() > 0 && m_SelectionContext[0].Entity == e)
 		{
 			m_SelectionContext.clear();
 			m_EditorScene->SetSelectedEntity({});
