@@ -1,13 +1,11 @@
 #pragma once
 
-#include "Luma/Core/Base.hpp"
-#include "Luma/Events/Event.hpp"
+ #include "Luma/Events/Event.hpp"
 #include "Luma/Core/Window.hpp"
 
 #include <SDL3/SDL.h>
 
 #include <functional>
-#include <filesystem>
 
 namespace Luma {
 

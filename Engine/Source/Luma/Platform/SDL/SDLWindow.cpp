@@ -8,10 +8,13 @@
 
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
+#include <stb/stb_image.h>
 
 #include <glad/glad.h>
 
 namespace Luma {
+
+#include "Luma/Embed/LumaIcon.embed"
 
 	static void SDLErrorCallback(const char* context)
 	{
@@ -64,6 +67,43 @@ namespace Luma {
 				const SDL_DisplayMode* mode = SDL_GetCurrentDisplayMode(displayID);
 				m_Window = SDL_CreateWindow(m_Data.Title.c_str(), mode->w, mode->h, windowFlags | SDL_WINDOW_FULLSCREEN | SDL_WINDOW_MOUSE_GRABBED);
 				break;
+			}
+		}
+
+		// Set icon
+		{
+			int width, height, channels;
+			uint8_t* pixels = nullptr;
+
+			bool useEmbedded = m_Specification.IconPath.empty();
+
+			if (!useEmbedded)
+			{
+				std::string iconPathStr = m_Specification.IconPath.string();
+				pixels = stbi_load(iconPathStr.c_str(), &width, &height, &channels, 4);
+				if (!pixels)
+				{
+					useEmbedded = true;
+				}
+			}
+
+			if (useEmbedded)
+			{
+				// Use embedded Luma icon
+				pixels = stbi_load_from_memory(g_LumaIconPNG, sizeof(g_LumaIconPNG), &width, &height, &channels, 4);
+			}
+
+			if (pixels)
+			{
+				SDL_Surface* iconSurface = SDL_CreateSurfaceFrom(width, height, SDL_PIXELFORMAT_RGBA32, pixels, width * 4);
+
+				if (iconSurface)
+				{
+					SDL_SetWindowIcon(m_Window, iconSurface);
+					SDL_DestroySurface(iconSurface);
+				}
+
+				stbi_image_free(pixels);
 			}
 		}
 
@@ -183,14 +223,14 @@ namespace Luma {
 				}
 				case SDL_EVENT_MOUSE_BUTTON_DOWN:
 				{
-					MouseButtonPressedEvent e(m_Event.button.button);
+					MouseButtonPressedEvent e(static_cast<MouseButton>(m_Event.button.button));
 					if (m_Data.EventCallback)
 						m_Data.EventCallback(e);
 					break;
 				}
 				case SDL_EVENT_MOUSE_BUTTON_UP:
 				{
-					MouseButtonReleasedEvent e(m_Event.button.button);
+					MouseButtonReleasedEvent e(static_cast<MouseButton>(m_Event.button.button));
 					if (m_Data.EventCallback)
 						m_Data.EventCallback(e);
 					break;

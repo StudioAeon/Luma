@@ -1,14 +1,12 @@
 #pragma once
 
+#include "Luma/Core/Base.hpp"
+
 #include <functional>
+#include <ostream>
 #include <string>
 
 namespace Luma {
-
-	// Events in Luma are currently blocking, meaning when an event occurs it
-	// immediately gets dispatched and must be dealt with right then an there.
-	// For the future, a better strategy might be to buffer events in an event
-	// bus and process them during the "event" part of the update stage.
 
 	enum class EventType
 	{
@@ -51,6 +49,7 @@ namespace Luma {
 		}
 
 		bool Handled = false;
+		bool Synced = false; // Queued events are only processed if this is true.  It is set true when asset thread syncs with main thread.
 	};
 
 	class EventDispatcher

@@ -3,8 +3,6 @@
 #include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_mouse.h>
 
-#include <ostream>
-
 namespace Luma {
 
 	enum class KeyCode : uint16_t
@@ -141,21 +139,49 @@ namespace Luma {
 
 	using Key = KeyCode;
 
+	enum class KeyState
+	{
+		None = -1,
+		Pressed,
+		Held,
+		Released
+	};
+
+	enum class CursorMode
+	{
+		Normal = 0,
+		Hidden = 1,
+		Locked = 2
+	};
+
+	enum class MouseButton : uint16_t
+	{
+		Left = SDL_BUTTON_LEFT,      // 1
+		Middle = SDL_BUTTON_MIDDLE,  // 2
+		Right = SDL_BUTTON_RIGHT,    // 3
+		X1 = SDL_BUTTON_X1,          // 4
+		X2 = SDL_BUTTON_X2,          // 5
+
+		Button0 = Left,
+		Button1 = Right,
+		Button2 = Middle,
+		Button3 = X1,
+		Button4 = X2
+	};
+
+	using Button = MouseButton;
+
 	inline std::ostream& operator<<(std::ostream& os, KeyCode keyCode)
 	{
 		os << static_cast<int32_t>(keyCode);
 		return os;
 	}
 
-	// Mouse button codes
-	enum class MouseButton : uint8_t
+	inline std::ostream& operator<<(std::ostream& os, MouseButton button)
 	{
-		Left = SDL_BUTTON_LEFT,
-		Middle = SDL_BUTTON_MIDDLE,
-		Right = SDL_BUTTON_RIGHT,
-		X1 = SDL_BUTTON_X1,
-		X2 = SDL_BUTTON_X2
-	};
+		os << static_cast<int32_t>(button);
+		return os;
+	}
 }
 
 // Convenience macros
@@ -285,9 +311,6 @@ namespace Luma {
 #define LM_KEY_RIGHT_SUPER     ::Luma::Key::RightSuper
 #define LM_KEY_MENU            ::Luma::Key::Menu
 
-// Mouse (TODO: move into separate file probably)
-#define LM_MOUSE_BUTTON_LEFT    1
-#define LM_MOUSE_BUTTON_MIDDLE  2
-#define LM_MOUSE_BUTTON_RIGHT   3
-#define LM_MOUSE_BUTTON_X1      4
-#define LM_MOUSE_BUTTON_X2      5
+#define LM_MOUSE_BUTTON_LEFT    ::Luma::Button::Left
+#define LM_MOUSE_BUTTON_RIGHT   ::Luma::Button::Right
+#define LM_MOUSE_BUTTON_MIDDLE  ::Luma::Button::Middle

@@ -4,6 +4,8 @@
 
 #include <sstream>
 
+#include "Luma/Core/KeyCodes.hpp"
+
 namespace Luma {
 
 	class MouseMovedEvent : public Event
@@ -53,20 +55,20 @@ namespace Luma {
 	class MouseButtonEvent : public Event
 	{
 	public:
-		inline int GetMouseButton() const { return m_Button; }
+		inline MouseButton GetMouseButton() const { return m_Button; }
 
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 	protected:
-		MouseButtonEvent(int button)
+		MouseButtonEvent(MouseButton button)
 			: m_Button(button) {}
 
-		int m_Button;
+		MouseButton m_Button;
 	};
 
 	class MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonPressedEvent(int button)
+		MouseButtonPressedEvent(MouseButton button)
 			: MouseButtonEvent(button) {}
 
 		std::string ToString() const override
@@ -82,7 +84,7 @@ namespace Luma {
 	class MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonReleasedEvent(int button)
+		MouseButtonReleasedEvent(MouseButton button)
 			: MouseButtonEvent(button) {}
 
 		std::string ToString() const override
@@ -93,6 +95,24 @@ namespace Luma {
 		}
 
 		EVENT_CLASS_TYPE(MouseButtonReleased)
+	};
+
+	class MouseButtonDownEvent : public MouseButtonEvent
+	{
+	public:
+		MouseButtonDownEvent(MouseButton button)
+			: MouseButtonEvent(button)
+		{
+		}
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "MouseButtonDownEvent: " << m_Button;
+			return ss.str();
+		}
+
+		EVENT_CLASS_TYPE(MouseButtonDown)
 	};
 
 }

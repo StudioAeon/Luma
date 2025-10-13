@@ -6,6 +6,7 @@
 #include <SDL3/SDL.h>
 
 #include <functional>
+#include <filesystem>
 
 namespace Luma {
 
@@ -23,6 +24,7 @@ namespace Luma {
 		uint32_t Height = 900;
 		WindowMode Mode = WindowMode::Windowed;
 		bool VSync = true;
+		std::filesystem::path IconPath;
 	};
 
 	class Window : public RefCounted

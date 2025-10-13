@@ -24,15 +24,20 @@ namespace Luma {
 
 	Application* Application::s_Instance = nullptr;
 
+	static std::thread::id s_MainThreadID;
+
 	Application::Application(const ApplicationSpecification& specification)
 		: m_Specification(specification)
 	{
 		FatalSignal::Install();
 
 		s_Instance = this;
+		s_MainThreadID = std::this_thread::get_id();
 
 		if (!specification.WorkingDirectory.empty())
 			std::filesystem::current_path(specification.WorkingDirectory);
+
+		m_Profiler = lnew PerformanceProfiler();
 
 		WindowSpecification windowSpec;
 		windowSpec.Title = specification.Name;
@@ -70,6 +75,9 @@ namespace Luma {
 		}
 
 		m_Window->Shutdown();
+
+		delete m_Profiler;
+		m_Profiler = nullptr;
 	}
 
 	void Application::PushLayer(Layer* layer)
@@ -99,6 +107,7 @@ namespace Luma {
 	void Application::RenderImGui()
 	{
 		LM_PROFILE_FUNC();
+		LM_SCOPE_PERF("Application::RenderImGui");
 
 		m_ImGuiLayer->Begin();
 
@@ -106,17 +115,31 @@ namespace Luma {
 			m_LayerStack[i]->OnImGuiRender();
 	}
 
+	void Application::SyncEvents()
+	{
+		std::scoped_lock<std::mutex> lock(m_EventQueueMutex);
+		for (auto& [synced, _] : m_EventQueue)
+		{
+			synced = true;
+		}
+	}
+
 	void Application::Run()
 	{
 		OnInit();
 		while (m_Running)
 		{
+			static uint64_t frameCounter = 0;
+
 			ProcessEvents();
 
 			if (!m_Minimized)
 			{
-				for (Layer* layer : m_LayerStack)
-					layer->OnUpdate(m_TimeStep);
+				{
+					LM_SCOPE_PERF("Application Layer::OnUpdate");
+					for (Layer* layer : m_LayerStack)
+						layer->OnUpdate(m_TimeStep);
+				}
 
 				// Render ImGui on render thread
 				Application* app = this;
@@ -131,6 +154,8 @@ namespace Luma {
 			m_Frametime = time - m_LastFrameTime;
 			m_TimeStep = glm::min<float>(m_Frametime, 0.333f);
 			m_LastFrameTime = time;
+
+			frameCounter++;
 
 			LM_PROFILE_MARK_FRAME;
 		}
@@ -151,6 +176,25 @@ namespace Luma {
 	void Application::ProcessEvents()
 	{
 		m_Window->ProcessEvents();
+
+		// Note: we have no control over what func() does.  holding this lock while calling func() is a bad idea:
+		// 1) func() might be slow (means we hold the lock for ages)
+		// 2) func() might result in events getting queued, in which case we have a deadlock
+		std::scoped_lock<std::mutex> lock(m_EventQueueMutex);
+
+		// Process custom event queue, up until we encounter an event that is not yet sync'd
+		// If application queues such events, then it is the application's responsibility to call
+		// SyncEvents() at the appropriate time.
+		while (m_EventQueue.size() > 0)
+		{
+			const auto& [synced, func] = m_EventQueue.front();
+			if (!synced)
+			{
+				break;
+			}
+			func();
+			m_EventQueue.pop_front();
+		}
 	}
 
 	void Application::OnEvent(Event& event)
@@ -160,7 +204,6 @@ namespace Luma {
 		dispatcher.Dispatch<WindowMinimizeEvent>([this](WindowMinimizeEvent& e) { return OnWindowMinimize(e); });
 		dispatcher.Dispatch<WindowCloseEvent>([this](WindowCloseEvent& e) { return OnWindowClose(e); });
 
-		//LM_CORE_TRACE_TAG("Core", "{}", event.ToString());
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
 		{
 			(*--it)->OnEvent(event);
@@ -210,7 +253,7 @@ namespace Luma {
 
 	bool Application::OnWindowClose(WindowCloseEvent& e)
 	{
-		m_Running = false;
+		Close();
 		return true;
 	}
 
@@ -227,6 +270,13 @@ namespace Luma {
 	const char* Application::GetPlatformName()
 	{
 		return LM_BUILD_PLATFORM_NAME;
+	}
+
+	std::thread::id Application::GetMainThreadID() { return s_MainThreadID; }
+
+	bool Application::IsMainThread()
+	{
+		return std::this_thread::get_id() == s_MainThreadID;
 	}
 
 }
