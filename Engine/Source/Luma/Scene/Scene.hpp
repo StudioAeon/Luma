@@ -84,6 +84,7 @@ namespace Luma {
 		}
 
 		Entity FindEntityByTag(const std::string& tag);
+		Entity FindEntityByHandle(uint32_t handle);
 
 		const EntityMap& GetEntityMap() const { return m_EntityIDMap; }
 		void CopyTo(Ref<Scene>& target);

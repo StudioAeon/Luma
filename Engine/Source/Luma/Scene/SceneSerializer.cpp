@@ -184,11 +184,10 @@ namespace Luma {
 			out << YAML::Key << "TransformComponent";
 			out << YAML::BeginMap; // TransformComponent
 
-			auto& transform = entity.GetComponent<TransformComponent>().Transform;
-			auto[pos, rot, scale] = GetTransformDecomposition(transform);
-			out << YAML::Key << "Position" << YAML::Value << pos;
-			out << YAML::Key << "Rotation" << YAML::Value << rot;
-			out << YAML::Key << "Scale" << YAML::Value << scale;
+			auto& transform = entity.GetComponent<TransformComponent>();
+			out << YAML::Key << "Position" << YAML::Value << transform.Translation;
+			out << YAML::Key << "Rotation" << YAML::Value << transform.Rotation;
+			out << YAML::Key << "Scale" << YAML::Value << transform.Scale;
 
 			out << YAML::EndMap; // TransformComponent
 		}
@@ -376,18 +375,26 @@ namespace Luma {
 				if (transformComponent)
 				{
 					// Entities always have transforms
-					auto& transform = deserializedEntity.GetComponent<TransformComponent>().Transform;
-					glm::vec3 translation = transformComponent["Position"].as<glm::vec3>();
-					glm::quat rotation = transformComponent["Rotation"].as<glm::quat>();
-					glm::vec3 scale = transformComponent["Scale"].as<glm::vec3>();
-
-					transform = glm::translate(glm::mat4(1.0f), translation) *
-						glm::toMat4(rotation) * glm::scale(glm::mat4(1.0f), scale);
+					auto& transform = deserializedEntity.GetComponent<TransformComponent>();
+					transform.Translation = transformComponent["Position"].as<glm::vec3>();
+					const auto& rotationNode = transformComponent["Rotation"];
+					// Rotations used to be stored as quaternions
+					if (rotationNode.size() == 4)
+					{
+						glm::quat rotation = transformComponent["Rotation"].as<glm::quat>();
+						transform.Rotation = glm::eulerAngles(rotation);
+					}
+					else
+					{
+						LM_CORE_ASSERT(rotationNode.size() == 3);
+						transform.Rotation = transformComponent["Rotation"].as<glm::vec3>();
+					}
+					transform.Scale = transformComponent["Scale"].as<glm::vec3>();
 
 					LM_CORE_INFO_TAG("Scene", "  Entity Transform:");
-					LM_CORE_INFO_TAG("Scene", "    Translation: {0}, {1}, {2}", translation.x, translation.y, translation.z);
-					LM_CORE_INFO_TAG("Scene", "    Rotation: {0}, {1}, {2}, {3}", rotation.w, rotation.x, rotation.y, rotation.z);
-					LM_CORE_INFO_TAG("Scene", "    Scale: {0}, {1}, {2}", scale.x, scale.y, scale.z);
+					LM_CORE_INFO("    Translation: {0}, {1}, {2}", transform.Translation.x, transform.Translation.y, transform.Translation.z);
+					LM_CORE_INFO("    Rotation: {0}, {1}, {2}", transform.Rotation.x, transform.Rotation.y, transform.Rotation.z);
+					LM_CORE_INFO("    Scale: {0}, {1}, {2}", transform.Scale.x, transform.Scale.y, transform.Scale.z);
 				}
 
 				auto meshComponent = entity["MeshComponent"];

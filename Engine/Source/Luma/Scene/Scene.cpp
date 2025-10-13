@@ -76,8 +76,7 @@ namespace Luma {
 		if (!cameraEntity)
 			return;
 
-		// Process camera entity
-		glm::mat4 cameraViewMatrix = glm::inverse(cameraEntity.GetComponent<TransformComponent>().Transform);
+		glm::mat4 cameraViewMatrix = glm::inverse(cameraEntity.Transform().GetTransform());
 		LM_CORE_ASSERT(cameraEntity, "Scene does not contain any cameras!");
 		SceneCamera& camera = cameraEntity.GetComponent<CameraComponent>();
 		camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
@@ -90,7 +89,7 @@ namespace Luma {
 			for (auto entity : lights)
 			{
 				auto [transformComponent, lightComponent] = lights.get<TransformComponent, DirectionalLightComponent>(entity);
-				glm::vec3 direction = -glm::normalize(glm::mat3(transformComponent.Transform) * glm::vec3(1.0f));
+				glm::vec3 direction = -glm::normalize(glm::mat3(transformComponent.GetTransform()) * glm::vec3(1.0f));
 				m_LightEnvironment.DirectionalLights[directionalLightIndex++] =
 				{
 					direction,
@@ -126,7 +125,7 @@ namespace Luma {
 				meshComponent.Mesh->OnUpdate(ts);
 
 				// TODO: Should we render (logically)
-				SceneRenderer::SubmitMesh(meshComponent, transformComponent, nullptr);
+				SceneRenderer::SubmitMesh(meshComponent, transformComponent.GetTransform());
 			}
 		}
 		SceneRenderer::EndScene();
@@ -157,7 +156,6 @@ namespace Luma {
 		// RENDER 3D SCENE
 		/////////////////////////////////////////////////////////////////////
 
-		// Process lights
 		{
 			m_LightEnvironment = LightEnvironment();
 			auto lights = m_Registry.group<DirectionalLightComponent>(entt::get<TransformComponent>);
@@ -165,7 +163,7 @@ namespace Luma {
 			for (auto entity : lights)
 			{
 				auto [transformComponent, lightComponent] = lights.get<TransformComponent, DirectionalLightComponent>(entity);
-				glm::vec3 direction = -glm::normalize(glm::mat3(transformComponent.Transform) * glm::vec3(1.0f));
+				glm::vec3 direction = -glm::normalize(glm::mat3(transformComponent.GetTransform()) * glm::vec3(1.0f));
 				m_LightEnvironment.DirectionalLights[directionalLightIndex++] =
 				{
 					direction,
@@ -176,7 +174,6 @@ namespace Luma {
 			}
 		}
 
-		// TODO: only one sky light at the moment!
 		{
 			m_Environment = Environment();
 			auto lights = m_Registry.group<SkyLightComponent>(entt::get<TransformComponent>);
@@ -201,13 +198,13 @@ namespace Luma {
 				meshComponent.Mesh->OnUpdate(ts);
 
 				// TODO: Should we render (logically)
-
 				if (m_SelectedEntity == entity)
-					SceneRenderer::SubmitSelectedMesh(meshComponent, transformComponent);
+					SceneRenderer::SubmitSelectedMesh(meshComponent, transformComponent.GetTransform());
 				else
-					SceneRenderer::SubmitMesh(meshComponent, transformComponent);
+					SceneRenderer::SubmitMesh(meshComponent, transformComponent.GetTransform());
 			}
 		}
+
 		SceneRenderer::EndScene();
 		/////////////////////////////////////////////////////////////////////
 
@@ -273,7 +270,7 @@ namespace Luma {
 		auto& idComponent = entity.AddComponent<IDComponent>();
 		idComponent.ID = {};
 
-		entity.AddComponent<TransformComponent>(glm::mat4(1.0f));
+		entity.AddComponent<TransformComponent>();
 		if (!name.empty())
 			entity.AddComponent<TagComponent>(name);
 
@@ -287,7 +284,7 @@ namespace Luma {
 		auto& idComponent = entity.AddComponent<IDComponent>();
 		idComponent.ID = uuid;
 
-		entity.AddComponent<TransformComponent>(glm::mat4(1.0f));
+		entity.AddComponent<TransformComponent>();
 		if (!name.empty())
 			entity.AddComponent<TagComponent>(name);
 
@@ -348,6 +345,18 @@ namespace Luma {
 		{
 			const auto& canditate = view.get<TagComponent>(entity).Tag;
 			if (canditate == tag)
+				return Entity(entity, this);
+		}
+
+		return Entity{};
+	}
+
+	Entity Scene::FindEntityByHandle(uint32_t handle)
+	{
+		auto view = m_Registry.view<TagComponent>();
+		for (auto entity : view)
+		{
+			if (entity == (entt::entity)handle)
 				return Entity(entity, this);
 		}
 

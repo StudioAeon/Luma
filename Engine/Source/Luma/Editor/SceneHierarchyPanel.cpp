@@ -77,7 +77,7 @@ namespace Luma {
 					{
 						auto newEntity = m_Context->CreateEntity("Directional Light");
 						newEntity.AddComponent<DirectionalLightComponent>();
-						newEntity.GetComponent<TransformComponent>().Transform = glm::toMat4(glm::quat(glm::radians(glm::vec3{80.0f, 10.0f, 0.0f})));
+						newEntity.GetComponent<TransformComponent>().Rotation = glm::radians(glm::vec3{ 80.0f, 10.0f, 0.0f });
 						SetSelected(newEntity);
 					}
 					if (ImGui::MenuItem("Sky Light"))
@@ -414,20 +414,11 @@ namespace Luma {
 
 		DrawComponent<TransformComponent>("Transform", entity, [](auto& component)
 		{
-			auto [translation, rotationQuat, scale] = GetTransformDecomposition(component);
-
-			bool updateTransform = false;
-			updateTransform |= DrawVec3Control("Translation", translation);
-			glm::vec3 rotation = glm::degrees(glm::eulerAngles(rotationQuat));
-			updateTransform |= DrawVec3Control("Rotation", rotation);
-			updateTransform |= DrawVec3Control("Scale", scale, 1.0f);
-
-			if (updateTransform)
-			{
-				component.Transform = glm::translate(glm::mat4(1.0f), translation) *
-					glm::toMat4(glm::quat(glm::radians(rotation))) *
-					glm::scale(glm::mat4(1.0f), scale);
-			}
+			DrawVec3Control("Translation", component.Translation);
+			glm::vec3 rotation = glm::degrees(component.Rotation);
+			DrawVec3Control("Rotation", rotation);
+			component.Rotation = glm::radians(rotation);
+			DrawVec3Control("Scale", component.Scale, 1.0f);
 		});
 
 		DrawComponent<MeshComponent>("Mesh", entity, [](MeshComponent& mc)
