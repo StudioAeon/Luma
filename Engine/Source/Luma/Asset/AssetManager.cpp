@@ -210,7 +210,7 @@ namespace Luma {
 
 	void AssetManager::LoadAssetRegistry()
 	{
-		std::string registryPath = "DataCache/AssetRegistryCache.lmr";
+		std::string registryPath = "Resources/cache/AssetRegistryCache.lmr";
 		if (!std::filesystem::exists(registryPath))
 			return;
 
@@ -372,8 +372,8 @@ namespace Luma {
 
 	void AssetManager::UpdateRegistryCache()
 	{
-		// Ensure DataCache directory exists
-		std::filesystem::create_directories("DataCache");
+		// Ensure cache directory exists
+		std::filesystem::create_directories("Resources/cache/");
 
 		YAML::Emitter out;
 		out << YAML::BeginMap;
@@ -390,7 +390,7 @@ namespace Luma {
 		out << YAML::EndSeq;
 		out << YAML::EndMap;
 
-		std::ofstream fout("DataCache/AssetRegistryCache.lmr");
+		std::ofstream fout("Resources/cache/AssetRegistryCache.lmr");
 		fout << out.c_str();
 	}
 

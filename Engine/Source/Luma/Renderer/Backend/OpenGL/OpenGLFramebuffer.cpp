@@ -68,6 +68,7 @@ namespace Luma {
 			}
 
 			Ref<OpenGLImage2D> glImage = image.As<OpenGLImage2D>();
+			glImage->CreateSampler(TextureProperties());
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, TextureTarget(multisampled), glImage->GetRendererID(), 0);
 			return image;
 		}
@@ -105,6 +106,7 @@ namespace Luma {
 			}
 
 			Ref<OpenGLImage2D> glImage = image.As<OpenGLImage2D>();
+			glImage->CreateSampler(TextureProperties());
 			glFramebufferTexture2D(GL_FRAMEBUFFER, Utils::DepthAttachmentType(format), TextureTarget(multisampled), glImage->GetRendererID(), 0);
 			return image;
 

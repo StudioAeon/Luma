@@ -200,6 +200,9 @@ namespace Luma {
 
 	void EditorLayer::NewScene()
 	{
+		// Clear
+		m_SelectionContext = {};
+
 		m_EditorScene = Ref<Scene>::Create();
 		m_SceneHierarchyPanel->SetContext(m_EditorScene);
 		UpdateWindowTitle("Untitled Scene");
@@ -554,6 +557,14 @@ namespace Luma {
 					p_open = false;
 				ImGui::EndMenu();
 			}
+
+			if (ImGui::BeginMenu("Help"))
+			{
+				if (ImGui::MenuItem("About"))
+					m_ShowAboutPopup = true;
+				ImGui::EndMenu();
+			}
+
 			ImGui::EndMenuBar();
 		}
 
@@ -653,7 +664,9 @@ namespace Luma {
 
 										if (!filepath.empty())
 										{
-											albedoMap = Texture2D::Create(filepath.string(), true/*m_AlbedoInput.SRGB*/);
+											TextureProperties props;
+											props.SRGB = true;
+											albedoMap = Texture2D::Create(filepath.string(), props);
 											materialInstance->Set("u_AlbedoTexture", albedoMap);
 										}
 									}
@@ -904,6 +917,31 @@ namespace Luma {
 
 			if (ImGui::Button("OK"))
 				ImGui::CloseCurrentPopup();
+			ImGui::EndPopup();
+		}
+
+		if (m_ShowAboutPopup)
+		{
+			ImGui::OpenPopup("About##AboutPopup");
+			m_ShowAboutPopup = false;
+		}
+
+		ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+		ImGui::SetNextWindowSize(ImVec2{ 600,0 });
+		if (ImGui::BeginPopupModal("About##AboutPopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			auto largeFont = io.Fonts->Fonts[1];
+
+			ImGui::PushFont(largeFont);
+			ImGui::Text("Luma Engine");
+			ImGui::PopFont();
+
+			ImGui::Separator();
+			ImGui::TextWrapped("Luma is an early-stage interactive application and rendering engine for Windows.");
+
+			if (ImGui::Button("OK"))
+				ImGui::CloseCurrentPopup();
+
 			ImGui::EndPopup();
 		}
 	}

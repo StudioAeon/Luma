@@ -44,14 +44,36 @@ namespace Luma {
 				1, &imageMemoryBarrier);
 		}
 
+		static VkSamplerAddressMode VulkanSamplerWrap(TextureWrap wrap)
+		{
+			switch (wrap)
+			{
+				case TextureWrap::Clamp:   return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+				case TextureWrap::Repeat:  return VK_SAMPLER_ADDRESS_MODE_REPEAT;
+			}
+			LM_CORE_ASSERT(false, "Unknown wrap mode");
+			return (VkSamplerAddressMode)0;
+		}
+
+		static VkFilter VulkanSamplerFilter(TextureFilter filter)
+		{
+			switch (filter)
+			{
+				case TextureFilter::Linear:   return VK_FILTER_LINEAR;
+				case TextureFilter::Nearest:  return VK_FILTER_NEAREST;
+			}
+			LM_CORE_ASSERT(false, "Unknown filter");
+			return (VkFilter)0;
+		}
+
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////
 	// Texture2D
 	//////////////////////////////////////////////////////////////////////////////////
 
-	VulkanTexture2D::VulkanTexture2D(const std::string& path, bool srgb)
-		: m_Path(path)
+	VulkanTexture2D::VulkanTexture2D(const std::string& path, TextureProperties properties)
+		: m_Path(path), m_Properties(properties)
 	{
 		int width, height, channels;
 		if (stbi_is_hdr(path.c_str()))
@@ -81,8 +103,8 @@ namespace Luma {
 		});
 	}
 
-	VulkanTexture2D::VulkanTexture2D(ImageFormat format, uint32_t width, uint32_t height, const void* data, TextureWrap wrap)
-		: m_Format(format)
+	VulkanTexture2D::VulkanTexture2D(ImageFormat format, uint32_t width, uint32_t height, const void* data, TextureProperties properties)
+		: m_Format(format), m_Properties(properties)
 	{
 		m_Width = width;
 		m_Height = height;
@@ -254,12 +276,12 @@ namespace Luma {
 		VkSamplerCreateInfo sampler{};
 		sampler.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
 		sampler.maxAnisotropy = 1.0f;
-		sampler.magFilter = VK_FILTER_LINEAR;
-		sampler.minFilter = VK_FILTER_LINEAR;
+		sampler.magFilter = Utils::VulkanSamplerFilter(m_Properties.SamplerFilter);
+		sampler.minFilter = Utils::VulkanSamplerFilter(m_Properties.SamplerFilter);
 		sampler.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-		sampler.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		sampler.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		sampler.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		sampler.addressModeU = Utils::VulkanSamplerWrap(m_Properties.SamplerWrap);
+		sampler.addressModeV =  Utils::VulkanSamplerWrap(m_Properties.SamplerWrap);
+		sampler.addressModeW =  Utils::VulkanSamplerWrap(m_Properties.SamplerWrap);
 		sampler.mipLodBias = 0.0f;
 		sampler.compareOp = VK_COMPARE_OP_NEVER;
 		sampler.minLod = 0.0f;
@@ -516,8 +538,8 @@ namespace Luma {
 	// TextureCube
 	//////////////////////////////////////////////////////////////////////////////////
 
-	VulkanTextureCube::VulkanTextureCube(ImageFormat format, uint32_t width, uint32_t height, const void* data)
-		: m_Format(format), m_Width(width), m_Height(height)
+	VulkanTextureCube::VulkanTextureCube(ImageFormat format, uint32_t width, uint32_t height, const void* data, TextureProperties properties)
+		: m_Format(format), m_Width(width), m_Height(height), m_Properties(properties)
 	{
 		if (data)
 		{
@@ -532,7 +554,8 @@ namespace Luma {
 		});
 }
 
-	VulkanTextureCube::VulkanTextureCube(const std::string& path)
+	VulkanTextureCube::VulkanTextureCube(const std::string& path, TextureProperties properties)
+		: m_Properties(properties)
 	{
 	}
 
@@ -833,12 +856,12 @@ namespace Luma {
 		VkSamplerCreateInfo sampler{};
 		sampler.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
 		sampler.maxAnisotropy = 1.0f;
-		sampler.magFilter = VK_FILTER_LINEAR;
-		sampler.minFilter = VK_FILTER_LINEAR;
+		sampler.magFilter = Utils::VulkanSamplerFilter(m_Properties.SamplerFilter);
+		sampler.minFilter = Utils::VulkanSamplerFilter(m_Properties.SamplerFilter);
 		sampler.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-		sampler.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		sampler.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		sampler.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		sampler.addressModeU =  Utils::VulkanSamplerWrap(m_Properties.SamplerWrap);
+		sampler.addressModeV =  Utils::VulkanSamplerWrap(m_Properties.SamplerWrap);
+		sampler.addressModeW =  Utils::VulkanSamplerWrap(m_Properties.SamplerWrap);
 		sampler.mipLodBias = 0.0f;
 		sampler.compareOp = VK_COMPARE_OP_NEVER;
 		sampler.minLod = 0.0f;

@@ -122,25 +122,25 @@ namespace Luma {
 						if (ImGui::MenuItem("Cube"))
 						{
 							auto newEntity = m_Context->CreateEntity("Cube");
-							newEntity.AddComponent<MeshComponent>(AssetManager::GetAsset<Mesh>("assets/meshes/Default/Cube.fbx"));
+							newEntity.AddComponent<MeshComponent>(AssetManager::GetAsset<Mesh>("Resources/Meshes/Default/Cube.fbx"));
 							SetSelected(newEntity);
 						}
 						if (ImGui::MenuItem("Sphere"))
 						{
 							auto newEntity = m_Context->CreateEntity("Sphere");
-							newEntity.AddComponent<MeshComponent>(AssetManager::GetAsset<Mesh>("assets/meshes/Default/Sphere.fbx"));
+							newEntity.AddComponent<MeshComponent>(AssetManager::GetAsset<Mesh>("Resources/Meshes/Default/Sphere.fbx"));
 							SetSelected(newEntity);
 						}
 						if (ImGui::MenuItem("Capsule"))
 						{
 							auto newEntity = m_Context->CreateEntity("Capsule");
-							newEntity.AddComponent<MeshComponent>(AssetManager::GetAsset<Mesh>("assets/meshes/Default/Capsule.fbx"));
+							newEntity.AddComponent<MeshComponent>(AssetManager::GetAsset<Mesh>("Resources/Meshes/Default/Capsule.fbx"));
 							SetSelected(newEntity);
 						}
 						if (ImGui::MenuItem("Plane"))
 						{
 							auto newEntity = m_Context->CreateEntity("Plane");
-							newEntity.AddComponent<MeshComponent>(AssetManager::GetAsset<Mesh>("assets/meshes/Default/Plane.fbx"));
+							newEntity.AddComponent<MeshComponent>(AssetManager::GetAsset<Mesh>("Resources/Meshes/Default/Plane.fbx"));
 							SetSelected(newEntity);
 						}
 						ImGui::EndMenu();

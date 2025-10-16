@@ -143,6 +143,7 @@ namespace Luma {
 		bool m_ViewportPanelFocused = false;
 
 		bool m_ShowWelcomePopup = true;
+		bool m_ShowAboutPopup = false;
 
 		enum class SceneState
 		{
