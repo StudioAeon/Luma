@@ -33,7 +33,20 @@ namespace Luma {
 		}
 
 		template<typename T>
+		const T& GetComponent() const
+		{
+			LM_CORE_ASSERT(HasComponent<T>(), "Entity doesn't have component!");
+			return m_Scene->m_Registry.get<T>(m_EntityHandle);
+		}
+
+		template<typename T>
 		bool HasComponent()
+		{
+			return m_Scene->m_Registry.all_of<T>(m_EntityHandle);
+		}
+
+		template<typename T>
+		bool HasComponent() const
 		{
 			return m_Scene->m_Registry.all_of<T>(m_EntityHandle);
 		}

@@ -139,6 +139,19 @@ namespace Luma {
 
 		ImGui::End();
 
+		ImGui::Begin("Performance");
+		//LM_CORE_WARN("Spent {0}ms updating materials", g_MaterialUpdateTimer);
+		//LM_CORE_WARN("Spent {0}ms rendering meshes (CPU)", g_MeshRenderTimer);
+		ImGui::Text("Frame Time: %.2fms\n", m_TimeStep.GetMilliseconds());
+		const auto& perFrameData = m_Profiler->GetPerFrameData();
+		for (auto&& [name, time] : perFrameData)
+		{
+			ImGui::Text("%s: %.3fms\n", name, time);
+		}
+
+		ImGui::End();
+		m_Profiler->Clear();
+
 		for (int i = 0; i < m_LayerStack.Size(); i++)
 			m_LayerStack[i]->OnImGuiRender();
 	}

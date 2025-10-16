@@ -13,13 +13,10 @@
 namespace Luma::UI {
 
 	static int s_UIContextID = 0;
-	static uint32_t s_Counter = 0;
-	static char s_IDBuffer[16];
 
 	static void PushID()
 	{
 		ImGui::PushID(s_UIContextID++);
-		s_Counter = 0;
 	}
 
 	static void PopID()
@@ -45,20 +42,18 @@ namespace Luma::UI {
 		char buffer[256];
 		strcpy(buffer, value.c_str());
 
-		s_IDBuffer[0] = '#';
-		s_IDBuffer[1] = '#';
-		memset(s_IDBuffer + 2, 0, 14);
-		std::snprintf(s_IDBuffer + 2, sizeof(s_IDBuffer) - 2, "%x", s_Counter++);
-
+		ImGui::PushID(label);
 		if (error)
 			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.2f, 0.2f, 1.0f));
-		if (ImGui::InputText(s_IDBuffer, buffer, 256))
+		if (ImGui::InputText("##value", buffer, 256))
 		{
 			value = buffer;
 			modified = true;
 		}
 		if (error)
 			ImGui::PopStyleColor();
+		ImGui::PopID();
+
 		ImGui::PopItemWidth();
 		ImGui::NextColumn();
 
@@ -71,11 +66,9 @@ namespace Luma::UI {
 		ImGui::NextColumn();
 		ImGui::PushItemWidth(-1);
 
-		s_IDBuffer[0] = '#';
-		s_IDBuffer[1] = '#';
-		memset(s_IDBuffer + 2, 0, 14);
-		std::snprintf(s_IDBuffer + 2, sizeof(s_IDBuffer) - 2, "%x", s_Counter++);
-		ImGui::InputText(s_IDBuffer, (char*)value, 256, ImGuiInputTextFlags_ReadOnly);
+		ImGui::PushID(label);
+		ImGui::InputText("##value", (char*)value, 256, ImGuiInputTextFlags_ReadOnly);
+		ImGui::PopID();
 
 		ImGui::PopItemWidth();
 		ImGui::NextColumn();
@@ -89,12 +82,10 @@ namespace Luma::UI {
 		ImGui::NextColumn();
 		ImGui::PushItemWidth(-1);
 
-		s_IDBuffer[0] = '#';
-		s_IDBuffer[1] = '#';
-		memset(s_IDBuffer + 2, 0, 14);
-		std::snprintf(s_IDBuffer + 2, sizeof(s_IDBuffer) - 2, "%x", s_Counter++);
-		if (ImGui::Checkbox(s_IDBuffer, &value))
+		ImGui::PushID(label);
+		if (ImGui::Checkbox("##value", &value))
 			modified = true;
+		ImGui::PopID();
 
 		ImGui::PopItemWidth();
 		ImGui::NextColumn();
@@ -110,12 +101,10 @@ namespace Luma::UI {
 		ImGui::NextColumn();
 		ImGui::PushItemWidth(-1);
 
-		s_IDBuffer[0] = '#';
-		s_IDBuffer[1] = '#';
-		memset(s_IDBuffer + 2, 0, 14);
-		std::snprintf(s_IDBuffer + 2, sizeof(s_IDBuffer) - 2, "%x", s_Counter++);
-		if (ImGui::DragInt(s_IDBuffer, &value))
+		ImGui::PushID(label);
+		if (ImGui::DragInt("##value", &value))
 			modified = true;
+		ImGui::PopID();
 
 		ImGui::PopItemWidth();
 		ImGui::NextColumn();
@@ -131,12 +120,10 @@ namespace Luma::UI {
 		ImGui::NextColumn();
 		ImGui::PushItemWidth(-1);
 
-		s_IDBuffer[0] = '#';
-		s_IDBuffer[1] = '#';
-		memset(s_IDBuffer + 2, 0, 14);
-		std::snprintf(s_IDBuffer + 2, sizeof(s_IDBuffer) - 2, "%x", s_Counter++);
-		if (ImGui::SliderInt(s_IDBuffer, &value, min, max))
+		ImGui::PushID(label);
+		if (ImGui::SliderInt("##value", &value, min, max))
 			modified = true;
+		ImGui::PopID();
 
 		ImGui::PopItemWidth();
 		ImGui::NextColumn();
@@ -152,12 +139,10 @@ namespace Luma::UI {
 		ImGui::NextColumn();
 		ImGui::PushItemWidth(-1);
 
-		s_IDBuffer[0] = '#';
-		s_IDBuffer[1] = '#';
-		memset(s_IDBuffer + 2, 0, 14);
-		std::snprintf(s_IDBuffer + 2, sizeof(s_IDBuffer) - 2, "%x", s_Counter++);
-		if (ImGui::SliderFloat(s_IDBuffer, &value, min, max))
+		ImGui::PushID(label);
+		if (ImGui::SliderFloat("##value", &value, min, max))
 			modified = true;
+		ImGui::PopID();
 
 		ImGui::PopItemWidth();
 		ImGui::NextColumn();
@@ -173,12 +158,10 @@ namespace Luma::UI {
 		ImGui::NextColumn();
 		ImGui::PushItemWidth(-1);
 
-		s_IDBuffer[0] = '#';
-		s_IDBuffer[1] = '#';
-		memset(s_IDBuffer + 2, 0, 14);
-		std::snprintf(s_IDBuffer + 2, sizeof(s_IDBuffer) - 2, "%x", s_Counter++);
-		if (ImGui::SliderFloat2(s_IDBuffer, glm::value_ptr(value), min, max))
+		ImGui::PushID(label);
+		if (ImGui::SliderFloat2("##value", glm::value_ptr(value), min, max))
 			modified = true;
+		ImGui::PopID();
 
 		ImGui::PopItemWidth();
 		ImGui::NextColumn();
@@ -194,12 +177,10 @@ namespace Luma::UI {
 		ImGui::NextColumn();
 		ImGui::PushItemWidth(-1);
 
-		s_IDBuffer[0] = '#';
-		s_IDBuffer[1] = '#';
-		memset(s_IDBuffer + 2, 0, 14);
-		std::snprintf(s_IDBuffer + 2, sizeof(s_IDBuffer) - 2, "%x", s_Counter++);
-		if (ImGui::SliderFloat3(s_IDBuffer, glm::value_ptr(value), min, max))
+		ImGui::PushID(label);
+		if (ImGui::SliderFloat3("##value", glm::value_ptr(value), min, max))
 			modified = true;
+		ImGui::PopID();
 
 		ImGui::PopItemWidth();
 		ImGui::NextColumn();
@@ -215,12 +196,10 @@ namespace Luma::UI {
 		ImGui::NextColumn();
 		ImGui::PushItemWidth(-1);
 
-		s_IDBuffer[0] = '#';
-		s_IDBuffer[1] = '#';
-		memset(s_IDBuffer + 2, 0, 14);
-		std::snprintf(s_IDBuffer + 2, sizeof(s_IDBuffer) - 2, "%x", s_Counter++);
-		if (ImGui::SliderFloat4(s_IDBuffer, glm::value_ptr(value), min, max))
+		ImGui::PushID(label);
+		if (ImGui::SliderFloat4("##value", glm::value_ptr(value), min, max))
 			modified = true;
+		ImGui::PopID();
 
 		ImGui::PopItemWidth();
 		ImGui::NextColumn();
@@ -236,20 +215,17 @@ namespace Luma::UI {
 		ImGui::NextColumn();
 		ImGui::PushItemWidth(-1);
 
-		s_IDBuffer[0] = '#';
-		s_IDBuffer[1] = '#';
-		memset(s_IDBuffer + 2, 0, 14);
-		std::snprintf(s_IDBuffer + 2, sizeof(s_IDBuffer) - 2, "%x", s_Counter++);
-
+		ImGui::PushID(label);
 		if (!readOnly)
 		{
-			if (ImGui::DragFloat(s_IDBuffer, &value, delta, min, max))
+			if (ImGui::DragFloat("##value", &value, delta, min, max))
 				modified = true;
 		}
 		else
 		{
-			ImGui::InputFloat(s_IDBuffer, &value, 0.0F, 0.0F, "%.3f", ImGuiInputTextFlags_ReadOnly);
+			ImGui::InputFloat("##value", &value, 0.0F, 0.0F, "%.3f", ImGuiInputTextFlags_ReadOnly);
 		}
+		ImGui::PopID();
 
 		ImGui::PopItemWidth();
 		ImGui::NextColumn();
@@ -265,12 +241,10 @@ namespace Luma::UI {
 		ImGui::NextColumn();
 		ImGui::PushItemWidth(-1);
 
-		s_IDBuffer[0] = '#';
-		s_IDBuffer[1] = '#';
-		memset(s_IDBuffer + 2, 0, 14);
-		std::snprintf(s_IDBuffer + 2, sizeof(s_IDBuffer) - 2, "%x", s_Counter++);
-		if (ImGui::DragFloat2(s_IDBuffer, glm::value_ptr(value), delta))
+		ImGui::PushID(label);
+		if (ImGui::DragFloat2("##value", glm::value_ptr(value), delta))
 			modified = true;
+		ImGui::PopID();
 
 		ImGui::PopItemWidth();
 		ImGui::NextColumn();
@@ -286,12 +260,10 @@ namespace Luma::UI {
 		ImGui::NextColumn();
 		ImGui::PushItemWidth(-1);
 
-		s_IDBuffer[0] = '#';
-		s_IDBuffer[1] = '#';
-		memset(s_IDBuffer + 2, 0, 14);
-		std::snprintf(s_IDBuffer + 2, sizeof(s_IDBuffer) - 2, "%x", s_Counter++);
-		if (ImGui::ColorEdit3(s_IDBuffer, glm::value_ptr(value)))
+		ImGui::PushID(label);
+		if (ImGui::ColorEdit3("##value", glm::value_ptr(value)))
 			modified = true;
+		ImGui::PopID();
 
 		ImGui::PopItemWidth();
 		ImGui::NextColumn();
@@ -307,12 +279,10 @@ namespace Luma::UI {
 		ImGui::NextColumn();
 		ImGui::PushItemWidth(-1);
 
-		s_IDBuffer[0] = '#';
-		s_IDBuffer[1] = '#';
-		memset(s_IDBuffer + 2, 0, 14);
-		std::snprintf(s_IDBuffer + 2, sizeof(s_IDBuffer) - 2, "%x", s_Counter++);
-		if (ImGui::DragFloat3(s_IDBuffer, glm::value_ptr(value), delta))
+		ImGui::PushID(label);
+		if (ImGui::DragFloat3("##value", glm::value_ptr(value), delta))
 			modified = true;
+		ImGui::PopID();
 
 		ImGui::PopItemWidth();
 		ImGui::NextColumn();
@@ -328,12 +298,10 @@ namespace Luma::UI {
 		ImGui::NextColumn();
 		ImGui::PushItemWidth(-1);
 
-		s_IDBuffer[0] = '#';
-		s_IDBuffer[1] = '#';
-		memset(s_IDBuffer + 2, 0, 14);
-		std::snprintf(s_IDBuffer + 2, sizeof(s_IDBuffer) - 2, "%x", s_Counter++);
-		if (ImGui::DragFloat4(s_IDBuffer, glm::value_ptr(value), delta))
+		ImGui::PushID(label);
+		if (ImGui::DragFloat4("##value", glm::value_ptr(value), delta))
 			modified = true;
+		ImGui::PopID();
 
 		ImGui::PopItemWidth();
 		ImGui::NextColumn();
@@ -476,12 +444,15 @@ namespace Luma::UI {
 	}
 
 	static int s_CheckboxCount = 0;
+	static int s_CheckboxGroupCounter = 0;
 
 	static void BeginCheckboxGroup(const char* label)
 	{
 		ImGui::Text(label);
 		ImGui::NextColumn();
 		ImGui::PushItemWidth(-1);
+		ImGui::PushID(label);
+		s_CheckboxGroupCounter = 0;
 	}
 
 	static bool PropertyCheckboxGroup(const char* label, bool& value)
@@ -494,18 +465,17 @@ namespace Luma::UI {
 		ImGui::Text(label);
 		ImGui::SameLine();
 
-		s_IDBuffer[0] = '#';
-		s_IDBuffer[1] = '#';
-		memset(s_IDBuffer + 2, 0, 14);
-		std::snprintf(s_IDBuffer + 2, sizeof(s_IDBuffer) - 2, "%x", s_Counter++);
-		if (ImGui::Checkbox(s_IDBuffer, &value))
+		ImGui::PushID(s_CheckboxGroupCounter++);
+		if (ImGui::Checkbox("##value", &value))
 			modified = true;
+		ImGui::PopID();
 
 		return modified;
 	}
 
 	static void EndCheckboxGroup()
 	{
+		ImGui::PopID();
 		ImGui::PopItemWidth();
 		ImGui::NextColumn();
 		s_CheckboxCount = 0;

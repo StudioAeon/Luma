@@ -1,7 +1,5 @@
 #type compute
 #version 450 core
-// Physically Based Rendering
-// Copyright (c) 2017-2018 Michał Siejak
 
 // Pre-filters environment cube map using GGX NDF importance sampling.
 // Part of specular IBL split-sum approximation.
@@ -127,7 +125,8 @@ void main(void)
 
 	// Convolve environment map using GGX NDF importance sampling.
 	// Weight by cosine term since Epic claims it generally improves quality.
-	for(uint i = 0; i < NumSamples; i++) {
+	for(uint i = 0; i < NumSamples; i++)
+	{
 		vec2 u = sampleHammersley(i);
 		vec3 Lh = tangentToWorld(sampleGGX(u.x, u.y, PARAM_ROUGHNESS), N, S, T);
 

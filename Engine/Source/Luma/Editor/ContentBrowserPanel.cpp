@@ -194,7 +194,7 @@ namespace Luma {
 		AssetHandle assetHandle = asset->Handle;
 		std::string filename = asset->FileName;
 
-		ImGui::PushID(&asset->Handle);
+		ImGui::PushID(static_cast<int>(assetHandle));
 		ImGui::BeginGroup();
 
 		Ref<Image2D> iconRef = m_AssetIconMap.find(asset->Extension) != m_AssetIconMap.end() ? m_AssetIconMap[asset->Extension]->GetImage() : m_FileTex->GetImage();
@@ -367,6 +367,7 @@ namespace Luma {
 
 	void ContentBrowserPanel::RenderBreadCrumbs()
 	{
+		ImGui::PushID("BackButton");
 		if (UI::ImageButton(m_BackbtnTex->GetImage(), ImVec2(20, 18)))
 		{
 			if (m_CurrentDirHandle == m_BaseDirectoryHandle) return;
@@ -374,16 +375,20 @@ namespace Luma {
 			m_PrevDirHandle = m_CurrentDirectory->ParentDirectory;
 			UpdateCurrentDirectory(m_PrevDirHandle);
 		}
+		ImGui::PopID();
 
 		ImGui::SameLine();
 
+		ImGui::PushID("ForwardButton");
 		if (UI::ImageButton(m_FwrdbtnTex->GetImage(), ImVec2(20, 18)))
 			UpdateCurrentDirectory(m_NextDirHandle);
+		ImGui::PopID();
 
 		ImGui::SameLine();
 
 		{
 			ImGui::PushItemWidth(200);
+			ImGui::PushID("SearchBox");
 			if (ImGui::InputTextWithHint("", "Search...", m_SearchBuffer, MAX_INPUT_BUFFER_LENGTH))
 			{
 				if (strlen(m_SearchBuffer) == 0)
@@ -396,7 +401,7 @@ namespace Luma {
 					m_CurrentDirFiles = AssetManager::SearchAssets(m_SearchBuffer, m_CurrentDirectory->FilePath);
 				}
 			}
-
+			ImGui::PopID();
 			ImGui::PopItemWidth();
 		}
 
@@ -428,10 +433,12 @@ namespace Luma {
 
 			int size = strlen(m_BreadCrumbData[i]->FileName.c_str()) * 7;
 
+			ImGui::PushID(i);
 			if (ImGui::Selectable(m_BreadCrumbData[i]->FileName.c_str(), false, 0, ImVec2(size, 22)))
 			{
 				UpdateCurrentDirectory(m_BreadCrumbData[i]->Handle);
 			}
+			ImGui::PopID();
 
 			ImGui::SameLine();
 		}
@@ -475,7 +482,7 @@ namespace Luma {
 		m_CurrentDirFolders.clear();
 		m_CurrentDirHandle = directoryHandle;
 		m_CurrentDirectory = AssetManager::GetAsset<Directory>(m_CurrentDirHandle);
-		
+
 		std::vector<Ref<Asset>> assets = AssetManager::GetAssetsInDirectory(m_CurrentDirHandle);
 		for (auto& asset : assets)
 		{

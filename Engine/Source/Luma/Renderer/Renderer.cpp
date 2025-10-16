@@ -7,6 +7,8 @@
 #include "SceneRenderer.hpp"
 #include "Renderer2D.hpp"
 
+#include "Luma/Core/Timer.hpp"
+
 #include "Luma/Renderer/Backend/OpenGL/OpenGLRenderer.hpp"
 #include "Luma/Renderer/Backend/Vulkan/VulkanRenderer.hpp"
 
@@ -139,6 +141,7 @@ namespace Luma {
 
 	void Renderer::WaitAndRender()
 	{
+		LM_SCOPE_PERF("Renderer::WaitAndRender");
 		s_CommandQueue->Execute();
 	}
 

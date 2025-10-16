@@ -114,9 +114,6 @@ namespace Luma {
 		};
 		//RoughnessInput m_RoughnessInput;
 
-		// PBR params
-		bool m_RadiancePrefilter = false;
-
 		float m_EnvMapRotation = 0.0f;
 
 		enum class SceneType : uint32_t
