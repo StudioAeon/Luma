@@ -2,8 +2,21 @@
 
 #include "Luma.hpp"
 
-#include "Luma/Editor/SceneHierarchyPanel.hpp"
+#include "Luma/ImGui/ImGuiLayer.hpp"
 #include "Luma/Editor/EditorCamera.hpp"
+
+#include "Luma/Editor/SceneHierarchyPanel.hpp"
+#include "Luma/Editor/ContentBrowserPanel.hpp"
+#include "Luma/Editor/ObjectsPanel.hpp"
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/glm.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#include "imgui_internal.h"
+
+#include <string>
 
 namespace Luma {
 
@@ -21,20 +34,11 @@ namespace Luma {
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
 		virtual void OnUpdate(Timestep ts) override;
+
 		virtual void OnImGuiRender() override;
 		virtual void OnEvent(Event& e) override;
 		bool OnKeyPressedEvent(KeyPressedEvent& e);
 		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
-
-		// ImGui UI helpers
-		bool Property(const std::string& name, bool& value);
-		bool Property(const std::string& name, float& value, float min = -1.0f, float max = 1.0f, PropertyFlag flags = PropertyFlag::None);
-		bool Property(const std::string& name, glm::vec2& value, PropertyFlag flags);
-		bool Property(const std::string& name, glm::vec2& value, float min = -1.0f, float max = 1.0f, PropertyFlag flags = PropertyFlag::None);
-		bool Property(const std::string& name, glm::vec3& value, PropertyFlag flags);
-		bool Property(const std::string& name, glm::vec3& value, float min = -1.0f, float max = 1.0f, PropertyFlag flags = PropertyFlag::None);
-		bool Property(const std::string& name, glm::vec4& value, PropertyFlag flags);
-		bool Property(const std::string& name, glm::vec4& value, float min = -1.0f, float max = 1.0f, PropertyFlag flags = PropertyFlag::None);
 
 		void ShowBoundingBoxes(bool show, bool onTop = false);
 		void SelectEntity(Entity entity);
@@ -54,6 +58,7 @@ namespace Luma {
 			Submesh* Mesh = nullptr;
 			float Distance = 0.0f;
 		};
+
 		void OnSelected(const SelectedSubmesh& selectionContext);
 		void OnEntityDeleted(Entity e);
 		Ray CastMouseRay();
@@ -66,6 +71,8 @@ namespace Luma {
 		float GetSnapValue();
 	private:
 		Scope<SceneHierarchyPanel> m_SceneHierarchyPanel;
+		Scope<ContentBrowserPanel> m_ContentBrowserPanel;
+		Scope<ObjectsPanel> m_ObjectsPanel;
 
 		Ref<Scene> m_RuntimeScene, m_EditorScene, m_CurrentScene;
 		std::string m_SceneFilePath;
@@ -74,10 +81,6 @@ namespace Luma {
 
 		Ref<Shader> m_BrushShader;
 		Ref<Material> m_SphereBaseMaterial;
-
-		Ref<Material> m_MeshMaterial;
-		std::vector<Ref<MaterialInstance>> m_MetalSphereMaterialInstances;
-		std::vector<Ref<MaterialInstance>> m_DielectricSphereMaterialInstances;
 
 		struct AlbedoInput
 		{
@@ -124,7 +127,7 @@ namespace Luma {
 
 		// Editor resources
 		Ref<Texture2D> m_CheckerboardTex;
-		Ref<Texture2D> m_PlayButtonTex;
+		Ref<Texture2D> m_PlayButtonTex, m_StopButtonTex, m_PauseButtonTex;
 
 		glm::vec2 m_ViewportBounds[2];
 		int m_GizmoType = -1; // -1 = no gizmo
@@ -139,6 +142,8 @@ namespace Luma {
 		bool m_ViewportPanelMouseOver = false;
 		bool m_ViewportPanelFocused = false;
 
+		bool m_ShowWelcomePopup = true;
+
 		enum class SceneState
 		{
 			Edit = 0, Play = 1, Pause = 2
@@ -149,8 +154,8 @@ namespace Luma {
 		{
 			None = 0, Entity = 1, SubMesh = 2
 		};
-		SelectionMode m_SelectionMode = SelectionMode::Entity;
 
+		SelectionMode m_SelectionMode = SelectionMode::Entity;
 		std::vector<SelectedSubmesh> m_SelectionContext;
 		glm::mat4* m_RelativeTransform = nullptr;
 		glm::mat4* m_CurrentlySelectedTransform = nullptr;

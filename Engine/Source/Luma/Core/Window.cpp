@@ -12,6 +12,7 @@ namespace Luma {
 		switch (RendererAPI::Current())
 		{
 			case RendererAPIType::OpenGL: return Ref<SDLWindow>::Create(specification);
+			case RendererAPIType::Vulkan: return Ref<SDLWindow>::Create(specification);
 		}
 	}
 

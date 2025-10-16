@@ -2,7 +2,8 @@
 
 #include "Luma/Core/Assert.hpp" // Temp
 
-#include "RendererAPI.hpp"
+#include "RendererTypes.hpp"
+#include "Luma/Core/Log.hpp"
 
 namespace Luma {
 
@@ -80,8 +81,9 @@ namespace Luma {
 			CalculateOffsetsAndStride();
 		}
 
-		inline uint32_t GetStride() const { return m_Stride; }
-		inline const std::vector<VertexBufferElement>& GetElements() const { return m_Elements; }
+		uint32_t GetStride() const { return m_Stride; }
+		const std::vector<VertexBufferElement>& GetElements() const { return m_Elements; }
+		uint32_t GetElementCount() const { return m_Elements.size(); }
 
 		std::vector<VertexBufferElement>::iterator begin() { return m_Elements.begin(); }
 		std::vector<VertexBufferElement>::iterator end() { return m_Elements.end(); }
@@ -120,7 +122,7 @@ namespace Luma {
 		virtual const VertexBufferLayout& GetLayout() const = 0;
 		virtual void SetLayout(const VertexBufferLayout& layout) = 0;
 
-		virtual unsigned int GetSize() const = 0;
+		virtual uint32_t GetSize() const = 0;
 		virtual RendererID GetRendererID() const = 0;
 
 		static Ref<VertexBuffer> Create(void* data, uint32_t size, VertexBufferUsage usage = VertexBufferUsage::Static);

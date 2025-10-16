@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Luma/Core/TimeStep.hpp"
+#include "Luma/Core/Timestep.hpp"
 
 #include "Luma/Renderer/Pipeline.hpp"
 #include "Luma/Renderer/IndexBuffer.hpp"
@@ -9,6 +9,8 @@
 #include "Luma/Renderer/Material.hpp"
 
 #include "Luma/Math/AABB.hpp"
+
+#include "Luma/Asset/Asset.hpp"
 
 #include <glm/glm.hpp>
 
@@ -58,7 +60,7 @@ namespace Luma {
 			}
 
 			// TODO: Keep top weights
-			LM_CORE_WARN_TAG("Mesh", "Vertex has more than four bones/weights affecting it, extra data will be discarded (BoneID={0}, Weight={1})", BoneID, Weight);
+			LM_CORE_WARN("Vertex has more than four bones/weights affecting it, extra data will be discarded (BoneID={0}, Weight={1})", BoneID, Weight);
 		}
 	};
 
@@ -120,18 +122,19 @@ namespace Luma {
 		uint32_t BaseIndex;
 		uint32_t MaterialIndex;
 		uint32_t IndexCount;
+		uint32_t VertexCount;
 
-		glm::mat4 Transform;
-		glm::mat4 LocalTransform;
+		glm::mat4 Transform{ 1.0f };
 		AABB BoundingBox;
 
 		std::string NodeName, MeshName;
 	};
 
-	class Mesh : public RefCounted
+	class Mesh : public Asset
 	{
 	public:
 		Mesh(const std::string& filename);
+		Mesh(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const glm::mat4& transform);
 		~Mesh();
 
 		void OnUpdate(Timestep ts);
@@ -140,15 +143,20 @@ namespace Luma {
 		std::vector<Submesh>& GetSubmeshes() { return m_Submeshes; }
 		const std::vector<Submesh>& GetSubmeshes() const { return m_Submeshes; }
 
+		const std::vector<Vertex>& GetStaticVertices() const { return m_StaticVertices; }
+		const std::vector<Index>& GetIndices() const { return m_Indices; }
+
 		Ref<Shader> GetMeshShader() { return m_MeshShader; }
-		Ref<Material> GetMaterial() { return m_BaseMaterial; }
-		std::vector<Ref<MaterialInstance>> GetMaterials() { return m_Materials; }
+		std::vector<Ref<Material>>& GetMaterials() { return m_Materials; }
+		const std::vector<Ref<Material>>& GetMaterials() const { return m_Materials; }
 		const std::vector<Ref<Texture2D>>& GetTextures() const { return m_Textures; }
 		const std::string& GetFilePath() const { return m_FilePath; }
 
-		bool IsAnimated() const { return m_IsAnimated; }
-
 		const std::vector<Triangle> GetTriangleCache(uint32_t index) const { return m_TriangleCache.at(index); }
+
+		Ref<VertexBuffer> GetVertexBuffer() { return m_VertexBuffer; }
+		Ref<IndexBuffer> GetIndexBuffer() { return m_IndexBuffer; }
+		const VertexBufferLayout& GetVertexBufferLayout() const { return m_VertexBufferLayout; }
 	private:
 		void BoneTransform(float time);
 		void ReadNodeHierarchy(float AnimationTime, const aiNode* pNode, const glm::mat4& ParentTransform);
@@ -171,9 +179,9 @@ namespace Luma {
 		uint32_t m_BoneCount = 0;
 		std::vector<BoneInfo> m_BoneInfo;
 
-		Ref<Pipeline> m_Pipeline;
 		Ref<VertexBuffer> m_VertexBuffer;
 		Ref<IndexBuffer> m_IndexBuffer;
+		VertexBufferLayout m_VertexBufferLayout;
 
 		std::vector<Vertex> m_StaticVertices;
 		std::vector<AnimatedVertex> m_AnimatedVertices;
@@ -184,10 +192,9 @@ namespace Luma {
 
 		// Materials
 		Ref<Shader> m_MeshShader;
-		Ref<Material> m_BaseMaterial;
 		std::vector<Ref<Texture2D>> m_Textures;
 		std::vector<Ref<Texture2D>> m_NormalMaps;
-		std::vector<Ref<MaterialInstance>> m_Materials;
+		std::vector<Ref<Material>> m_Materials;
 
 		std::unordered_map<uint32_t, std::vector<Triangle>> m_TriangleCache;
 
@@ -201,6 +208,8 @@ namespace Luma {
 		std::string m_FilePath;
 
 		friend class Renderer;
+		friend class VulkanRenderer;
+		friend class OpenGLRenderer;
 		friend class SceneHierarchyPanel;
 	};
 }

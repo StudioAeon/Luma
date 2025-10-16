@@ -2,6 +2,7 @@ set(IMGUI_SOURCES
 		ImGuiBuild.cpp
 		ImGuiLayer.cpp
 		ImGuizmo.cpp
+		VulkanImGui.cpp
 )
 
 set(IMGUI_HEADERS

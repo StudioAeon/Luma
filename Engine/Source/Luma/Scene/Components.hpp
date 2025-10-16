@@ -5,6 +5,7 @@
 #include "Luma/Renderer/Mesh.hpp"
 #include "Luma/Renderer/SceneEnvironment.hpp"
 #include "Luma/Scene/SceneCamera.hpp"
+#include "Luma/Asset/Asset.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
@@ -34,7 +35,6 @@ namespace Luma {
 	struct RelationshipComponent
 	{
 		UUID ParentHandle = 0;
-
 		std::vector<UUID> Children;
 
 		RelationshipComponent() = default;
@@ -122,9 +122,12 @@ namespace Luma {
 
 	struct SkyLightComponent
 	{
-		Environment SceneEnvironment;
+		Ref<Environment> SceneEnvironment;
 		float Intensity = 1.0f;
 		float Angle = 0.0f;
+
+		bool DynamicSky = false;
+		glm::vec3 TurbidityAzimuthInclination = { 2.0, 0.0, 0.0 };
 	};
 
 }

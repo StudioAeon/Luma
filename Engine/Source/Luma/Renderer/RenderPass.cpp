@@ -4,6 +4,9 @@
 #include "Renderer.hpp"
 
 #include "Luma/Renderer/Backend/OpenGL/OpenGLRenderPass.hpp"
+#include "Luma/Renderer/Backend/Vulkan/VulkanRenderPass.hpp"
+
+#include "Luma/Renderer/RendererAPI.hpp"
 
 namespace Luma {
 
@@ -12,6 +15,7 @@ namespace Luma {
 		switch (RendererAPI::Current())
 		{
 			case RendererAPIType::None:    LM_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+			case RendererAPIType::Vulkan:  return Ref<VulkanRenderPass>::Create(spec);
 			case RendererAPIType::OpenGL:  return Ref<OpenGLRenderPass>::Create(spec);
 		}
 

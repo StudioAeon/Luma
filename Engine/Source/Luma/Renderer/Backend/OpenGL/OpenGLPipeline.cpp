@@ -31,6 +31,8 @@ namespace Luma {
 	OpenGLPipeline::OpenGLPipeline(const PipelineSpecification& spec)
 		: m_Specification(spec)
 	{
+		LM_CORE_ASSERT(spec.Shader);
+		LM_CORE_ASSERT(spec.RenderPass);
 		Invalidate();
 	}
 

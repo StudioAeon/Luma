@@ -6,18 +6,18 @@
 #include "Components.hpp"
 
 #include "Luma/Renderer/SceneRenderer.hpp"
-
 #include "Luma/Renderer/Renderer2D.hpp"
 
 #include "Luma/Math/Math.hpp"
-
-// TEMP
-#include "Luma/Core/Input.hpp"
+#include "Luma/Renderer/Renderer.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+// TEMP
+#include "Luma/Core/Input.hpp"
 
 namespace Luma {
 
@@ -43,25 +43,17 @@ namespace Luma {
 
 	Scene::~Scene()
 	{
+		m_Registry.on_destroy<ScriptComponent>().disconnect();
+
 		m_Registry.clear();
 		s_ActiveScenes.erase(m_SceneID);
 	}
 
 	void Scene::Init()
 	{
-		auto skyboxShader = Shader::Create("Resources/Shaders/Skybox.glsl");
-		m_SkyboxMaterial = MaterialInstance::Create(Material::Create(skyboxShader));
+		auto skyboxShader = Renderer::GetShaderLibrary()->Get("Skybox");
+		m_SkyboxMaterial = Material::Create(skyboxShader);
 		m_SkyboxMaterial->SetFlag(MaterialFlag::DepthTest, false);
-	}
-
-	static std::tuple<glm::vec3, glm::quat, glm::vec3> GetTransformDecomposition(const glm::mat4& transform)
-	{
-		glm::vec3 scale, translation, skew;
-		glm::vec4 perspective;
-		glm::quat orientation;
-		glm::decompose(transform, scale, orientation, translation, skew, perspective);
-
-		return { translation, orientation, scale };
 	}
 
 	// Merge OnUpdate/Render into one function?
@@ -69,19 +61,16 @@ namespace Luma {
 	{
 		{
 			auto view = m_Registry.view<TransformComponent>();
-			for (auto entity : view)
+			for (auto [entity, transformComponent] : view.each())
 			{
-				auto& transformComponent = view.get<TransformComponent>(entity);
 				glm::mat4 transform = GetTransformRelativeToParent(Entity(entity, this));
-				glm::vec3 translation;
+				glm::vec3 translation, scale;
 				glm::quat rotation;
-				glm::vec3 scale;
 				Math::DecomposeTransform(transform, translation, rotation, scale);
 
-				glm::quat rotationQuat = glm::quat(rotation);
-				transformComponent.Up = glm::normalize(glm::rotate(rotationQuat, glm::vec3(0.0f, 1.0f, 0.0f)));
-				transformComponent.Right = glm::normalize(glm::rotate(rotationQuat, glm::vec3(1.0f, 0.0f, 0.0f)));
-				transformComponent.Forward = glm::normalize(glm::rotate(rotationQuat, glm::vec3(0.0f, 0.0f, -1.0f)));
+				transformComponent.Up = glm::normalize(glm::rotate(rotation, glm::vec3(0.0f, 1.0f, 0.0f)));
+				transformComponent.Right = glm::normalize(glm::rotate(rotation, glm::vec3(1.0f, 0.0f, 0.0f)));
+				transformComponent.Forward = glm::normalize(glm::rotate(rotation, glm::vec3(0.0f, 0.0f, -1.0f)));
 			}
 		}
 	}
@@ -121,25 +110,33 @@ namespace Luma {
 
 		// TODO: only one sky light at the moment!
 		{
-			m_Environment = Environment();
 			auto lights = m_Registry.group<SkyLightComponent>(entt::get<TransformComponent>);
+			if (lights.empty())
+				m_Environment = Ref<Environment>::Create(Renderer::GetBlackCubeTexture(), Renderer::GetBlackCubeTexture());
+
 			for (auto entity : lights)
 			{
 				auto [transformComponent, skyLightComponent] = lights.get<TransformComponent, SkyLightComponent>(entity);
+				if (!skyLightComponent.SceneEnvironment && skyLightComponent.DynamicSky)
+				{
+					Ref<TextureCube> preethamEnv = Renderer::CreatePreethamSky(skyLightComponent.TurbidityAzimuthInclination.x, skyLightComponent.TurbidityAzimuthInclination.y, skyLightComponent.TurbidityAzimuthInclination.z);
+					skyLightComponent.SceneEnvironment = Ref<Environment>::Create(preethamEnv, preethamEnv);
+				}
 				m_Environment = skyLightComponent.SceneEnvironment;
 				m_EnvironmentIntensity = skyLightComponent.Intensity;
-				SetSkybox(m_Environment.RadianceMap);
+				if (m_Environment)
+					SetSkybox(m_Environment->RadianceMap);
 			}
 		}
 
-		m_SkyboxMaterial->Set("u_TextureLod", m_SkyboxLod);
+		m_SkyboxMaterial->Set("u_Uniforms.TextureLod", m_SkyboxLod);
 
 		auto group = m_Registry.group<MeshComponent>(entt::get<TransformComponent>);
 		SceneRenderer::BeginScene(this, { camera, cameraViewMatrix });
 		for (auto entity : group)
 		{
 			auto [transformComponent, meshComponent] = group.get<TransformComponent, MeshComponent>(entity);
-			if (meshComponent.Mesh)
+			if (meshComponent.Mesh && meshComponent.Mesh->Type == AssetType::Mesh)
 			{
 				meshComponent.Mesh->OnUpdate(ts);
 				glm::mat4 transform = GetTransformRelativeToParent(Entity(entity, this));
@@ -195,25 +192,26 @@ namespace Luma {
 		}
 
 		{
-			m_Environment = Environment();
+			//m_Environment = Ref<Environment>::Create();
 			auto lights = m_Registry.group<SkyLightComponent>(entt::get<TransformComponent>);
 			for (auto entity : lights)
 			{
 				auto [transformComponent, skyLightComponent] = lights.get<TransformComponent, SkyLightComponent>(entity);
 				m_Environment = skyLightComponent.SceneEnvironment;
 				m_EnvironmentIntensity = skyLightComponent.Intensity;
-				SetSkybox(m_Environment.RadianceMap);
+				if (m_Environment)
+					SetSkybox(m_Environment->RadianceMap);
 			}
 		}
 
-		m_SkyboxMaterial->Set("u_TextureLod", m_SkyboxLod);
+		m_SkyboxMaterial->Set("u_Uniforms.TextureLod", m_SkyboxLod);
 
 		auto group = m_Registry.group<MeshComponent>(entt::get<TransformComponent>);
 		SceneRenderer::BeginScene(this, { editorCamera, editorCamera.GetViewMatrix(), 0.1f, 1000.0f, 45.0f }); // TODO: real values
 		for (auto entity : group)
 		{
 			auto [meshComponent, transformComponent] = group.get<MeshComponent, TransformComponent>(entity);
-			if (meshComponent.Mesh)
+			if (meshComponent.Mesh && meshComponent.Mesh->Type == AssetType::Mesh)
 			{
 				meshComponent.Mesh->OnUpdate(ts);
 
@@ -251,7 +249,8 @@ namespace Luma {
 	}
 
 	void Scene::OnEvent(Event& e)
-	{}
+	{
+	}
 
 	void Scene::OnRuntimeStart()
 	{
@@ -260,6 +259,8 @@ namespace Luma {
 
 	void Scene::OnRuntimeStop()
 	{
+		Input::SetCursorMode(CursorMode::Normal);
+
 		m_IsPlaying = false;
 	}
 
@@ -271,8 +272,6 @@ namespace Luma {
 
 	void Scene::SetSkybox(const Ref<TextureCube>& skybox)
 	{
-		m_SkyboxTexture = skybox;
-		m_SkyboxMaterial->Set("u_Texture", skybox);
 	}
 
 	Entity Scene::GetMainCameraEntity()
@@ -328,13 +327,28 @@ namespace Luma {
 	template<typename T>
 	static void CopyComponent(entt::registry& dstRegistry, entt::registry& srcRegistry, const std::unordered_map<UUID, entt::entity>& enttMap)
 	{
-		auto components = srcRegistry.view<T>();
-		for (auto srcEntity : components)
+		auto view = srcRegistry.view<T>();
+		for (auto srcEntity : view)
 		{
 			entt::entity destEntity = enttMap.at(srcRegistry.get<IDComponent>(srcEntity).ID);
 
-			auto& srcComponent = srcRegistry.get<T>(srcEntity);
-			auto& destComponent = dstRegistry.emplace_or_replace<T>(destEntity, srcComponent);
+			if constexpr (std::is_empty_v<T>)
+			{
+				// For empty/tag components, just emplace
+				if (dstRegistry.all_of<T>(destEntity))
+					dstRegistry.replace<T>(destEntity);
+				else
+					dstRegistry.emplace<T>(destEntity);
+			}
+			else
+			{
+				// For components with data, copy the component
+				const auto& srcComponent = srcRegistry.get<T>(srcEntity);
+				if (dstRegistry.all_of<T>(destEntity))
+					dstRegistry.replace<T>(destEntity, srcComponent);
+				else
+					dstRegistry.emplace<T>(destEntity, srcComponent);
+			}
 		}
 	}
 
@@ -343,8 +357,23 @@ namespace Luma {
 	{
 		if (registry.all_of<T>(src))
 		{
-			auto& srcComponent = registry.get<T>(src);
-			registry.emplace_or_replace<T>(dst, srcComponent);
+			if constexpr (std::is_empty_v<T>)
+			{
+				// For empty/tag components
+				if (registry.all_of<T>(dst))
+					registry.replace<T>(dst);
+				else
+					registry.emplace<T>(dst);
+			}
+			else
+			{
+				// For components with data
+				const auto& srcComponent = registry.get<T>(src);
+				if (registry.all_of<T>(dst))
+					registry.replace<T>(dst, srcComponent);
+				else
+					registry.emplace<T>(dst, srcComponent);
+			}
 		}
 	}
 
@@ -361,6 +390,7 @@ namespace Luma {
 		CopyComponentIfExists<MeshComponent>(newEntity.m_EntityHandle, entity.m_EntityHandle, m_Registry);
 		CopyComponentIfExists<DirectionalLightComponent>(newEntity.m_EntityHandle, entity.m_EntityHandle, m_Registry);
 		CopyComponentIfExists<SkyLightComponent>(newEntity.m_EntityHandle, entity.m_EntityHandle, m_Registry);
+		CopyComponentIfExists<ScriptComponent>(newEntity.m_EntityHandle, entity.m_EntityHandle, m_Registry);
 		CopyComponentIfExists<CameraComponent>(newEntity.m_EntityHandle, entity.m_EntityHandle, m_Registry);
 		CopyComponentIfExists<SpriteRendererComponent>(newEntity.m_EntityHandle, entity.m_EntityHandle, m_Registry);
 	}
@@ -430,6 +460,7 @@ namespace Luma {
 		CopyComponent<MeshComponent>(target->m_Registry, m_Registry, enttMap);
 		CopyComponent<DirectionalLightComponent>(target->m_Registry, m_Registry, enttMap);
 		CopyComponent<SkyLightComponent>(target->m_Registry, m_Registry, enttMap);
+		CopyComponent<ScriptComponent>(target->m_Registry, m_Registry, enttMap);
 		CopyComponent<CameraComponent>(target->m_Registry, m_Registry, enttMap);
 		CopyComponent<SpriteRendererComponent>(target->m_Registry, m_Registry, enttMap);
 	}

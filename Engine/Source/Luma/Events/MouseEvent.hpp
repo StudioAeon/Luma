@@ -2,9 +2,9 @@
 
 #include "Event.hpp"
 
-#include <sstream>
-
 #include "Luma/Core/KeyCodes.hpp"
+
+#include <sstream>
 
 namespace Luma {
 

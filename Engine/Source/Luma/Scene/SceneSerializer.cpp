@@ -3,13 +3,16 @@
 
 #include "Entity.hpp"
 #include "Components.hpp"
+#include "Luma/Renderer/MeshFactory.hpp"
 
-#include <yaml-cpp/yaml.h>
+#include "Luma/Asset/AssetManager.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include <yaml-cpp/yaml.h>
 
 #include <iostream>
 #include <fstream>
@@ -151,7 +154,7 @@ namespace Luma {
 	{
 	}
 
-	static std::tuple<glm::vec3, glm::quat, glm::vec3> GetTransformDecomposition(const glm::mat4& transform)
+	/*static std::tuple<glm::vec3, glm::quat, glm::vec3> GetTransformDecomposition(const glm::mat4& transform)
 	{
 		glm::vec3 scale, translation, skew;
 		glm::vec4 perspective;
@@ -159,7 +162,7 @@ namespace Luma {
 		glm::decompose(transform, scale, orientation, translation, skew, perspective);
 
 		return { translation, orientation, scale };
-	}
+	}*/
 
 	static void SerializeEntity(YAML::Emitter& out, Entity entity)
 	{
@@ -215,7 +218,10 @@ namespace Luma {
 			out << YAML::BeginMap; // MeshComponent
 
 			auto mesh = entity.GetComponent<MeshComponent>().Mesh;
-			out << YAML::Key << "AssetPath" << YAML::Value << mesh->GetFilePath();
+			if (mesh)
+				out << YAML::Key << "AssetID" << YAML::Value << mesh->Handle;
+			else
+				out << YAML::Key << "AssetID" << YAML::Value << 0;
 
 			out << YAML::EndMap; // MeshComponent
 		}
@@ -262,7 +268,7 @@ namespace Luma {
 			out << YAML::BeginMap; // SkyLightComponent
 
 			auto& skyLightComponent = entity.GetComponent<SkyLightComponent>();
-			out << YAML::Key << "EnvironmentAssetPath" << YAML::Value << skyLightComponent.SceneEnvironment.FilePath;
+			out << YAML::Key << "EnvironmentMap" << YAML::Value << skyLightComponent.SceneEnvironment->Handle;
 			out << YAML::Key << "Intensity" << YAML::Value << skyLightComponent.Intensity;
 			out << YAML::Key << "Angle" << YAML::Value << skyLightComponent.Angle;
 
@@ -291,7 +297,7 @@ namespace Luma {
 		out << YAML::Key << "Environment";
 		out << YAML::Value;
 		out << YAML::BeginMap; // Environment
-		out << YAML::Key << "AssetPath" << YAML::Value << scene->GetEnvironment().FilePath;
+		out << YAML::Key << "AssetHandle" << YAML::Value << scene->GetEnvironment()->Handle;
 		const auto& light = scene->GetLight();
 		out << YAML::Key << "Light" << YAML::Value;
 		out << YAML::BeginMap; // Light
@@ -302,31 +308,27 @@ namespace Luma {
 		out << YAML::EndMap; // Environment
 	}
 
-	static bool CheckPath(const std::string& path)
-	{
-		FILE* f = fopen(path.c_str(), "rb");
-		if (f)
-			fclose(f);
-		return f != nullptr;
-	}
-
 	void SceneSerializer::Serialize(const std::string& filepath)
 	{
 		YAML::Emitter out;
 		out << YAML::BeginMap;
 		out << YAML::Key << "Scene";
 		out << YAML::Value << "Scene Name";
-		SerializeEnvironment(out, m_Scene);
+
+		if (m_Scene->GetEnvironment())
+			SerializeEnvironment(out, m_Scene);
+
 		out << YAML::Key << "Entities";
 		out << YAML::Value << YAML::BeginSeq;
-		m_Scene->m_Registry.view<IDComponent>().each([&](auto entityID, auto& idComponent)
+		auto view = m_Scene->m_Registry.view<entt::entity>();
+		for (auto entityID : view)
 		{
 			Entity entity = { entityID, m_Scene.Raw() };
-			if (!entity)
+			if (!entity || !entity.HasComponent<IDComponent>())
 				return;
 
 			SerializeEntity(out, entity);
-		});
+		}
 		out << YAML::EndSeq;
 		out << YAML::EndMap;
 
@@ -343,6 +345,7 @@ namespace Luma {
 	bool SceneSerializer::Deserialize(const std::string& filepath)
 	{
 		std::ifstream stream(filepath);
+		LM_CORE_ASSERT(stream);
 		std::stringstream strStream;
 		strStream << stream.rdbuf();
 
@@ -351,25 +354,7 @@ namespace Luma {
 			return false;
 
 		std::string sceneName = data["Scene"].as<std::string>();
-		LM_CORE_INFO_TAG("Scene", "Deserializing scene '{0}'", sceneName);
-
-		auto environment = data["Environment"];
-		if (environment)
-		{
-			std::string envPath = environment["AssetPath"].as<std::string>();
-			//m_Scene->SetEnvironment(Environment::Load(envPath));
-
-			auto lightNode = environment["Light"];
-			if (lightNode)
-			{
-				auto& light = m_Scene->GetLight();
-				light.Direction = lightNode["Direction"].as<glm::vec3>();
-				light.Radiance = lightNode["Radiance"].as<glm::vec3>();
-				light.Multiplier = lightNode["Multiplier"].as<float>();
-			}
-		}
-
-		std::vector<std::string> missingPaths;
+		LM_CORE_INFO("Deserializing scene '{0}'", sceneName);
 
 		auto entities = data["Entities"];
 		if (entities)
@@ -383,7 +368,7 @@ namespace Luma {
 				if (tagComponent)
 					name = tagComponent["Tag"].as<std::string>();
 
-				LM_CORE_INFO_TAG("Scene", "Deserialized entity with ID = {0}, name = {1}", uuid, name);
+				LM_CORE_INFO("Deserialized entity with ID = {0}, name = {1}", uuid, name);
 
 				Entity deserializedEntity = m_Scene->CreateEntityWithID(uuid, name);
 
@@ -407,7 +392,7 @@ namespace Luma {
 					// Entities always have transforms
 					auto& transform = deserializedEntity.GetComponent<TransformComponent>();
 					transform.Translation = transformComponent["Position"].as<glm::vec3>();
-					const auto& rotationNode = transformComponent["Rotation"];
+					auto rotationNode = transformComponent["Rotation"];
 					// Rotations used to be stored as quaternions
 					if (rotationNode.size() == 4)
 					{
@@ -421,35 +406,45 @@ namespace Luma {
 					}
 					transform.Scale = transformComponent["Scale"].as<glm::vec3>();
 
-					LM_CORE_INFO_TAG("Scene", "  Entity Transform:");
-					LM_CORE_INFO_TAG("Scene", "    Translation: {0}, {1}, {2}", transform.Translation.x, transform.Translation.y, transform.Translation.z);
-					LM_CORE_INFO_TAG("Scene", "    Rotation: {0}, {1}, {2}", transform.Rotation.x, transform.Rotation.y, transform.Rotation.z);
-					LM_CORE_INFO_TAG("Scene", "    Scale: {0}, {1}, {2}", transform.Scale.x, transform.Scale.y, transform.Scale.z);
+					LM_CORE_INFO("  Entity Transform:");
+					LM_CORE_INFO("    Translation: {0}, {1}, {2}", transform.Translation.x, transform.Translation.y, transform.Translation.z);
+					LM_CORE_INFO("    Rotation: {0}, {1}, {2}", transform.Rotation.x, transform.Rotation.y, transform.Rotation.z);
+					LM_CORE_INFO("    Scale: {0}, {1}, {2}", transform.Scale.x, transform.Scale.y, transform.Scale.z);
 				}
 
 				auto meshComponent = entity["MeshComponent"];
 				if (meshComponent)
 				{
-					std::string meshPath = meshComponent["AssetPath"].as<std::string>();
-					if (!deserializedEntity.HasComponent<MeshComponent>())
+					auto& component = deserializedEntity.AddComponent<MeshComponent>();
+
+					AssetHandle assetHandle = 0;
+					if (meshComponent["AssetPath"])
+						assetHandle = AssetManager::GetAssetHandleFromFilePath(meshComponent["AssetPath"].as<std::string>());
+					else
+						assetHandle = meshComponent["AssetID"].as<uint64_t>();
+
+					if (AssetManager::IsAssetHandleValid(assetHandle))
 					{
-						Ref<Mesh> mesh;
-						if (!CheckPath(meshPath))
-							missingPaths.emplace_back(meshPath);
-						else
-							mesh = Ref<Mesh>::Create(meshPath);
-
-						deserializedEntity.AddComponent<MeshComponent>(mesh);
+						component.Mesh = AssetManager::GetAsset<Mesh>(assetHandle);
 					}
+					else
+					{
+						component.Mesh = Ref<Asset>::Create().As<Mesh>();
+						component.Mesh->Type = AssetType::Missing;
 
-					LM_CORE_INFO_TAG("Scene", "  Mesh Asset Path: {0}", meshPath);
+						std::string filepath = meshComponent["AssetPath"] ? meshComponent["AssetPath"].as<std::string>() : "";
+						if (filepath.empty())
+							LM_CORE_ERROR("Tried to load non-existent mesh in Entity: {0}", deserializedEntity.GetUUID());
+						else
+							LM_CORE_ERROR("Tried to load invalid mesh '{0}' in Entity {1}", filepath, deserializedEntity.GetUUID());
+					}
 				}
 
 				auto cameraComponent = entity["CameraComponent"];
 				if (cameraComponent)
 				{
 					auto& component = deserializedEntity.AddComponent<CameraComponent>();
-					const auto& cameraNode = cameraComponent["Camera"];
+					auto cameraNode = cameraComponent["Camera"];
 
 					component.Camera = SceneCamera();
 					auto& camera = component.Camera;
@@ -485,18 +480,26 @@ namespace Luma {
 				if (skyLightComponent)
 				{
 					auto& component = deserializedEntity.AddComponent<SkyLightComponent>();
-					std::string env = skyLightComponent["EnvironmentAssetPath"].as<std::string>();
-					if (!env.empty())
+
+					AssetHandle assetHandle = 0;
+					if (skyLightComponent["EnvironmentAssetPath"])
+						assetHandle = AssetManager::GetAssetHandleFromFilePath(skyLightComponent["EnvironmentAssetPath"].as<std::string>());
+					else
+						assetHandle = skyLightComponent["EnvironmentMap"].as<uint64_t>();
+
+					if (AssetManager::IsAssetHandleValid(assetHandle))
 					{
-						if (!CheckPath(env))
-						{
-							missingPaths.emplace_back(env);
-						}
-						else
-						{
-							component.SceneEnvironment = Environment::Load(env);
-						}
+						component.SceneEnvironment = AssetManager::GetAsset<Environment>(assetHandle);
 					}
+					else
+					{
+						std::string filepath = meshComponent["EnvironmentAssetPath"] ? meshComponent["EnvironmentAssetPath"].as<std::string>() : "";
+						if (filepath.empty())
+							LM_CORE_ERROR("Tried to load non-existent environment map in Entity: {0}", deserializedEntity.GetUUID());
+						else
+							LM_CORE_ERROR("Tried to load invalid environment map '{0}' in Entity {1}", filepath, deserializedEntity.GetUUID());
+					}
+
 					component.Intensity = skyLightComponent["Intensity"].as<float>();
 					component.Angle = skyLightComponent["Angle"].as<float>();
 				}
@@ -510,18 +513,6 @@ namespace Luma {
 				}
 			}
 		}
-
-		if (missingPaths.size())
-		{
-			LM_CORE_ERROR_TAG("Scene", "The following files could not be loaded:");
-			for (auto& path : missingPaths)
-			{
-				LM_CORE_ERROR_TAG("Scene", "  {0}", path);
-			}
-
-			return false;
-		}
-
 		return true;
 	}
 

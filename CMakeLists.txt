@@ -44,12 +44,12 @@ else()
 endif()
 
 # ==== Distribution Build Configuration ====
-set(CMAKE_CXX_FLAGS_DISTRIBUTION "${CMAKE_CXX_FLAGS_RELEASE}")
-set(CMAKE_C_FLAGS_DISTRIBUTION "${CMAKE_C_FLAGS_RELEASE}")
-set(CMAKE_EXE_LINKER_FLAGS_DISTRIBUTION "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
-set(CMAKE_SHARED_LINKER_FLAGS_DISTRIBUTION "${CMAKE_SHARED_LINKER_FLAGS_RELEASE}")
+set(CMAKE_MAP_IMPORTED_CONFIG_DISTRIBUTION "Release" CACHE STRING "" FORCE)
 
-set(CMAKE_MAP_IMPORTED_CONFIG_DISTRIBUTION "Release")
+set(CMAKE_CXX_FLAGS_DISTRIBUTION "${CMAKE_CXX_FLAGS_RELEASE}" CACHE STRING "" FORCE)
+set(CMAKE_C_FLAGS_DISTRIBUTION "${CMAKE_C_FLAGS_RELEASE}" CACHE STRING "" FORCE)
+set(CMAKE_EXE_LINKER_FLAGS_DISTRIBUTION "${CMAKE_EXE_LINKER_FLAGS_RELEASE}" CACHE STRING "" FORCE)
+set(CMAKE_SHARED_LINKER_FLAGS_DISTRIBUTION "${CMAKE_SHARED_LINKER_FLAGS_RELEASE}" CACHE STRING "" FORCE)
 
 # ==== Build Config ====
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -63,6 +63,50 @@ if(IPO_SUPPORTED)
 	message(STATUS "Interprocedural Optimization (LTO): Available for per-target use")
 else()
 	message(WARNING "Interprocedural Optimization (LTO): Not supported by compiler")
+endif()
+
+# ==== Find system packages ====
+find_package(OpenGL REQUIRED)
+find_package(Vulkan REQUIRED COMPONENTS shaderc_combined)
+
+message(STATUS "Found Vulkan: ${Vulkan_VERSION}")
+message(STATUS "Using Vulkan includes: ${Vulkan_INCLUDE_DIRS}")
+
+# ==== Fix for configuration-less Vulkan (common on Linux) ====
+if(TARGET Vulkan::Vulkan)
+	get_target_property(vulkan_configs Vulkan::Vulkan IMPORTED_CONFIGURATIONS)
+
+	# If Vulkan has no configurations, copy IMPORTED_LOCATION to all configs
+	if(NOT vulkan_configs)
+		get_target_property(vulkan_location Vulkan::Vulkan IMPORTED_LOCATION)
+		if(vulkan_location)
+			set_target_properties(Vulkan::Vulkan PROPERTIES
+					IMPORTED_LOCATION_DEBUG "${vulkan_location}"
+					IMPORTED_LOCATION_RELEASE "${vulkan_location}"
+					IMPORTED_LOCATION_DISTRIBUTION "${vulkan_location}"
+					IMPORTED_CONFIGURATIONS "Debug;Release;Distribution"
+			)
+			message(STATUS "Fixed Vulkan::Vulkan for multi-config build")
+		endif()
+	endif()
+endif()
+
+# Same fix for shaderc_combined
+if(TARGET Vulkan::shaderc_combined)
+	get_target_property(shaderc_configs Vulkan::shaderc_combined IMPORTED_CONFIGURATIONS)
+
+	if(NOT shaderc_configs)
+		get_target_property(shaderc_location Vulkan::shaderc_combined IMPORTED_LOCATION)
+		if(shaderc_location)
+			set_target_properties(Vulkan::shaderc_combined PROPERTIES
+					IMPORTED_LOCATION_DEBUG "${shaderc_location}"
+					IMPORTED_LOCATION_RELEASE "${shaderc_location}"
+					IMPORTED_LOCATION_DISTRIBUTION "${shaderc_location}"
+					IMPORTED_CONFIGURATIONS "Debug;Release;Distribution"
+			)
+			message(STATUS "Fixed Vulkan::shaderc_combined for multi-config build")
+		endif()
+	endif()
 endif()
 
 # ==== CMake Utilities ====

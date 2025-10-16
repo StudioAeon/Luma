@@ -40,8 +40,46 @@ namespace Luma {
 	std::pair<float, float> Input::GetMousePosition()
 	{
 		float x, y;
-		SDL_GetGlobalMouseState(&x, &y);
+		SDL_GetMouseState(&x, &y);
 		return { x, y };
+	}
+
+	// TODO: A better way to do this is to handle it internally, and simply move the cursor the opposite side
+	//		of the screen when it reaches the edge
+	void Input::SetCursorMode(CursorMode mode)
+	{
+		auto* window = Application::Get().GetWindow()->GetNativeWindow();
+
+		switch (mode)
+		{
+			case CursorMode::Normal:
+				SDL_SetWindowRelativeMouseMode(window, false);
+				SDL_ShowCursor();
+				break;
+
+			case CursorMode::Hidden:
+				SDL_SetWindowRelativeMouseMode(window, false);
+				SDL_HideCursor();
+				break;
+
+			case CursorMode::Locked:
+				SDL_SetWindowRelativeMouseMode(window, true);
+				SDL_HideCursor();
+				break;
+		}
+	}
+
+	CursorMode Input::GetCursorMode()
+	{
+		auto* window = Application::Get().GetWindow()->GetNativeWindow();
+
+		if (SDL_GetWindowRelativeMouseMode(window))
+			return CursorMode::Locked;
+
+		if (SDL_CursorVisible())
+			return CursorMode::Normal;
+
+		return CursorMode::Hidden;
 	}
 
 }

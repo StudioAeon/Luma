@@ -1,22 +1,29 @@
 set(OPENGL_SOURCES
+		OpenGLContext.cpp
 		OpenGLFramebuffer.cpp
+		OpenGLImage.cpp
+		OpenGLImGuiLayer.cpp
 		OpenGLIndexBuffer.cpp
+		OpenGLMaterial.cpp
 		OpenGLPipeline.cpp
-		OpenGLRendererAPI.cpp
+		OpenGLRenderer.cpp
 		OpenGLRenderPass.cpp
 		OpenGLShader.cpp
-		OpenGLShaderUniform.cpp
 		OpenGLTexture.cpp
 		OpenGLVertexBuffer.cpp
 )
 
 set(OPENGL_HEADERS
+		OpenGLContext.hpp
 		OpenGLFramebuffer.hpp
+		OpenGLImage.hpp
+		OpenGLImGuiLayer.hpp
 		OpenGLIndexBuffer.hpp
+		OpenGLMaterial.hpp
 		OpenGLPipeline.hpp
+		OpenGLRenderer.hpp
 		OpenGLRenderPass.hpp
 		OpenGLShader.hpp
-		OpenGLShaderUniform.hpp
 		OpenGLTexture.hpp
 		OpenGLVertexBuffer.hpp
 )

@@ -4,6 +4,9 @@
 #include "Renderer.hpp"
 
 #include "Luma/Renderer/Backend/OpenGL/OpenGLPipeline.hpp"
+#include "Luma/Renderer/Backend/Vulkan/VulkanPipeline.hpp"
+
+#include "Luma/Renderer/RendererAPI.hpp"
 
 namespace Luma {
 
@@ -13,6 +16,7 @@ namespace Luma {
 		{
 			case RendererAPIType::None:    return nullptr;
 			case RendererAPIType::OpenGL:  return Ref<OpenGLPipeline>::Create(spec);
+			case RendererAPIType::Vulkan:  return Ref<VulkanPipeline>::Create(spec);
 		}
 		LM_CORE_ASSERT(false, "Unknown RendererAPI");
 		return nullptr;

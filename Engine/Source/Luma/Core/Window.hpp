@@ -3,6 +3,8 @@
 #include "Luma/Core/Base.hpp"
 #include "Luma/Events/Event.hpp"
 
+#include "Luma/Renderer/RendererContext.hpp"
+
 #include <SDL3/SDL.h>
 
 #include <functional>
@@ -57,6 +59,8 @@ namespace Luma {
 
 		virtual const std::string& GetTitle() const = 0;
 		virtual void SetTitle(const std::string& title) = 0;
+
+		virtual Ref<RendererContext> GetRenderContext() = 0;
 	public:
 		static Ref<Window> Create(const WindowSpecification& specification = WindowSpecification());
 	};

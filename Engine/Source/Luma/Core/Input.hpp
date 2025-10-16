@@ -13,6 +13,9 @@ namespace Luma {
 		static float GetMouseX();
 		static float GetMouseY();
 		static std::pair<float, float> GetMousePosition();
+
+		static void SetCursorMode(CursorMode mode);
+		static CursorMode GetCursorMode();
 	};
 
 }

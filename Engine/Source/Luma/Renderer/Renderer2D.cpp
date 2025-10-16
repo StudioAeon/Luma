@@ -96,6 +96,7 @@ namespace Luma {
 				{ ShaderDataType::Float, "a_TexIndex" },
 				{ ShaderDataType::Float, "a_TilingFactor" }
 			};
+			pipelineSpecification.DebugName = "Renderer2D-Quad";
 			s_Data.QuadPipeline = Pipeline::Create(pipelineSpecification);
 
 			s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(QuadVertex));
@@ -121,7 +122,7 @@ namespace Luma {
 			delete[] quadIndices;
 		}
 
-		s_Data.WhiteTexture = Texture2D::Create(TextureFormat::RGBA, 1, 1);
+		s_Data.WhiteTexture = Texture2D::Create(ImageFormat::RGBA, 1, 1);
 		uint32_t whiteTextureData = 0xffffffff;
 		s_Data.WhiteTexture->Lock();
 		s_Data.WhiteTexture->GetWriteableBuffer().Write(&whiteTextureData, sizeof(uint32_t));
@@ -146,6 +147,7 @@ namespace Luma {
 				{ ShaderDataType::Float3, "a_Position" },
 				{ ShaderDataType::Float4, "a_Color" }
 			};
+			pipelineSpecification.DebugName = "Renderer2D-Line";
 			s_Data.LinePipeline = Pipeline::Create(pipelineSpecification);
 
 			s_Data.LineVertexBuffer = VertexBuffer::Create(s_Data.MaxLineVertices * sizeof(LineVertex));
@@ -175,6 +177,7 @@ namespace Luma {
 			s_Data.CircleVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(QuadVertex));
 			s_Data.CircleVertexBufferBase = new CircleVertex[s_Data.MaxVertices];
 		}
+
 	}
 
 	void Renderer2D::Shutdown()
@@ -203,6 +206,7 @@ namespace Luma {
 
 	void Renderer2D::EndScene()
 	{
+#if 0
 		uint32_t dataSize = (uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase;
 		if (dataSize)
 		{
@@ -237,6 +241,7 @@ namespace Luma {
 			s_Data.Stats.DrawCalls++;
 		}
 
+
 		dataSize = (uint8_t*)s_Data.CircleVertexBufferPtr - (uint8_t*)s_Data.CircleVertexBufferBase;
 		if (dataSize)
 		{
@@ -250,8 +255,8 @@ namespace Luma {
 			s_Data.QuadIndexBuffer->Bind();
 			Renderer::DrawIndexed(s_Data.CircleIndexCount, PrimitiveType::Triangles, false, false);
 			s_Data.Stats.DrawCalls++;
-		}
-
+	}
+#endif
 #if OLD
 		Flush();
 #endif
@@ -282,6 +287,7 @@ namespace Luma {
 
 	void Renderer2D::FlushAndResetLines()
 	{
+
 	}
 
 	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
@@ -647,6 +653,7 @@ namespace Luma {
 			s_Data.CircleIndexCount += 6;
 			s_Data.Stats.QuadCount++;
 		}
+
 	}
 
 	void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color)

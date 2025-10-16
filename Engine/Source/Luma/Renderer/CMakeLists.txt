@@ -1,13 +1,16 @@
 set(RENDERER_SOURCES
 		Camera.cpp
 		Framebuffer.cpp
+		Image.cpp
 		IndexBuffer.cpp
 		Material.cpp
 		Mesh.cpp
+		MeshFactory.cpp
 		Pipeline.cpp
 		RenderCommandQueue.cpp
 		Renderer.cpp
 		Renderer2D.cpp
+		RendererContext.cpp
 		RenderPass.cpp
 		SceneEnvironment.cpp
 		SceneRenderer.cpp
@@ -19,14 +22,19 @@ set(RENDERER_SOURCES
 set(RENDERER_HEADERS
 		Camera.hpp
 		Framebuffer.hpp
+		Image.hpp
 		IndexBuffer.hpp
 		Material.hpp
 		Mesh.hpp
+		MeshFactory.hpp
 		Pipeline.hpp
 		RenderCommandQueue.hpp
 		Renderer.hpp
 		Renderer2D.hpp
 		RendererAPI.hpp
+		RendererCapabilities.hpp
+		RendererContext.hpp
+		RendererTypes.hpp
 		RenderPass.hpp
 		SceneEnvironment.hpp
 		SceneRenderer.hpp
@@ -37,6 +45,7 @@ set(RENDERER_HEADERS
 )
 
 add_subdirectory(Backend/OpenGL)
+add_subdirectory(Backend/Vulkan)
 
 target_sources(Luma
 		PRIVATE

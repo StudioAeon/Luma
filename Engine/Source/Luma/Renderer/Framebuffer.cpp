@@ -2,6 +2,9 @@
 #include "Framebuffer.hpp"
 
 #include "Luma/Renderer/Backend/OpenGL/OpenGLFramebuffer.hpp"
+#include "Luma/Renderer/Backend/Vulkan/VulkanFramebuffer.hpp"
+
+#include "Luma/Renderer/RendererAPI.hpp"
 
 namespace Luma {
 
@@ -12,7 +15,8 @@ namespace Luma {
 		switch (RendererAPI::Current())
 		{
 			case RendererAPIType::None:		return nullptr;
-			case RendererAPIType::OpenGL:	result = Ref<OpenGLFramebuffer>::Create(spec);
+			case RendererAPIType::OpenGL:	result = Ref<OpenGLFramebuffer>::Create(spec); break;
+			case RendererAPIType::Vulkan:	result = Ref<VulkanFramebuffer>::Create(spec); break;
 		}
 		FramebufferPool::GetGlobal()->Add(result);
 		return result;

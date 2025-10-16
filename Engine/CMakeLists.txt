@@ -19,6 +19,7 @@ add_library(Luma STATIC)
 
 target_sources(Luma PRIVATE ${LUMA_ROOT_SOURCES} ${LUMA_ROOT_HEADERS} ${LUMA_THIRDPARTY_IMPL_SOURCES})
 
+add_subdirectory(${LUMA_SRC_DIR}/Luma/Asset)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Core)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Debug)
 add_subdirectory(${LUMA_SRC_DIR}/Luma/Editor)
@@ -98,6 +99,9 @@ target_link_libraries(Luma
 		EnTT::EnTT
 		spdlog
 		SDL3::SDL3-static
+		Vulkan::Vulkan
+		Vulkan::shaderc_combined
+		OpenGL::GL
 		imgui
 		yaml-cpp
 		choc_lib
@@ -108,6 +112,9 @@ target_link_libraries(Luma
 		FastNoise
 		TracyClient
 		backward
+		spirv-cross-core
+		spirv-cross-glsl
+		vma
 )
 
 # ==== Optimizations ====

@@ -7,6 +7,10 @@
 #include "Input.hpp"
 #include "FatalSignal.hpp"
 
+#include "Luma/Asset/AssetManager.hpp" //Temp
+#include "Luma/Renderer/Backend/Vulkan/VulkanAllocator.hpp"
+#include "Luma/Renderer/RendererAPI.hpp"
+
 #include "Luma/Utilities/StringUtils.hpp"
 #include "Luma/Debug/Profiler.hpp"
 
@@ -51,15 +55,18 @@ namespace Luma {
 
 		LM_CORE_VERIFY(NFD::Init() == NFD_OKAY);
 
-		m_ImGuiLayer = new ImGuiLayer("ImGui");
-		PushOverlay(m_ImGuiLayer);
-
+		// Init renderer and execute command queue to compile all shaders
 		Renderer::Init();
 		Renderer::WaitAndRender();
+
+		m_ImGuiLayer = ImGuiLayer::Create();
+		PushOverlay(m_ImGuiLayer);
 
 		m_Window->SetResizable(specification.Resizable);
 		if (windowSpec.Mode == WindowMode::Windowed)
 			m_Window->CenterWindow();
+
+		AssetManager::Init();
 	}
 
 	Application::~Application()
@@ -73,6 +80,13 @@ namespace Luma {
 			layer->OnDetach();
 			delete layer;
 		}
+
+		FramebufferPool::GetGlobal()->GetAll().clear();
+
+		AssetManager::Shutdown();
+
+		Renderer::WaitAndRender();
+		Renderer::Shutdown();
 
 		m_Window->Shutdown();
 
@@ -111,6 +125,20 @@ namespace Luma {
 
 		m_ImGuiLayer->Begin();
 
+		ImGui::Begin("Renderer");
+		auto& caps = Renderer::GetCapabilities();
+
+		if (RendererAPI::Current() == RendererAPIType::Vulkan)
+		{
+			GPUMemoryStats memoryStats = VulkanAllocator::GetStats();
+			std::string used = Utils::BytesToString(memoryStats.Used);
+			std::string free = Utils::BytesToString(memoryStats.Free);
+			ImGui::Text("Used VRAM: %s", used.c_str());
+			ImGui::Text("Free VRAM: %s", free.c_str());
+		}
+
+		ImGui::End();
+
 		for (int i = 0; i < m_LayerStack.Size(); i++)
 			m_LayerStack[i]->OnImGuiRender();
 	}
@@ -135,6 +163,7 @@ namespace Luma {
 
 			if (!m_Minimized)
 			{
+				Renderer::BeginFrame();
 				{
 					LM_SCOPE_PERF("Application Layer::OnUpdate");
 					for (Layer* layer : m_LayerStack)
@@ -145,10 +174,13 @@ namespace Luma {
 				Application* app = this;
 				Renderer::Submit([app]() { app->RenderImGui(); });
 				Renderer::Submit([=]() { m_ImGuiLayer->End(); });
+				Renderer::EndFrame();
 
+				// On Render thread
+				m_Window->GetRenderContext()->BeginFrame();
 				Renderer::WaitAndRender();
+				m_Window->SwapBuffers();
 			}
-			m_Window->SwapBuffers();
 
 			float time = GetTime();
 			m_Frametime = time - m_LastFrameTime;
@@ -235,7 +267,9 @@ namespace Luma {
 			return false;
 		}
 		m_Minimized = false;
-		Renderer::Submit([=]() { glViewport(0, 0, width, height); });
+
+		m_Window->GetRenderContext()->OnResize(width, height);
+
 		auto& fbs = FramebufferPool::GetGlobal()->GetAll();
 		for (auto& fb : fbs)
 		{

@@ -6,6 +6,8 @@
 #include "Luma/Events/MouseEvent.hpp"
 #include "Luma/Core/Input.hpp"
 
+#include "Luma/Renderer/RendererAPI.hpp"
+
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
 #include <stb/stb_image.h>
@@ -50,7 +52,31 @@ namespace Luma {
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-		Uint32 windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_HIGH_PIXEL_DENSITY;
+		Uint32 windowFlags = SDL_WINDOW_HIGH_PIXEL_DENSITY;
+
+		switch (RendererAPI::Current())
+		{
+			case RendererAPIType::None:
+				LM_CORE_ASSERT(false, "None is currently not supported!");
+				break;
+			case RendererAPIType::OpenGL:
+				windowFlags |= SDL_WINDOW_OPENGL;
+
+				SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+				SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+				SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+				SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+				SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+				SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
+#ifdef LM_DEBUG
+				SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+#endif
+				break;
+			case RendererAPIType::Vulkan:
+				windowFlags |= SDL_WINDOW_VULKAN;
+				break;
+		}
 
 		switch (m_Specification.Mode)
 		{
@@ -107,10 +133,9 @@ namespace Luma {
 			}
 		}
 
-		m_GLContext = SDL_GL_CreateContext(m_Window);
-		SDL_GL_MakeCurrent(m_Window, m_GLContext);
-		int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(SDL_GL_GetProcAddress));
-		LM_CORE_ASSERT(status, "Failed to initialize Glad!");
+		// Create Renderer Context
+		m_RendererContext = RendererContext::Create(m_Window);
+		m_RendererContext->Create();
 
 		SDL_SetPointerProperty(SDL_GetWindowProperties(m_Window), "WindowData", &m_Data);
 
@@ -255,15 +280,18 @@ namespace Luma {
 
 	void SDLWindow::SwapBuffers()
 	{
-		SDL_GL_SwapWindow(m_Window);
+		m_RendererContext->SwapBuffers();
 	}
 
 	void SDLWindow::SetVSync(bool enabled)
 	{
-		if (enabled)
-			SDL_GL_SetSwapInterval(1);
-		else
-			SDL_GL_SetSwapInterval(0);
+		if (RendererAPI::Current() == RendererAPIType::OpenGL)
+		{
+			if (enabled)
+				SDL_GL_SetSwapInterval(1);
+			else
+				SDL_GL_SetSwapInterval(0);
+		}
 		m_Specification.VSync = enabled;
 	}
 

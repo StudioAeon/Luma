@@ -31,9 +31,6 @@ FetchContent_MakeAvailable(spdlog)
 	)
 	FetchContent_MakeAvailable(SDL3)
 
-# ==== OpenGL ====
-find_package(OpenGL REQUIRED)
-
 # ==== Glad ====
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/glad SYSTEM)
 
@@ -195,3 +192,26 @@ FetchContent_Declare(
 		SYSTEM
 )
 FetchContent_MakeAvailable(backward-cpp)
+
+FetchContent_Declare(
+		spirv_cross
+		GIT_REPOSITORY https://github.com/KhronosGroup/SPIRV-Cross.git
+		GIT_TAG        vulkan-sdk-1.4.313.0
+)
+
+set(SPIRV_CROSS_CLI OFF)
+set(SPIRV_CROSS_ENABLE_TESTS OFF)
+
+FetchContent_MakeAvailable(spirv_cross)
+
+# ==== Vulkan Memory Allocator ====
+find_package(Vulkan REQUIRED)
+add_library(vma STATIC
+		${CMAKE_CURRENT_LIST_DIR}/VulkanMemoryAllocator/vk_mem_alloc.cpp
+)
+
+target_include_directories(vma PUBLIC
+		${CMAKE_CURRENT_LIST_DIR}/VulkanMemoryAllocator
+)
+
+target_link_libraries(vma PUBLIC Vulkan::Headers)

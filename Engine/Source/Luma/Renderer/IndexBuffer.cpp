@@ -4,6 +4,9 @@
 #include "Renderer.hpp"
 
 #include "Luma/Renderer/Backend/OpenGL/OpenGLIndexBuffer.hpp"
+#include "Luma/Renderer/Backend/Vulkan/VulkanIndexBuffer.hpp"
+
+#include "Luma/Renderer/RendererAPI.hpp"
 
 namespace Luma {
 
@@ -13,6 +16,7 @@ namespace Luma {
 		{
 			case RendererAPIType::None:    return nullptr;
 			case RendererAPIType::OpenGL:  return Ref<OpenGLIndexBuffer>::Create(size);
+			case RendererAPIType::Vulkan:  return Ref<VulkanIndexBuffer>::Create(size);
 		}
 		LM_CORE_ASSERT(false, "Unknown RendererAPI");
 		return nullptr;
@@ -24,6 +28,7 @@ namespace Luma {
 		{
 			case RendererAPIType::None:    return nullptr;
 			case RendererAPIType::OpenGL:  return Ref<OpenGLIndexBuffer>::Create(data, size);
+			case RendererAPIType::Vulkan:  return Ref<VulkanIndexBuffer>::Create(data, size);
 		}
 		LM_CORE_ASSERT(false, "Unknown RendererAPI");
 		return nullptr;

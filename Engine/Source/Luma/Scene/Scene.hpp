@@ -1,18 +1,17 @@
 #pragma once
 
-#include "SceneCamera.hpp"
-
 #include "Luma/Core/UUID.hpp"
-#include "Luma/Core/TimeStep.hpp"
+#include "Luma/Core/Timestep.hpp"
 
 #include "Luma/Renderer/Camera.hpp"
 #include "Luma/Renderer/Texture.hpp"
 #include "Luma/Renderer/Material.hpp"
 #include "Luma/Renderer/SceneEnvironment.hpp"
 
+#include "SceneCamera.hpp"
 #include "Luma/Editor/EditorCamera.hpp"
 
-#include <entt/entt.hpp>
+#include "entt/entt.hpp"
 
 namespace Luma {
 
@@ -61,7 +60,7 @@ namespace Luma {
 
 		void SetViewportSize(uint32_t width, uint32_t height);
 
-		const Environment& GetEnvironment() const { return m_Environment; }
+		const Ref<Environment>& GetEnvironment() const { return m_Environment; }
 		void SetSkybox(const Ref<TextureCube>& skybox);
 
 		Light& GetLight() { return m_Light; }
@@ -70,6 +69,7 @@ namespace Luma {
 		Entity GetMainCameraEntity();
 
 		float& GetSkyboxLod() { return m_SkyboxLod; }
+		float GetSkyboxLod() const { return m_SkyboxLod; }
 
 		Entity CreateEntity(const std::string& name = "");
 		Entity CreateEntityWithID(UUID uuid, const std::string& name = "", bool runtimeMap = false);
@@ -112,10 +112,10 @@ namespace Luma {
 
 		LightEnvironment m_LightEnvironment;
 
-		Environment m_Environment;
+		Ref<Environment> m_Environment;
 		float m_EnvironmentIntensity = 1.0f;
 		Ref<TextureCube> m_SkyboxTexture;
-		Ref<MaterialInstance> m_SkyboxMaterial;
+		Ref<Material> m_SkyboxMaterial;
 
 		entt::entity m_SelectedEntity;
 

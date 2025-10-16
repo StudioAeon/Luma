@@ -4,17 +4,20 @@
 #include "Luma/Core/Application.hpp"
 #include "Luma/Math/Math.hpp"
 #include "Luma/Renderer/Mesh.hpp"
-#include "Luma/ImGui/ImGui.hpp"
+#include "Luma/Renderer/MeshFactory.hpp"
 
-#include "Luma/Utilities/FileSystem.hpp"
+#include "Luma/Asset/AssetManager.hpp"
+
+#include "Luma/ImGui/ImGui.hpp"
+#include "Luma/Renderer/Renderer.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
+#include <imgui.h>
+#include <imgui_internal.h>
 #include <assimp/scene.h>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <imgui.h>
-#include <imgui_internal.h>
 
 // TODO:
 // - Eventually change imgui node IDs to be entity/asset GUID
@@ -25,7 +28,8 @@ namespace Luma {
 
 	SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context)
 		: m_Context(context)
-	{}
+	{
+	}
 
 	void SceneHierarchyPanel::SetContext(const Ref<Scene>& scene)
 	{
@@ -44,6 +48,9 @@ namespace Luma {
 	void SceneHierarchyPanel::SetSelected(Entity entity)
 	{
 		m_SelectionContext = entity;
+
+		if (m_SelectionChangedCallback)
+			m_SelectionChangedCallback(m_SelectionContext);
 	}
 
 	void SceneHierarchyPanel::OnImGuiRender()
@@ -98,11 +105,45 @@ namespace Luma {
 						auto newEntity = m_Context->CreateEntity("Empty Entity");
 						SetSelected(newEntity);
 					}
-					if (ImGui::MenuItem("Mesh"))
+					if (ImGui::MenuItem("Camera"))
 					{
-						auto newEntity = m_Context->CreateEntity("Mesh");
-						newEntity.AddComponent<MeshComponent>();
+						auto newEntity = m_Context->CreateEntity("Camera");
+						newEntity.AddComponent<CameraComponent>();
 						SetSelected(newEntity);
+					}
+					if (ImGui::BeginMenu("Mesh"))
+					{
+						if (ImGui::MenuItem("Empty Mesh"))
+						{
+							auto newEntity = m_Context->CreateEntity("Empty Mesh");
+							newEntity.AddComponent<MeshComponent>();
+							SetSelected(newEntity);
+						}
+						if (ImGui::MenuItem("Cube"))
+						{
+							auto newEntity = m_Context->CreateEntity("Cube");
+							newEntity.AddComponent<MeshComponent>(AssetManager::GetAsset<Mesh>("assets/meshes/Default/Cube.fbx"));
+							SetSelected(newEntity);
+						}
+						if (ImGui::MenuItem("Sphere"))
+						{
+							auto newEntity = m_Context->CreateEntity("Sphere");
+							newEntity.AddComponent<MeshComponent>(AssetManager::GetAsset<Mesh>("assets/meshes/Default/Sphere.fbx"));
+							SetSelected(newEntity);
+						}
+						if (ImGui::MenuItem("Capsule"))
+						{
+							auto newEntity = m_Context->CreateEntity("Capsule");
+							newEntity.AddComponent<MeshComponent>(AssetManager::GetAsset<Mesh>("assets/meshes/Default/Capsule.fbx"));
+							SetSelected(newEntity);
+						}
+						if (ImGui::MenuItem("Plane"))
+						{
+							auto newEntity = m_Context->CreateEntity("Plane");
+							newEntity.AddComponent<MeshComponent>(AssetManager::GetAsset<Mesh>("assets/meshes/Default/Plane.fbx"));
+							SetSelected(newEntity);
+						}
+						ImGui::EndMenu();
 					}
 					ImGui::Separator();
 					if (ImGui::MenuItem("Directional Light"))
@@ -164,6 +205,11 @@ namespace Luma {
 		if (entity.Children().empty())
 			flags |= ImGuiTreeNodeFlags_Leaf;
 
+		// TODO(Peter): This should probably be a function that checks that the entities components are valid
+		bool missingMesh = entity.HasComponent<MeshComponent>() && (entity.GetComponent<MeshComponent>().Mesh && entity.GetComponent<MeshComponent>().Mesh->Type == AssetType::Missing);
+		if (missingMesh)
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.4f, 0.3f, 1.0f));
+
 		bool opened = ImGui::TreeNodeEx((void*)(uint32_t)entity, flags, name);
 		if (ImGui::IsItemClicked())
 		{
@@ -171,6 +217,9 @@ namespace Luma {
 			if (m_SelectionChangedCallback)
 				m_SelectionChangedCallback(m_SelectionContext);
 		}
+
+		if (missingMesh)
+			ImGui::PopStyleColor();
 
 		bool entityDeleted = false;
 		if (ImGui::BeginPopupContextItem())
@@ -217,6 +266,7 @@ namespace Luma {
 					e.SetParentUUID(entity.GetUUID());
 					entity.Children().push_back(droppedHandle);
 				}
+
 			}
 
 			ImGui::EndDragDropTarget();
@@ -230,6 +280,7 @@ namespace Luma {
 				if (e)
 					DrawEntityNode(e);
 			}
+
 			ImGui::TreePop();
 		}
 
@@ -298,30 +349,44 @@ namespace Luma {
 	}
 
 	template<typename T, typename UIFunction>
-	static void DrawComponent(const std::string& name, Entity entity, UIFunction uiFunction)
+	static void DrawComponent(const std::string& name, Entity entity, UIFunction uiFunction, bool canBeRemoved = true)
 	{
 		const ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding;
 		if (entity.HasComponent<T>())
 		{
+			// NOTE(Peter):
+			//	This fixes an issue where the first "+" button would display the "Remove" buttons for ALL components on an Entity.
+			//	This is due to ImGui::TreeNodeEx only pushing the id for it's children if it's actually open
+			ImGui::PushID(static_cast<int>(typeid(T).hash_code()));
 			auto& component = entity.GetComponent<T>();
 			ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
 			float lineHeight = ImGui::GetFontSize() + GImGui->Style.FramePadding.y * 2.0f;
 			ImGui::Separator();
-			bool open = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, name.c_str());
+			bool open = ImGui::TreeNodeEx("##dummy_id", treeNodeFlags, name.c_str());
+			bool right_clicked = ImGui::IsItemClicked(ImGuiMouseButton_Right);
 			ImGui::PopStyleVar();
+
+			bool resetValues = false;
+			bool removeComponent = false;
+
 			ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
-			if (ImGui::Button("+", ImVec2{ lineHeight, lineHeight }))
+			if (ImGui::Button("+", ImVec2{ lineHeight, lineHeight }) || right_clicked)
 			{
 				ImGui::OpenPopup("ComponentSettings");
 			}
 
-			bool removeComponent = false;
 			if (ImGui::BeginPopup("ComponentSettings"))
 			{
-				if (ImGui::MenuItem("Remove component"))
-					removeComponent = true;
+				if (ImGui::MenuItem("Reset"))
+					resetValues = true;
+
+				if (canBeRemoved)
+				{
+					if (ImGui::MenuItem("Remove component"))
+						removeComponent = true;
+				}
 
 				ImGui::EndPopup();
 			}
@@ -332,8 +397,13 @@ namespace Luma {
 				ImGui::TreePop();
 			}
 
-			if (removeComponent)
+			if (removeComponent || resetValues)
 				entity.RemoveComponent<T>();
+
+			if (resetValues)
+				entity.AddComponent<T>();
+
+			ImGui::PopID();
 		}
 	}
 
@@ -341,7 +411,7 @@ namespace Luma {
 	{
 		bool modified = false;
 
-		ImGuiIO& io = ImGui::GetIO();
+		const ImGuiIO& io = ImGui::GetIO();
 		auto boldFont = io.Fonts->Fonts[0];
 
 		ImGui::PushID(label.c_str());
@@ -357,9 +427,9 @@ namespace Luma {
 		float lineHeight = ImGui::GetFontSize() + GImGui->Style.FramePadding.y * 2.0f;
 		ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
 
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.6f, 0.3f, 0.3f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.7f, 0.4f, 0.4f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.6f, 0.3f, 0.3f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
 		ImGui::PushFont(boldFont);
 		if (ImGui::Button("X", buttonSize))
 		{
@@ -375,9 +445,9 @@ namespace Luma {
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.3f, 0.6f, 0.3f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.4f, 0.7f, 0.4f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.3f, 0.6f, 0.3f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.8f, 0.3f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
 		ImGui::PushFont(boldFont);
 		if (ImGui::Button("Y", buttonSize))
 		{
@@ -393,9 +463,9 @@ namespace Luma {
 		ImGui::PopItemWidth();
 		ImGui::SameLine();
 
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.3f, 0.4f, 0.7f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.4f, 0.5f, 0.8f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.3f, 0.4f, 0.7f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.1f, 0.25f, 0.8f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.2f, 0.35f, 0.9f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.1f, 0.25f, 0.8f, 1.0f });
 		ImGui::PushFont(boldFont);
 		if (ImGui::Button("Z", buttonSize))
 		{
@@ -464,7 +534,7 @@ namespace Luma {
 			{
 				if (ImGui::Button("Mesh"))
 				{
-					m_SelectionContext.AddComponent<MeshComponent>();
+					MeshComponent& component = m_SelectionContext.AddComponent<MeshComponent>();
 					ImGui::CloseCurrentPopup();
 				}
 			}
@@ -495,65 +565,34 @@ namespace Luma {
 			ImGui::EndPopup();
 		}
 
-		DrawComponent<TransformComponent>("Transform", entity, [](auto& component)
+		DrawComponent<TransformComponent>("Transform", entity, [](TransformComponent& component)
 		{
 			DrawVec3Control("Translation", component.Translation);
 			glm::vec3 rotation = glm::degrees(component.Rotation);
 			DrawVec3Control("Rotation", rotation);
 			component.Rotation = glm::radians(rotation);
 			DrawVec3Control("Scale", component.Scale, 1.0f);
-		});
+		}, false);
 
-		DrawComponent<MeshComponent>("Mesh", entity, [](MeshComponent& mc)
+		DrawComponent<MeshComponent>("Mesh", entity, [&](MeshComponent& mc)
 		{
-			ImGui::Columns(3);
-			ImGui::SetColumnWidth(0, 100);
-			ImGui::SetColumnWidth(1, 300);
-			ImGui::SetColumnWidth(2, 40);
-			ImGui::Text("File Path");
-			ImGui::NextColumn();
-			ImGui::PushItemWidth(-1);
-			if (mc.Mesh)
-				ImGui::InputText("##meshfilepath", (char*)mc.Mesh->GetFilePath().c_str(), 256, ImGuiInputTextFlags_ReadOnly);
-			else
-				ImGui::InputText("##meshfilepath", (char*)"Null", 256, ImGuiInputTextFlags_ReadOnly);
-			ImGui::PopItemWidth();
-			ImGui::NextColumn();
-			if (ImGui::Button("...##openmesh"))
-			{
-				auto filepath = FileSystem::OpenFileDialog({
-					{ "3D Models", "obj,fbx,gltf,glb,dae" },
-					{ "All Files", "*" }
-				});
-
-				if (!filepath.empty())
-					mc.Mesh = Ref<Mesh>::Create(filepath.string());
-			}
-			ImGui::Columns(1);
+			UI::BeginPropertyGrid();
+			UI::PropertyAssetReference("Mesh", mc.Mesh, AssetType::Mesh);
+			UI::EndPropertyGrid();
 		});
 
 		DrawComponent<CameraComponent>("Camera", entity, [](CameraComponent& cc)
 		{
+			UI::BeginPropertyGrid();
+
 			// Projection Type
 			const char* projTypeStrings[] = { "Perspective", "Orthographic" };
-			const char* currentProj = projTypeStrings[(int)cc.Camera.GetProjectionType()];
-			if (ImGui::BeginCombo("Projection", currentProj))
+			int currentProj = (int)cc.Camera.GetProjectionType();
+			if (UI::PropertyDropdown("Projection", projTypeStrings, 2, &currentProj))
 			{
-				for (int type = 0; type < 2; type++)
-				{
-					bool is_selected = (currentProj == projTypeStrings[type]);
-					if (ImGui::Selectable(projTypeStrings[type], is_selected))
-					{
-						currentProj = projTypeStrings[type];
-						cc.Camera.SetProjectionType((SceneCamera::ProjectionType)type);
-					}
-					if (is_selected)
-						ImGui::SetItemDefaultFocus();
-				}
-				ImGui::EndCombo();
+				cc.Camera.SetProjectionType((SceneCamera::ProjectionType)currentProj);
 			}
 
-			UI::BeginPropertyGrid();
 			// Perspective parameters
 			if (cc.Camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective)
 			{
@@ -606,34 +645,25 @@ namespace Luma {
 
 		DrawComponent<SkyLightComponent>("Sky Light", entity, [](SkyLightComponent& slc)
 		{
-			ImGui::Columns(3);
-			ImGui::SetColumnWidth(0, 100);
-			ImGui::SetColumnWidth(1, 300);
-			ImGui::SetColumnWidth(2, 40);
-			ImGui::Text("File Path");
-			ImGui::NextColumn();
-			ImGui::PushItemWidth(-1);
-			if (!slc.SceneEnvironment.FilePath.empty())
-				ImGui::InputText("##envfilepath", (char*)slc.SceneEnvironment.FilePath.c_str(), 256, ImGuiInputTextFlags_ReadOnly);
-			else
-				ImGui::InputText("##envfilepath", (char*)"Empty", 256, ImGuiInputTextFlags_ReadOnly);
-			ImGui::PopItemWidth();
-			ImGui::NextColumn();
-			if (ImGui::Button("...##openenv"))
-			{
-				auto filepath = FileSystem::OpenFileDialog({
-					{ "HDR Environment", "hdr" }
-				});
-
-				if (!filepath.empty())
-					slc.SceneEnvironment = Environment::Load(filepath.string());
-			}
-			ImGui::Columns(1);
-
 			UI::BeginPropertyGrid();
+			UI::PropertyAssetReference("Environment Map", slc.SceneEnvironment, AssetType::EnvMap);
 			UI::Property("Intensity", slc.Intensity, 0.01f, 0.0f, 5.0f);
+			ImGui::Separator();
+			UI::Property("Dynamic Sky", slc.DynamicSky);
+			if (slc.DynamicSky)
+			{
+				bool changed = UI::Property("Turbidity", slc.TurbidityAzimuthInclination.x, 0.01f);
+				changed |= UI::Property("Azimuth", slc.TurbidityAzimuthInclination.y, 0.01f);
+				changed |= UI::Property("Inclination", slc.TurbidityAzimuthInclination.z, 0.01f);
+				if (changed)
+				{
+					Ref<TextureCube> preethamEnv = Renderer::CreatePreethamSky(slc.TurbidityAzimuthInclination.x, slc.TurbidityAzimuthInclination.y, slc.TurbidityAzimuthInclination.z);
+					slc.SceneEnvironment = Ref<Environment>::Create(preethamEnv, preethamEnv);
+				}
+			}
 			UI::EndPropertyGrid();
 		});
+
 	}
 
 }
