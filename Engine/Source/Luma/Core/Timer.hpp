@@ -99,7 +99,7 @@ namespace Luma {
 #define LM_SCOPE_TIMER(name)\
 	ScopedTimer timer__LINE__(name);
 #else
-#define LM_SCOPE_PERF(name)
-#define LM_SCOPE_TIMER(name)
+	#define LM_SCOPE_PERF(name)
+	#define LM_SCOPE_TIMER(name)
 #endif
 }

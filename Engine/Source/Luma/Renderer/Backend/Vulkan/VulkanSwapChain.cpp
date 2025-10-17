@@ -205,8 +205,6 @@ namespace Luma {
 			}
 		}
 
-		swapchainPresentMode = VK_PRESENT_MODE_MAILBOX_KHR;
-
 		// Determine the number of images
 		uint32_t desiredNumberOfSwapchainImages = surfCaps.minImageCount + 1;
 		if ((surfCaps.maxImageCount > 0) && (desiredNumberOfSwapchainImages > surfCaps.maxImageCount))
@@ -534,16 +532,20 @@ namespace Luma {
 
 	void VulkanSwapChain::BeginFrame()
 	{
+		LM_SCOPE_PERF("VulkanSwapChain::BeginFrame");
+
 		VK_CHECK_RESULT(vkWaitForFences(m_Device->GetVulkanDevice(), 1, &m_WaitFences[m_CurrentBufferIndex], VK_TRUE, UINT64_MAX));
 		VK_CHECK_RESULT(AcquireNextImage(m_Semaphores.PresentComplete, &m_CurrentBufferIndex));
+		VK_CHECK_RESULT(vkResetCommandPool(m_Device->GetVulkanDevice(), m_CommandPool, 0));
 	}
 
 	void VulkanSwapChain::Present()
 	{
-		const uint64_t DEFAULT_FENCE_TIMEOUT = 100000000000;
+		LM_SCOPE_PERF("VulkanSwapChain::Present");
 
-		// Use a fence to wait until the command buffer has finished execution before using it again
 		VK_CHECK_RESULT(vkResetFences(m_Device->GetVulkanDevice(), 1, &m_WaitFences[m_CurrentBufferIndex]));
+
+		const uint64_t DEFAULT_FENCE_TIMEOUT = 100000000000;
 
 		// Pipeline stage at which the queue submission will wait (via pWaitSemaphores)
 		VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
@@ -564,7 +566,11 @@ namespace Luma {
 		// Present the current buffer to the swap chain
 		// Pass the semaphore signaled by the command buffer submission from the submit info as the wait semaphore for swap chain presentation
 		// This ensures that the image is not presented to the windowing system until all commands have been submitted
-		VkResult result = QueuePresent(m_Device->GetQueue(), m_CurrentBufferIndex, m_Semaphores.RenderComplete);
+		VkResult result;
+		{
+			LM_SCOPE_PERF("VulkanSwapChain::Present - QueuePresent");
+			result = QueuePresent(m_Device->GetQueue(), m_CurrentBufferIndex, m_Semaphores.RenderComplete);
+		}
 
 		if (result != VK_SUCCESS || result == VK_SUBOPTIMAL_KHR)
 		{

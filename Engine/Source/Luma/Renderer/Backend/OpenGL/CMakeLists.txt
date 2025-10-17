@@ -10,6 +10,7 @@ set(OPENGL_SOURCES
 		OpenGLRenderPass.cpp
 		OpenGLShader.cpp
 		OpenGLTexture.cpp
+		OpenGLUniformBuffer.cpp
 		OpenGLVertexBuffer.cpp
 )
 
@@ -25,6 +26,7 @@ set(OPENGL_HEADERS
 		OpenGLRenderPass.hpp
 		OpenGLShader.hpp
 		OpenGLTexture.hpp
+		OpenGLUniformBuffer.hpp
 		OpenGLVertexBuffer.hpp
 )
 

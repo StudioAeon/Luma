@@ -139,6 +139,38 @@ namespace Luma::UI {
 		}
 	}
 
+	void Image(const Ref<Image2D>& image, uint32_t imageLayer, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col)
+	{
+		if (RendererAPI::Current() == RendererAPIType::OpenGL)
+		{
+			Ref<OpenGLImage2D> glImage = image.As<OpenGLImage2D>();
+			ImGui::Image((ImTextureID)(uint64_t)glImage->GetRendererID(), size, uv0, uv1, tint_col, border_col);
+		}
+		else
+		{
+			Ref<VulkanImage2D> vulkanImage = image.As<VulkanImage2D>();
+			VkImageView layerImageView = vulkanImage->GetLayerImageView(imageLayer);
+
+			if (!layerImageView) {
+				LM_CORE_WARN("Attempting to render Image2D layer with null ImageView");
+				return;
+			}
+
+			const auto& imageInfo = vulkanImage->GetImageInfo();
+			const auto& descriptor = vulkanImage->GetDescriptor();
+
+			// Create unique hash combining image hash and layer index
+			uint64_t hash = vulkanImage->GetHash() ^ (static_cast<uint64_t>(imageLayer) << 32);
+
+			auto& cache = Internal::GetDescriptorCache();
+			ImTextureID textureID = cache.GetOrCreate(hash, imageInfo.Sampler, layerImageView, descriptor.imageLayout);
+
+			if (textureID) {
+				ImGui::Image(textureID, size, uv0, uv1, tint_col, border_col);
+			}
+		}
+	}
+
 	void Image(const Ref<Texture2D>& texture, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1,
 			   const ImVec4& tint_col, const ImVec4& border_col)
 	{

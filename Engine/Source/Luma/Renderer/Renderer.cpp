@@ -17,6 +17,8 @@
 
 #include <glad/glad.h>
 
+#include <map>
+
 namespace Luma {
 
 	static std::unordered_map<size_t, Ref<Pipeline>> s_PipelineCache;
@@ -66,6 +68,7 @@ namespace Luma {
 		Ref<Texture2D> WhiteTexture;
 		Ref<TextureCube> BlackCubeTexture;
 		Ref<Environment> EmptyEnvironment;
+		std::map<uint32_t, std::map<uint32_t, Ref<UniformBuffer>>> UniformBuffers;
 	};
 
 	static RendererData* s_Data = nullptr;
@@ -94,11 +97,11 @@ namespace Luma {
 		Renderer::GetShaderLibrary()->Load("Resources/Shaders/EnvironmentMipFilter.glsl");
 		Renderer::GetShaderLibrary()->Load("Resources/Shaders/EquirectangularToCubeMap.glsl");
 		Renderer::GetShaderLibrary()->Load("Resources/Shaders/EnvironmentIrradiance.glsl");
-		Renderer::GetShaderLibrary()->Load("Resources/Shaders/PreethamSky.glsl", true);
+		Renderer::GetShaderLibrary()->Load("Resources/Shaders/PreethamSky.glsl");
 
 		Renderer::GetShaderLibrary()->Load("Resources/Shaders/Grid.glsl");
 		Renderer::GetShaderLibrary()->Load("Resources/Shaders/SceneComposite.glsl");
-		Renderer::GetShaderLibrary()->Load("Resources/Shaders/PBR_StaticMesh.glsl");
+		Renderer::GetShaderLibrary()->Load("Resources/Shaders/PBR_StaticMesh.glsl", true);
 		//Renderer::GetShaderLibrary()->Load("assets/shaders/PBR_AnimMesh.glsl");
 		//Renderer::GetShaderLibrary()->Load("assets/shaders/Outline.glsl");
 		Renderer::GetShaderLibrary()->Load("Resources/Shaders/Skybox.glsl");
@@ -187,9 +190,9 @@ namespace Luma {
 		s_RendererAPI->RenderMesh(pipeline, mesh, transform);
 	}
 
-	void Renderer::RenderMeshWithoutMaterial(Ref<Pipeline> pipeline, Ref<Mesh> mesh, const glm::mat4& transform)
+	void Renderer::RenderMeshWithMaterial(Ref<Pipeline> pipeline, Ref<Mesh> mesh, Ref<Material> material, const glm::mat4& transform, Buffer additionalUniforms)
 	{
-		s_RendererAPI->RenderMeshWithoutMaterial(pipeline, mesh, transform);
+		s_RendererAPI->RenderMeshWithMaterial(pipeline, mesh, material, transform, additionalUniforms);
 	}
 
 	void Renderer::RenderQuad(Ref<Pipeline> pipeline, Ref<Material> material, const glm::mat4& transform)
@@ -306,6 +309,19 @@ namespace Luma {
 	Ref<Environment> Renderer::GetEmptyEnvironment()
 	{
 		return s_Data->EmptyEnvironment;
+	}
+
+	void Renderer::SetUniformBuffer(Ref<UniformBuffer> uniformBuffer, uint32_t set)
+	{
+		s_Data->UniformBuffers[set][uniformBuffer->GetBinding()] = uniformBuffer;
+	}
+
+	Ref<UniformBuffer> Renderer::GetUniformBuffer(uint32_t binding, uint32_t set)
+	{
+		LM_CORE_ASSERT(s_Data->UniformBuffers.find(set) != s_Data->UniformBuffers.end());
+		LM_CORE_ASSERT(s_Data->UniformBuffers.at(set).find(binding) != s_Data->UniformBuffers.at(set).end());
+
+		return s_Data->UniformBuffers.at(set).at(binding);
 	}
 
 	RenderCommandQueue& Renderer::GetRenderCommandQueue()

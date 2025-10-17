@@ -23,6 +23,13 @@ namespace Luma {
 		Depth = DEPTH24STENCIL8
 	};
 
+	enum class ImageUsage
+	{
+		None = 0,
+		Texture,
+		Attachment
+	};
+
 	enum class TextureWrap
 	{
 		None = 0,
@@ -52,6 +59,16 @@ namespace Luma {
 		bool SRGB = false;
 	};
 
+	struct ImageSpecification
+	{
+		ImageFormat Format = ImageFormat::RGBA;
+		ImageUsage Usage = ImageUsage::Texture;
+		uint32_t Width = 0;
+		uint32_t Height = 0;
+		uint32_t Mips = 1;
+		uint32_t Layers = 1;
+	};
+
 	class Image : public RefCounted
 	{
 	public:
@@ -63,10 +80,13 @@ namespace Luma {
 		virtual uint32_t GetWidth() const = 0;
 		virtual uint32_t GetHeight() const = 0;
 
-		virtual ImageFormat GetFormat() const = 0;
-		
+		virtual ImageSpecification& GetSpecification() = 0;
+		virtual const ImageSpecification& GetSpecification() const = 0;
+
 		virtual Buffer GetBuffer() const = 0;
 		virtual Buffer& GetBuffer() = 0;
+
+		virtual void CreatePerLayerImageViews() = 0;
 
 		virtual uint64_t GetHash() const = 0;
 
@@ -76,8 +96,8 @@ namespace Luma {
 	class Image2D : public Image
 	{
 	public:
-		static Ref<Image2D> Create(ImageFormat format, uint32_t width, uint32_t height, Buffer buffer);
-		static Ref<Image2D> Create(ImageFormat format, uint32_t width, uint32_t height, const void* data = nullptr);
+		static Ref<Image2D> Create(ImageSpecification specification, Buffer buffer);
+		static Ref<Image2D> Create(ImageSpecification specification, const void* data = nullptr);
 	};
 
 	namespace Utils {
@@ -104,6 +124,14 @@ namespace Luma {
 		inline uint32_t GetImageMemorySize(ImageFormat format, uint32_t width, uint32_t height)
 		{
 			return width * height * GetImageFormatBPP(format);
+		}
+
+		inline bool IsDepthFormat(ImageFormat format)
+		{
+			if (format == ImageFormat::DEPTH24STENCIL8 || format == ImageFormat::DEPTH32F)
+				return true;
+
+			return false;
 		}
 
 	}

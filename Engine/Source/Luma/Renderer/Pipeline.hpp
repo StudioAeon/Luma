@@ -5,6 +5,7 @@
 #include "Luma/Renderer/VertexBuffer.hpp"
 #include "Luma/Renderer/Shader.hpp"
 #include "Luma/Renderer/RenderPass.hpp"
+#include "Luma/Renderer/UniformBuffer.hpp"
 
 namespace Luma {
 
@@ -26,6 +27,7 @@ namespace Luma {
 		virtual const PipelineSpecification& GetSpecification() const = 0;
 
 		virtual void Invalidate() = 0;
+		virtual void SetUniformBuffer(Ref<UniformBuffer> uniformBuffer, uint32_t binding, uint32_t set = 0) = 0;
 
 		// TEMP: remove this when render command buffers are a thing
 		virtual void Bind() = 0;

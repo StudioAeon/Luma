@@ -16,6 +16,7 @@ set(RENDERER_SOURCES
 		SceneRenderer.cpp
 		Shader.cpp
 		Texture.cpp
+		UniformBuffer.cpp
 		VertexBuffer.cpp
 )
 
@@ -41,6 +42,7 @@ set(RENDERER_HEADERS
 		Shader.hpp
 		ShaderUniform.hpp
 		Texture.hpp
+		UniformBuffer.hpp
 		VertexBuffer.hpp
 )
 

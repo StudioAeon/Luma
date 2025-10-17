@@ -11,7 +11,7 @@
 #include "SceneCamera.hpp"
 #include "Luma/Editor/EditorCamera.hpp"
 
-#include "entt/entt.hpp"
+#include <entt/entt.hpp>
 
 namespace Luma {
 

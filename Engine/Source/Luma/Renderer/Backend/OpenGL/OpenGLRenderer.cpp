@@ -275,7 +275,7 @@ namespace Luma {
 		const uint32_t irradianceMapSize = 32;
 
 		Ref<OpenGLTextureCube> envUnfiltered = TextureCube::Create(ImageFormat::RGBA32F, cubemapSize, cubemapSize).As<OpenGLTextureCube>();
-		Ref<Shader> equirectangularConversionShader = Renderer::GetShaderLibrary()->Get("EquirectangularToCubeMap");
+		Ref<OpenGLShader> equirectangularConversionShader = Renderer::GetShaderLibrary()->Get("EquirectangularToCubeMap").As<OpenGLShader>();
 		Ref<Texture2D> envEquirect = Texture2D::Create(filepath);
 		LM_CORE_ASSERT(envEquirect->GetFormat() == ImageFormat::RGBA32F, "Texture is not HDR!");
 
@@ -289,7 +289,7 @@ namespace Luma {
 			glGenerateTextureMipmap(envUnfiltered->GetRendererID());
 		});
 
-		Ref<Shader> envFilteringShader = Renderer::GetShaderLibrary()->Get("EnvironmentMipFilter");
+		Ref<OpenGLShader> envFilteringShader = Renderer::GetShaderLibrary()->Get("EnvironmentMipFilter").As<OpenGLShader>();
 
 		Ref<OpenGLTextureCube> envFiltered = TextureCube::Create(ImageFormat::RGBA32F, cubemapSize, cubemapSize).As<OpenGLTextureCube>();
 
@@ -320,7 +320,7 @@ namespace Luma {
 			}
 		});
 
-		Ref<Shader> envIrradianceShader = Renderer::GetShaderLibrary()->Get("EnvironmentIrradiance");
+		Ref<OpenGLShader> envIrradianceShader = Renderer::GetShaderLibrary()->Get("EnvironmentIrradiance").As<OpenGLShader>();
 
 		Ref<OpenGLTextureCube> irradianceMap = TextureCube::Create(ImageFormat::RGBA32F, irradianceMapSize, irradianceMapSize).As<OpenGLTextureCube>();
 		envIrradianceShader->Bind();
@@ -353,20 +353,22 @@ namespace Luma {
 		{
 			// Material
 			auto material = materials[submesh.MaterialIndex].As<OpenGLMaterial>();
-			auto shader = material->GetShader();
+			auto shader = material->GetShader().As<OpenGLShader>();
 			material->UpdateForRendering();
 
-			if (false && mesh->m_IsAnimated)
+#if 0
+			if (mesh->m_IsAnimated)
 			{
 				for (size_t i = 0; i < mesh->m_BoneTransforms.size(); i++)
 				{
 					std::string uniformName = std::string("u_BoneTransforms[") + std::to_string(i) + std::string("]");
-					mesh->m_MeshShader->SetMat4(uniformName, mesh->m_BoneTransforms[i]);
+					mesh->m_MeshShader->SetUn(uniformName, mesh->m_BoneTransforms[i]);
 				}
 			}
+#endif
 
 			auto transformUniform = transform * submesh.Transform;
-			shader->SetMat4("u_Renderer.Transform", transformUniform);
+			shader->SetUniform("u_Renderer.Transform", transformUniform);
 
 			Renderer::Submit([submesh, material]()
 			{
@@ -380,18 +382,19 @@ namespace Luma {
 		}
 	}
 
-	void OpenGLRenderer::RenderMeshWithoutMaterial(Ref<Pipeline> pipeline, Ref<Mesh> mesh, const glm::mat4& transform)
+	void OpenGLRenderer::RenderMeshWithMaterial(Ref<Pipeline> pipeline, Ref<Mesh> mesh, Ref<Material> material, const glm::mat4& transform, Buffer additionalUniforms)
 	{
 		mesh->m_VertexBuffer->Bind();
 		pipeline->Bind();
 		mesh->m_IndexBuffer->Bind();
 
-		auto shader = pipeline->GetSpecification().Shader;
+		auto shader = pipeline->GetSpecification().Shader.As<OpenGLShader>();
 		shader->Bind();
 
 		for (Submesh& submesh : mesh->m_Submeshes)
 		{
-			if (false && mesh->m_IsAnimated)
+			#if 0
+			if (mesh->m_IsAnimated)
 			{
 				for (size_t i = 0; i < mesh->m_BoneTransforms.size(); i++)
 				{
@@ -399,9 +402,10 @@ namespace Luma {
 					mesh->m_MeshShader->SetMat4(uniformName, mesh->m_BoneTransforms[i]);
 				}
 			}
+#endif
 
 			auto transformUniform = transform * submesh.Transform;
-			shader->SetMat4("u_Renderer.Transform", transformUniform);
+			shader->SetUniform("u_Renderer.Transform", transformUniform);
 
 			Renderer::Submit([submesh]()
 			{
@@ -418,8 +422,8 @@ namespace Luma {
 		Ref<OpenGLMaterial> glMaterial = material.As<OpenGLMaterial>();
 		glMaterial->UpdateForRendering();
 		
-		auto shader = material->GetShader();
-		shader->SetMat4("u_Renderer.Transform", transform);
+		auto shader = material->GetShader().As<OpenGLShader>();
+		shader->SetUniform("u_Renderer.Transform", transform);
 
 		Renderer::Submit([material]()
 		{
