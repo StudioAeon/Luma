@@ -52,6 +52,7 @@ namespace Luma {
 		glm::vec3 Up = { 0.0f, 1.0f, 0.0f };
 		glm::vec3 Right = { 1.0f, 0.0f, 0.0f };
 		glm::vec3 Forward = { 0.0f, 0.0f, -1.0f };
+		glm::vec3 WorldTranslation = { 0.0f, 0.0f, 0.0f };
 
 		TransformComponent() = default;
 		TransformComponent(const TransformComponent& other) = default;
@@ -69,6 +70,7 @@ namespace Luma {
 	struct MeshComponent
 	{
 		Ref<Luma::Mesh> Mesh;
+		bool IsFractured = false;
 
 		MeshComponent() = default;
 		MeshComponent(const MeshComponent& other) = default;

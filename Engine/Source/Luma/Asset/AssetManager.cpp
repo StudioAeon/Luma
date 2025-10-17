@@ -10,6 +10,8 @@
 
 namespace Luma {
 
+	static const char* s_AssetRegistryPath = "Resources/AssetRegistry.lmr";
+
 	void AssetManager::Init()
 	{
 		AssetImporter::Init();
@@ -210,7 +212,7 @@ namespace Luma {
 
 	void AssetManager::LoadAssetRegistry()
 	{
-		std::string registryPath = "Resources/cache/AssetRegistryCache.lmr";
+		std::string registryPath = s_AssetRegistryPath;
 		if (!std::filesystem::exists(registryPath))
 			return;
 
@@ -373,7 +375,7 @@ namespace Luma {
 	void AssetManager::UpdateRegistryCache()
 	{
 		// Ensure cache directory exists
-		std::filesystem::create_directories("Resources/cache/");
+		std::filesystem::create_directories("Resources/");
 
 		YAML::Emitter out;
 		out << YAML::BeginMap;
@@ -390,7 +392,7 @@ namespace Luma {
 		out << YAML::EndSeq;
 		out << YAML::EndMap;
 
-		std::ofstream fout("Resources/cache/AssetRegistryCache.lmr");
+		std::ofstream fout(s_AssetRegistryPath);
 		fout << out.c_str();
 	}
 

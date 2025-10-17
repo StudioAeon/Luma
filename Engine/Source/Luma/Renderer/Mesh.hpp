@@ -135,6 +135,7 @@ namespace Luma {
 	public:
 		Mesh(const std::string& filename);
 		Mesh(const std::vector<Vertex>& vertices, const std::vector<Index>& indices, const glm::mat4& transform);
+		Mesh(Ref<Mesh> originalMesh, Submesh submesh);
 		~Mesh();
 
 		void OnUpdate(Timestep ts);

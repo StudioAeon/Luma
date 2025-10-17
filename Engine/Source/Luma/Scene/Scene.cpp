@@ -63,7 +63,8 @@ namespace Luma {
 			auto view = m_Registry.view<TransformComponent>();
 			for (auto [entity, transformComponent] : view.each())
 			{
-				glm::mat4 transform = GetTransformRelativeToParent(Entity(entity, this));
+				Entity e = Entity(entity, this);
+				glm::mat4 transform = GetTransformRelativeToParent(e);
 				glm::vec3 translation, scale;
 				glm::quat rotation;
 				Math::DecomposeTransform(transform, translation, rotation, scale);
@@ -71,6 +72,20 @@ namespace Luma {
 				transformComponent.Up = glm::normalize(glm::rotate(rotation, glm::vec3(0.0f, 1.0f, 0.0f)));
 				transformComponent.Right = glm::normalize(glm::rotate(rotation, glm::vec3(1.0f, 0.0f, 0.0f)));
 				transformComponent.Forward = glm::normalize(glm::rotate(rotation, glm::vec3(0.0f, 0.0f, -1.0f)));
+
+				Entity parent = FindEntityByUUID(e.GetParentUUID());
+				if (parent)
+				{
+					glm::vec3 parentTranslation, parentScale;
+					glm::quat parentRotation;
+					Math::DecomposeTransform(GetTransformRelativeToParent(parent), parentTranslation, parentRotation, parentScale);
+
+					transformComponent.WorldTranslation = parentTranslation + transformComponent.Translation;
+				}
+				else
+				{
+					transformComponent.WorldTranslation = transformComponent.Translation;
+				}
 			}
 		}
 	}

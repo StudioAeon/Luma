@@ -463,6 +463,7 @@ namespace Luma {
 
 			TransformComponent& entityTransform = selection.Entity.Transform();
 			glm::mat4 transform = m_CurrentScene->GetTransformRelativeToParent(selection.Entity);
+			//glm::mat4 transform = entityTransform.GetTransform();
 			float snapValue = GetSnapValue();
 			float snapValues[3] = { snapValue, snapValue, snapValue };
 
@@ -478,27 +479,29 @@ namespace Luma {
 
 				if (ImGuizmo::IsUsing())
 				{
-					glm::vec3 translation, scale;
-					glm::quat rotation;
-					Math::DecomposeTransform(transform, translation, rotation, scale);
-
 					Entity parent = m_CurrentScene->FindEntityByUUID(selection.Entity.GetParentUUID());
 					if (parent)
 					{
-						glm::vec3 parentTranslation, parentScale;
-						glm::quat parentRotation;
-						Math::DecomposeTransform(m_CurrentScene->GetTransformRelativeToParent(parent), parentTranslation, parentRotation, parentScale);
+						glm::mat4 parentMatrix = m_CurrentScene->GetTransformRelativeToParent(parent);
+						transform = glm::inverse(parentMatrix) * transform;
 
-						glm::vec3 rotationEuler = glm::eulerAngles(rotation);
-						glm::vec3 parentRotationEuler = glm::eulerAngles(parentRotation);
+						glm::vec3 translation, scale;
+						glm::quat rotation;
+						Math::DecomposeTransform(transform, translation, rotation, scale);
 
-						glm::vec3 deltaRotation = (rotationEuler - parentRotationEuler) - entityTransform.Rotation;
-						entityTransform.Translation = translation - parentTranslation;
+						glm::vec3 rotationEuler = glm::degrees(glm::eulerAngles(rotation));
+						glm::vec3 deltaRotation = rotationEuler - entityTransform.Rotation;
+
+						entityTransform.Translation = translation;
 						entityTransform.Rotation += deltaRotation;
 						entityTransform.Scale = scale;
 					}
 					else
 					{
+						glm::vec3 translation, scale;
+						glm::quat rotation;
+						Math::DecomposeTransform(transform, translation, rotation, scale);
+
 						glm::vec3 rotationEuler = glm::eulerAngles(rotation);
 						glm::vec3 deltaRotation = rotationEuler - entityTransform.Rotation;
 						entityTransform.Translation = translation;

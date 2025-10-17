@@ -4,7 +4,6 @@
 #include "Tests/InputTests.hpp"
 #include "Tests/MemoryTests.hpp"
 #include "Tests/SerializationTests.hpp"
-#include "Tests/RendererTests.hpp"
 
 #include <imgui.h>
 
@@ -33,13 +32,6 @@ namespace Luma {
 		RegisterTest<YAMLSerializationTest>();
 		RegisterTest<BinarySerializationTest>();
 
-		RegisterTest<RendererInitTest>();
-		RegisterTest<TextureLoadTest>();
-		RegisterTest<ShaderCompileTest>();
-		RegisterTest<FramebufferTest>();
-		RegisterTest<VertexBufferTest>();
-		RegisterTest<RenderCommandTest>();
-
 		for (auto& test : m_Tests)
 			test->OnInit();
 
@@ -62,8 +54,6 @@ namespace Luma {
 
 		if (m_SelectedTestIndex >= 0 && m_SelectedTestIndex < m_Tests.size())
 			m_Tests[m_SelectedTestIndex]->OnUpdate(ts);
-
-		Renderer::Clear();
 
 		auto end = std::chrono::high_resolution_clock::now();
 		m_Metrics.UpdateTime = std::chrono::duration<float, std::milli>(end - start).count();
@@ -293,17 +283,9 @@ namespace Luma {
 	void TestLayer::RenderRendererStatsPanel()
 	{
 		ImGui::Begin("Renderer Stats", &m_ShowRendererStats);
-
-		auto& caps = RendererAPI::GetCapabilities();
-		ImGui::Text("Vendor: %s", caps.Vendor.c_str());
-		ImGui::Text("Renderer: %s", caps.Renderer.c_str());
-		ImGui::Text("Version: %s", caps.Version.c_str());
-		ImGui::Separator();
-
 		ImGui::Text("Draw Calls: %d", 0);
 		ImGui::Text("Vertices: %d", 0);
 		ImGui::Text("Triangles: %d", 0);
-
 		ImGui::End();
 	}
 

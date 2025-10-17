@@ -519,6 +519,51 @@ namespace Luma {
 		};
 	}
 
+	Mesh::Mesh(Ref<Mesh> originalMesh, Submesh submesh)
+	{
+		uint32_t materialIndex = submesh.MaterialIndex;
+
+		uint32_t currentFace = 0;
+		for (uint32_t face = submesh.BaseIndex; face < submesh.BaseIndex + (submesh.IndexCount / 3); face++)
+		{
+			Index index = originalMesh->m_Indices[face];
+
+			Vertex v1 = originalMesh->m_StaticVertices[index.V1 + submesh.BaseVertex];
+			Vertex v2 = originalMesh->m_StaticVertices[index.V2 + submesh.BaseVertex];
+			Vertex v3 = originalMesh->m_StaticVertices[index.V3 + submesh.BaseVertex];
+
+			m_StaticVertices.push_back(v1);
+			m_StaticVertices.push_back(v2);
+			m_StaticVertices.push_back(v3);
+
+			Index newIndex = { currentFace + 0, currentFace + 1, currentFace + 2 };
+			m_Indices.push_back(newIndex);
+			currentFace++;
+		}
+
+		submesh.BaseVertex = 0;
+		submesh.BaseIndex = 0;
+		submesh.MaterialIndex = 0;
+
+		m_Materials.push_back(originalMesh->m_Materials[materialIndex]);
+		m_Submeshes.push_back(submesh);
+		m_MeshShader = Renderer::GetShaderLibrary()->Get("PBR_StaticMesh");
+
+		m_Textures = originalMesh->m_Textures;
+		m_NormalMaps = originalMesh->m_NormalMaps;
+
+		m_VertexBuffer = VertexBuffer::Create(m_StaticVertices.data(), m_StaticVertices.size() * sizeof(Vertex));
+		m_VertexBufferLayout = {
+			{ ShaderDataType::Float3, "a_Position" },
+			{ ShaderDataType::Float3, "a_Normal" },
+			{ ShaderDataType::Float3, "a_Tangent" },
+			{ ShaderDataType::Float3, "a_Binormal" },
+			{ ShaderDataType::Float2, "a_TexCoord" },
+		};
+
+		m_IndexBuffer = IndexBuffer::Create(m_Indices.data(), m_Indices.size() * sizeof(Index));
+	}
+
 	Mesh::~Mesh()
 	{
 	}

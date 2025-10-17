@@ -19,6 +19,8 @@
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Luma/Scene/EntityFactory.hpp"
+
 // TODO:
 // - Eventually change imgui node IDs to be entity/asset GUID
 
@@ -262,7 +264,11 @@ namespace Luma {
 					glm::quat parentRotation;
 					Math::DecomposeTransform(parentTransform, parentTranslation, parentRotation, parentScale);
 
-					e.Transform().Translation = e.Transform().Translation - parentTranslation;
+					auto& entityTransform = e.Transform();
+					entityTransform.Translation = entityTransform.Translation - parentTranslation;
+					glm::vec3 parentEuler = glm::degrees(glm::eulerAngles(parentRotation));
+					entityTransform.Rotation = entityTransform.Rotation - parentEuler;
+
 					e.SetParentUUID(entity.GetUUID());
 					entity.Children().push_back(droppedHandle);
 				}
@@ -578,6 +584,11 @@ namespace Luma {
 		{
 			UI::BeginPropertyGrid();
 			UI::PropertyAssetReference("Mesh", mc.Mesh, AssetType::Mesh);
+			if (UI::Button("Fracture"))
+			{
+				EntityFactory::Fracture(entity);
+				mc.IsFractured = true;
+			}
 			UI::EndPropertyGrid();
 		});
 
