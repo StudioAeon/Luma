@@ -8,6 +8,7 @@ set(RENDERER_SOURCES
 		RenderCommandQueue.cpp
 		Renderer.cpp
 		Renderer2D.cpp
+		RendererContext.cpp
 		RenderPass.cpp
 		SceneEnvironment.cpp
 		SceneRenderer.cpp
@@ -26,6 +27,7 @@ set(RENDERER_HEADERS
 		RenderCommandQueue.hpp
 		Renderer.hpp
 		Renderer2D.hpp
+		RendererContext.hpp
 		RendererAPI.hpp
 		RenderPass.hpp
 		SceneEnvironment.hpp

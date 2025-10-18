@@ -4,7 +4,6 @@ set(CORE_SOURCES
 		FatalSignal.cpp
 		Hash.cpp
 		HashCRC32.cpp
-		Input.cpp
 		Layer.cpp
 		LayerStack.cpp
 		Log.cpp

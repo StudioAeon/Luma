@@ -3,7 +3,7 @@
 #include "Luma/Core/Base.hpp"
 #include "Luma/Core/Buffer.hpp"
 
-#include "Luma/Renderer/RendererAPI.hpp"
+#include "Luma/Renderer/RendererTypes.hpp"
 #include "Luma/Renderer/ShaderUniform.hpp"
 
 #include <glm/glm.hpp>

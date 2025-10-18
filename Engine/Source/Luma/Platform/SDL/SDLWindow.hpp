@@ -3,6 +3,8 @@
  #include "Luma/Events/Event.hpp"
 #include "Luma/Core/Window.hpp"
 
+#include "Luma/Renderer/RendererContext.hpp"
+
 #include <SDL3/SDL.h>
 
 #include <functional>
@@ -42,6 +44,8 @@ namespace Luma {
 		virtual void SetTitle(const std::string& title) override;
 
 		SDL_Window* GetNativeWindow() const { return m_Window; }
+
+		virtual Ref<RendererContext> GetRenderContext() override { return m_RendererContext; }
 	private:
 		SDL_Window* m_Window = nullptr;
 		SDL_GLContext m_GLContext;
@@ -58,6 +62,8 @@ namespace Luma {
 		}; WindowData m_Data;
 
 		float m_LastFrameTime = 0.0f;
+
+		Ref<RendererContext> m_RendererContext;
 	};
 
 }

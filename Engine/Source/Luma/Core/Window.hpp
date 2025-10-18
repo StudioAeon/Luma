@@ -3,6 +3,8 @@
 #include "Luma/Core/Base.hpp"
 #include "Luma/Events/Event.hpp"
 
+#include "Luma/Renderer/RendererContext.hpp"
+
 #include <SDL3/SDL.h>
 
 #include <functional>
@@ -10,11 +12,20 @@
 
 namespace Luma {
 
+	class Input;
+
 	enum class WindowMode
 	{
 		Windowed,
 		BorderlessFullscreen,
 		ExclusiveFullscreen
+	};
+
+	enum class WindowingAPI
+	{
+		None = 0,
+		SDL,
+		Win32
 	};
 
 	struct WindowSpecification
@@ -29,6 +40,9 @@ namespace Luma {
 
 	class Window : public RefCounted
 	{
+	public:
+		static WindowingAPI Current() { return s_CurrentWindowingAPI; }
+		static void SetAPI(WindowingAPI api) { s_CurrentWindowingAPI = api; }
 	public:
 		using EventCallbackFn = std::function<void(Event&)>;
 
@@ -57,6 +71,10 @@ namespace Luma {
 
 		virtual const std::string& GetTitle() const = 0;
 		virtual void SetTitle(const std::string& title) = 0;
+
+		virtual Ref<RendererContext> GetRenderContext() = 0;
+	private:
+		inline static WindowingAPI s_CurrentWindowingAPI = WindowingAPI::SDL;
 	public:
 		static Ref<Window> Create(const WindowSpecification& specification = WindowSpecification());
 	};

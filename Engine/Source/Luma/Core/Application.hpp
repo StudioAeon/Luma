@@ -24,12 +24,19 @@ namespace Luma {
 		bool VSync = true;
 		std::string WorkingDirectory;
 		bool Resizable = true;
+		bool EnableImGui = true;
 		std::filesystem::path IconPath;
 	};
 
 	class Application
 	{
 		using EventCallbackFn = std::function<void(Event&)>;
+	public:
+		struct PerformanceTimers
+		{
+			float MainThreadWorkTime = 0.0f;
+			float MainThreadWaitTime = 0.0f;
+		};
 	public:
 		Application(const ApplicationSpecification& specification);
 		virtual ~Application();
@@ -104,6 +111,12 @@ namespace Luma {
 		const ApplicationSpecification& GetSpecification() const { return m_Specification; }
 
 		PerformanceProfiler* GetPerformanceProfiler() { return m_Profiler; }
+
+		ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
+
+		const PerformanceTimers& GetPerformanceTimers() const { return m_PerformanceTimers; }
+		PerformanceTimers& GetPerformanceTimers() { return m_PerformanceTimers; }
+		const std::unordered_map<const char*, PerformanceProfiler::PerFrameData>& GetProfilerPreviousFrameData() const { return m_ProfilerPreviousFrameData; }
 	private:
 		void ProcessEvents();
 
@@ -120,12 +133,15 @@ namespace Luma {
 		Timestep m_Frametime;
 		Timestep m_TimeStep;
 		PerformanceProfiler* m_Profiler = nullptr; // TODO: Should be null in Dist
+		std::unordered_map<const char*, PerformanceProfiler::PerFrameData> m_ProfilerPreviousFrameData;
 
 		std::mutex m_EventQueueMutex;
 		std::deque<std::pair<bool, std::function<void()>>> m_EventQueue;
 		std::vector<EventCallbackFn> m_EventCallbacks;
 
 		float m_LastFrameTime = 0.0f;
+
+		PerformanceTimers m_PerformanceTimers; // TODO: remove for Dist
 
 		static Application* s_Instance;
 

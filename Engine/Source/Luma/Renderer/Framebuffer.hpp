@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Luma/Renderer/RendererAPI.hpp"
+#include "Luma/Renderer/RendererTypes.hpp"
 
 #include <glm/glm.hpp>
 

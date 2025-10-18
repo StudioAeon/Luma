@@ -54,6 +54,7 @@ add_library(imgui STATIC
 target_include_directories(imgui PUBLIC
 		${IMGUI_DIR}
 		${IMGUI_DIR}/backends
+		${CMAKE_CURRENT_LIST_DIR}
 )
 
 target_compile_definitions(imgui PUBLIC
@@ -195,3 +196,17 @@ FetchContent_Declare(
 		SYSTEM
 )
 FetchContent_MakeAvailable(backward-cpp)
+
+# ==== magic_enum ====
+add_library(magic_enum INTERFACE)
+target_include_directories(magic_enum INTERFACE
+		${CMAKE_CURRENT_LIST_DIR}/magic_enum/include
+)
+
+target_compile_features(magic_enum INTERFACE cxx_std_17)
+
+# ==== RenderDoc ====
+add_library(RenderDoc INTERFACE)
+target_include_directories(RenderDoc INTERFACE
+		${CMAKE_CURRENT_SOURCE_DIR}/renderdoc/include
+)

@@ -11,7 +11,7 @@
 
 namespace Luma {
 
-	RendererAPIType RendererAPI::s_CurrentRendererAPI = RendererAPIType::OpenGL;
+	static RendererAPI* s_RendererAPI = nullptr;
 
 	struct RendererData
 	{
@@ -81,14 +81,14 @@ namespace Luma {
 
 	void Renderer::Clear()
 	{
-		Renderer::Submit([](){
+		Submit([](){
 			RendererAPI::Clear(0.0f, 0.0f, 0.0f, 1.0f);
 		});
 	}
 
 	void Renderer::Clear(float r, float g, float b, float a)
 	{
-		Renderer::Submit([=]() {
+		Submit([=]() {
 			RendererAPI::Clear(r, g, b, a);
 		});
 	}
@@ -104,14 +104,14 @@ namespace Luma {
 
 	void Renderer::DrawIndexed(uint32_t count, PrimitiveType type, bool depthTest, bool faceCulling)
 	{
-		Renderer::Submit([=]() {
+		Submit([=]() {
 			RendererAPI::DrawIndexed(count, type, depthTest, faceCulling);
 		});
 	}
 
 	void Renderer::SetLineThickness(float thickness)
 	{
-		Renderer::Submit([=]() {
+		Submit([=]() {
 			RendererAPI::SetLineThickness(thickness);
 		});
 	}
@@ -132,7 +132,7 @@ namespace Luma {
 		if (clear)
 		{
 			const glm::vec4& clearColor = renderPass->GetSpecification().TargetFramebuffer->GetSpecification().ClearColor;
-			Renderer::Submit([=]() {
+			Submit([=]() {
 				RendererAPI::Clear(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 			});
 		}
@@ -162,7 +162,7 @@ namespace Luma {
 		s_Data.m_FullscreenQuadVertexBuffer->Bind();
 		s_Data.m_FullscreenQuadPipeline->Bind();
 		s_Data.m_FullscreenQuadIndexBuffer->Bind();
-		Renderer::DrawIndexed(6, PrimitiveType::Triangles, depthTest, cullFace);
+		DrawIndexed(6, PrimitiveType::Triangles, depthTest, cullFace);
 	}
 
 	void Renderer::SubmitFullscreenQuad(Ref<MaterialInstance> material)
@@ -180,7 +180,7 @@ namespace Luma {
 		s_Data.m_FullscreenQuadPipeline->Bind();
 		s_Data.m_FullscreenQuadIndexBuffer->Bind();
 
-		Renderer::DrawIndexed(6, PrimitiveType::Triangles, depthTest, cullFace);
+		DrawIndexed(6, PrimitiveType::Triangles, depthTest, cullFace);
 	}
 
 	void Renderer::SubmitMesh(Ref<Mesh> mesh, const glm::mat4& transform, Ref<MaterialInstance> overrideMaterial)
@@ -210,7 +210,7 @@ namespace Luma {
 			}
 			shader->SetMat4("u_Transform", transform * submesh.Transform);
 
-			Renderer::Submit([submesh, material]() {
+			Submit([submesh, material]() {
 				if (material->GetFlag(MaterialFlag::DepthTest))
 					glEnable(GL_DEPTH_TEST);
 				else
@@ -244,7 +244,7 @@ namespace Luma {
 			}
 			shader->SetMat4("u_Transform", transform * submesh.Transform);
 
-			Renderer::Submit([submesh]() {
+			Submit([submesh]() {
 				glDrawElementsBaseVertex(GL_TRIANGLES, submesh.IndexCount, GL_UNSIGNED_INT, (void*)(sizeof(uint32_t) * submesh.BaseIndex), submesh.BaseVertex);
 			});
 		}

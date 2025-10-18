@@ -1,29 +1,31 @@
-# ==== SDL Window Backend (Cross-platform) ====
-target_sources(Luma
-		PRIVATE
-		SDL/SDLWindow.cpp
-		SDL/SDLWindow.hpp
-)
-
 # ==== Platform-Specific Implementations ====
 if(WIN32)
 	target_sources(Luma
 			PRIVATE
-			Windows/WindowsFileSystem.cpp
-			Windows/WindowsPlatform.cpp
-			Windows/WindowsProcessHelper.cpp
-			Windows/WindowsThread.cpp
+			Win32/Win32FileSystem.cpp
+			Win32/Win32Platform.cpp
+			Win32/Win32ProcessHelper.cpp
+			Win32/Win32Thread.cpp
+
+			# temporary - will be replaced with Win32Window
+			SDL/SDLInput.cpp
+			SDL/SDLWindow.cpp
+			SDL/SDLWindow.hpp
 	)
 
 	target_compile_definitions(Luma PRIVATE LM_PLATFORM_WINDOWS)
 
-elseif(LINUX)
+elseif(UNIX AND NOT APPLE)
 	target_sources(Luma
 			PRIVATE
 			Linux/LinuxFileSystem.cpp
 			Linux/LinuxPlatform.cpp
 			Linux/LinuxProcessHelper.cpp
 			Linux/LinuxThread.cpp
+
+			SDL/SDLInput.cpp
+			SDL/SDLWindow.cpp
+			SDL/SDLWindow.hpp
 	)
 
 	target_compile_definitions(Luma PRIVATE LM_PLATFORM_LINUX)

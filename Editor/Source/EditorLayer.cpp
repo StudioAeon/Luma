@@ -118,6 +118,9 @@ namespace Luma {
 
 	void EditorLayer::OnUpdate(Timestep ts)
 	{
+		if (!ImGui::GetCurrentContext())
+			return;
+
 		auto [x, y] = GetMouseViewportSpace();
 
 		SceneRenderer::SetFocusPoint({ x * 0.5f + 0.5f, y * 0.5f + 0.5f });
@@ -952,7 +955,7 @@ namespace Luma {
 			}
 		}
 
-		if (Input::IsKeyPressed(LM_KEY_LEFT_CONTROL))
+		if (Input::IsKeyDown(LM_KEY_LEFT_CONTROL))
 		{
 			switch (e.GetKeyCode())
 			{
@@ -983,7 +986,7 @@ namespace Luma {
 					break;
 			}
 
-			if (Input::IsKeyPressed(LM_KEY_LEFT_SHIFT))
+			if (Input::IsKeyDown(LM_KEY_LEFT_SHIFT))
 			{
 				switch (e.GetKeyCode())
 				{
@@ -1000,7 +1003,7 @@ namespace Luma {
 	bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 	{
 		auto [mx, my] = Input::GetMousePosition();
-		if (e.GetMouseButton() == LM_MOUSE_BUTTON_LEFT && m_ViewportPanelMouseOver && !Input::IsKeyPressed(KeyCode::LeftAlt) && !ImGuizmo::IsOver() && m_SceneState != SceneState::Play)
+		if (e.GetMouseButton() == MouseButton::Left && m_ViewportPanelMouseOver && !Input::IsKeyPressed(KeyCode::LeftAlt) && !ImGuizmo::IsOver() && m_SceneState != SceneState::Play)
 		{
 			auto [mouseX, mouseY] = GetMouseViewportSpace();
 			if (mouseX > -1.0f && mouseX < 1.0f && mouseY > -1.0f && mouseY < 1.0f)

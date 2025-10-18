@@ -1,5 +1,7 @@
 set(OPENGL_SOURCES
+		OpenGLContext.cpp
 		OpenGLFramebuffer.cpp
+		OpenGLImGuiLayer.cpp
 		OpenGLIndexBuffer.cpp
 		OpenGLPipeline.cpp
 		OpenGLRendererAPI.cpp
@@ -11,7 +13,9 @@ set(OPENGL_SOURCES
 )
 
 set(OPENGL_HEADERS
+		OpenGLContext.hpp
 		OpenGLFramebuffer.hpp
+		OpenGLImGuiLayer.hpp
 		OpenGLIndexBuffer.hpp
 		OpenGLPipeline.hpp
 		OpenGLRenderPass.hpp

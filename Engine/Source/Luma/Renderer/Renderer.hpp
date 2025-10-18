@@ -1,19 +1,37 @@
 #pragma once
 
+#include "RendererContext.hpp"
 #include "RenderCommandQueue.hpp"
 #include "RenderPass.hpp"
-
 #include "Mesh.hpp"
+
+#include "Luma/Core/Application.hpp"
+
+#include "RendererCapabilities.hpp"
+
+
+#include "RendererAPI.hpp"
 
 namespace Luma {
 
 	class ShaderLibrary;
 
-	// TODO: Maybe this should be renamed to RendererAPI? Because we want an actual renderer vs API calls...
 	class Renderer
 	{
 	public:
 		typedef void(*RenderCommandFn)(void*);
+
+		static Ref<RendererContext> GetContext()
+		{
+			return Application::Get().GetWindow()->GetRenderContext();
+		}
+
+		static void Init();
+		static void Shutdown();
+
+		// static RendererCapabilities& GetCapabilities();
+
+		static Ref<ShaderLibrary> GetShaderLibrary();
 
 		// Commands
 		static void Clear();
@@ -24,12 +42,7 @@ namespace Luma {
 
 		// For OpenGL
 		static void SetLineThickness(float thickness);
-
 		static void ClearMagenta();
-
-		static void Init();
-
-		static Ref<ShaderLibrary> GetShaderLibrary();
 
 		template<typename FuncT>
 		static void Submit(FuncT&& func)
@@ -41,16 +54,11 @@ namespace Luma {
 				// NOTE: Instead of destroying we could try and enforce all items to be trivally destructible
 				// however some items like uniforms which contain std::strings still exist for now
 				// static_assert(std::is_trivially_destructible_v<FuncT>, "FuncT must be trivially destructible");
-				//pFunc->~FuncT();
+				pFunc->~FuncT();
 			};
 			auto storageBuffer = GetRenderCommandQueue().Allocate(renderCmd, sizeof(func));
 			new (storageBuffer) FuncT(std::forward<FuncT>(func));
 		}
-
-		/*static void* Submit(RenderCommandFn fn, unsigned int size)
-		{
-			return s_Instance->m_CommandQueue.Allocate(fn, size);
-		}*/
 
 		static void WaitAndRender();
 

@@ -2,7 +2,7 @@
 
 #include "Luma/Core/Base.hpp"
 #include "Luma/Core/Buffer.hpp"
-#include "RendererAPI.hpp"
+#include "RendererTypes.hpp"
 
 namespace Luma {
 

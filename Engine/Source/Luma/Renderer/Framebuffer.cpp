@@ -1,6 +1,7 @@
 #include "lmpch.hpp"
 #include "Framebuffer.hpp"
 
+#include "RendererAPI.hpp"
 #include "Luma/Renderer/Backend/OpenGL/OpenGLFramebuffer.hpp"
 
 namespace Luma {

@@ -1,8 +1,8 @@
 #pragma once
 
-namespace Luma {
+#include "RendererCapabilities.hpp"
 
-	using RendererID = uint32_t;
+namespace Luma {
 
 	enum class RendererAPIType
 	{
@@ -10,7 +10,6 @@ namespace Luma {
 		OpenGL
 	};
 
-	// TODO: move into separate header
 	enum class PrimitiveType
 	{
 		None = 0, Triangles, Lines
@@ -46,10 +45,10 @@ namespace Luma {
 		}
 
 		static RendererAPIType Current() { return s_CurrentRendererAPI; }
-	private:
+		static void SetAPI(RendererAPIType api) { s_CurrentRendererAPI = api; }
 		static void LoadRequiredAssets();
 	private:
-		static RendererAPIType s_CurrentRendererAPI;
+		inline static RendererAPIType s_CurrentRendererAPI = RendererAPIType::OpenGL;
 	};
 
 }

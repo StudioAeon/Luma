@@ -108,6 +108,8 @@ target_link_libraries(Luma
 		FastNoise
 		TracyClient
 		backward
+		magic_enum
+		RenderDoc
 )
 
 # ==== Optimizations ====

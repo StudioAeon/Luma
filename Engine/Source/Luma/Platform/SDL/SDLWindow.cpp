@@ -6,6 +6,10 @@
 #include "Luma/Events/MouseEvent.hpp"
 #include "Luma/Core/Input.hpp"
 
+#include "Luma/Renderer/RendererAPI.hpp"
+
+#include "Luma/Renderer/Backend/OpenGL/OpenGLContext.hpp"
+
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
 #include <stb/stb_image.h>
@@ -38,7 +42,7 @@ namespace Luma {
 
 		if (!s_SDLInitialized)
 		{
-			if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) == 0)
+			if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_JOYSTICK) == 0)
 			{
 				SDLErrorCallback("SDL_Init");
 				LM_CORE_ASSERT(false, "Could not initialize SDL!");
@@ -50,7 +54,28 @@ namespace Luma {
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-		Uint32 windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_HIGH_PIXEL_DENSITY;
+		Uint32 windowFlags = SDL_WINDOW_HIGH_PIXEL_DENSITY;
+
+		switch (RendererAPI::Current())
+		{
+			case RendererAPIType::None:
+				LM_CORE_ASSERT(false, "None is currently not supported!");
+				break;
+			case RendererAPIType::OpenGL:
+				windowFlags |= SDL_WINDOW_OPENGL;
+
+				SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+				SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+				SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+				SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+				SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+				SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
+#ifdef LM_DEBUG
+				SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+#endif
+				break;
+		}
 
 		switch (m_Specification.Mode)
 		{
@@ -107,10 +132,11 @@ namespace Luma {
 			}
 		}
 
-		m_GLContext = SDL_GL_CreateContext(m_Window);
-		SDL_GL_MakeCurrent(m_Window, m_GLContext);
-		int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(SDL_GL_GetProcAddress));
-		LM_CORE_ASSERT(status, "Failed to initialize Glad!");
+		// Create Renderer Context
+		m_RendererContext = RendererContext::Create();
+		Ref<OpenGLContext> glContext = m_RendererContext.As<OpenGLContext>();
+		glContext->SetWindow(m_Window);
+		m_RendererContext->Init();
 
 		SDL_SetPointerProperty(SDL_GetWindowProperties(m_Window), "WindowData", &m_Data);
 
@@ -150,6 +176,7 @@ namespace Luma {
 	void SDLWindow::ProcessEvents()
 	{
 		PollEvents();
+		Input::Update();
 	}
 
 	void SDLWindow::PollEvents()
@@ -197,17 +224,35 @@ namespace Luma {
 				case SDL_EVENT_KEY_DOWN:
 				{
 					SDL_Scancode scancode = m_Event.key.scancode;
+					SDL_Keymod mods = m_Event.key.mod;
 					int repeatCount = m_Event.key.repeat ? 1 : 0;
 
-					KeyPressedEvent e(static_cast<KeyCode>(scancode), repeatCount);
-					if (m_Data.EventCallback)
-						m_Data.EventCallback(e);
+					Input::UpdateKeyMods(magic_enum::enum_flags_cast<KeyMods>(mods));
+
+					if (repeatCount == 0)
+					{
+						Input::UpdateKeyState(static_cast<KeyCode>(scancode), KeyState::Pressed);
+						KeyPressedEvent e(static_cast<KeyCode>(scancode), 0);
+						if (m_Data.EventCallback)
+							m_Data.EventCallback(e);
+					}
+					else
+					{
+						Input::UpdateKeyState(static_cast<KeyCode>(scancode), KeyState::Held);
+						KeyPressedEvent e(static_cast<KeyCode>(scancode), 1);
+						if (m_Data.EventCallback)
+							m_Data.EventCallback(e);
+					}
 					break;
 				}
 				case SDL_EVENT_KEY_UP:
 				{
 					SDL_Scancode scancode = m_Event.key.scancode;
+					SDL_Keymod mods = m_Event.key.mod;
 
+					Input::UpdateKeyMods(magic_enum::enum_flags_cast<KeyMods>(mods));
+
+					Input::UpdateKeyState(static_cast<KeyCode>(scancode), KeyState::Released);
 					KeyReleasedEvent e(static_cast<KeyCode>(scancode));
 					if (m_Data.EventCallback)
 						m_Data.EventCallback(e);
@@ -215,8 +260,21 @@ namespace Luma {
 				}
 				case SDL_EVENT_TEXT_INPUT:
 				{
-					// SDL3 text input is a string, take first character
-					KeyTypedEvent e(static_cast<KeyCode>(m_Event.text.text[0]));
+					// SDL3 text input is UTF-8 string, decode first codepoint
+					const char* text = m_Event.text.text;
+					uint32_t codepoint = 0;
+
+					// Simple UTF-8 to codepoint conversion for first character
+					if ((text[0] & 0x80) == 0)
+						codepoint = text[0];
+					else if ((text[0] & 0xE0) == 0xC0)
+						codepoint = ((text[0] & 0x1F) << 6) | (text[1] & 0x3F);
+					else if ((text[0] & 0xF0) == 0xE0)
+						codepoint = ((text[0] & 0x0F) << 12) | ((text[1] & 0x3F) << 6) | (text[2] & 0x3F);
+					else if ((text[0] & 0xF8) == 0xF0)
+						codepoint = ((text[0] & 0x07) << 18) | ((text[1] & 0x3F) << 12) | ((text[2] & 0x3F) << 6) | (text[3] & 0x3F);
+
+					KeyTypedEvent e(static_cast<KeyCode>(codepoint));
 					if (m_Data.EventCallback)
 						m_Data.EventCallback(e);
 					break;

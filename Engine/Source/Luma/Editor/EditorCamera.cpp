@@ -76,17 +76,17 @@ namespace Luma {
 
 	void EditorCamera::OnUpdate(Timestep ts)
 	{
-		if (Input::IsKeyPressed(KeyCode::LeftAlt))
+		if (Input::IsKeyDown(KeyCode::LeftAlt))
 		{
 			const glm::vec2& mouse{ Input::GetMouseX(), Input::GetMouseY() };
 			glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
 			m_InitialMousePosition = mouse;
 
-			if (Input::IsMouseButtonPressed(SDL_BUTTON_MIDDLE))
+			if (Input::IsMouseButtonDown(MouseButton::Middle))
 				MousePan(delta);
-			else if (Input::IsMouseButtonPressed(SDL_BUTTON_LEFT))
+			else if (Input::IsMouseButtonDown(MouseButton::Left))
 				MouseRotate(delta);
-			else if (Input::IsMouseButtonPressed(SDL_BUTTON_RIGHT))
+			else if (Input::IsMouseButtonDown(MouseButton::Right))
 				MouseZoom(delta.y);
 		}
 

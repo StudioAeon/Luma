@@ -2,7 +2,7 @@
 
 #include "Luma/Core/Assert.hpp" // Temp
 
-#include "RendererAPI.hpp"
+#include "RendererTypes.hpp"
 
 namespace Luma {
 

@@ -51,15 +51,18 @@ namespace Luma {
 
 		LM_CORE_VERIFY(NFD::Init() == NFD_OKAY);
 
-		m_ImGuiLayer = new ImGuiLayer("ImGui");
-		PushOverlay(m_ImGuiLayer);
-
 		Renderer::Init();
 		Renderer::WaitAndRender();
 
 		m_Window->SetResizable(specification.Resizable);
 		if (windowSpec.Mode == WindowMode::Windowed)
 			m_Window->CenterWindow();
+
+		if (m_Specification.EnableImGui)
+		{
+			m_ImGuiLayer = ImGuiLayer::Create();
+			PushOverlay(m_ImGuiLayer);
+		}
 	}
 
 	Application::~Application()
@@ -133,8 +136,13 @@ namespace Luma {
 
 			ProcessEvents();
 
+			m_ProfilerPreviousFrameData = m_Profiler->GetPerFrameData();
+			m_Profiler->Clear();
+
 			if (!m_Minimized)
 			{
+				Timer cpuTimer;
+
 				{
 					LM_SCOPE_PERF("Application Layer::OnUpdate");
 					for (Layer* layer : m_LayerStack)
@@ -143,12 +151,23 @@ namespace Luma {
 
 				// Render ImGui on render thread
 				Application* app = this;
-				Renderer::Submit([app]() { app->RenderImGui(); });
-				Renderer::Submit([=]() { m_ImGuiLayer->End(); });
+				if (m_Specification.EnableImGui)
+				{
+					Renderer::Submit([app]() { app->RenderImGui(); });
+					Renderer::Submit([=]() { m_ImGuiLayer->End(); });
+				}
 
 				Renderer::WaitAndRender();
+
+				Renderer::Submit([&]()
+				{
+					m_Window->SwapBuffers();
+				});
+
+				m_PerformanceTimers.MainThreadWorkTime = cpuTimer.ElapsedMillis();
 			}
-			m_Window->SwapBuffers();
+
+			Input::ClearReleasedKeys();
 
 			float time = GetTime();
 			m_Frametime = time - m_LastFrameTime;
@@ -175,6 +194,9 @@ namespace Luma {
 
 	void Application::ProcessEvents()
 	{
+		Input::TransitionPressedKeys();
+		Input::TransitionPressedButtons();
+
 		m_Window->ProcessEvents();
 
 		// Note: we have no control over what func() does.  holding this lock while calling func() is a bad idea:
